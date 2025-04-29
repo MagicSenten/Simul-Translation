@@ -31,11 +31,11 @@ curl -L \
      --retry 3 \
      --retry-delay 5 \
      --continue-at - \
-     --output all.cs-en.top10M \
+     --output all.cs-en.top10M.txt \
      "https://ufallab.ms.mff.cuni.cz/~machacek/cs-en-de-training-data/derived/all.cs-en.top10M"
 ```
 
-This will save the file as `all.cs-en.top10M` in your current folder.
+This will save the file as `all.cs-en.top10M.txt` in your current folder.
 
 ### 3. Create and activate a virtual environment
 
@@ -69,7 +69,7 @@ You can customize file paths and how many lines to process using these flags:
 
 | Flag                        | Default                     | Description                                                                           |
 |-----------------------------|-----------------------------|---------------------------------------------------------------------------------------|
-| `--input_file_path`         | `all.cs-en.top10M`          | Path to the downloaded text file (must be `.txt` or no extension).                     |
+| `--input_file_path`         | `all.cs-en.top10M.txt`          | Path to the downloaded text file (`.txt` format).                     |
 | `--cleaned_dataset_path`    | `cleaned_dataset.jsonl`     | Output file for the cleaned data (JSONL format).                                     |
 | `--prefix_dataset_path`     | `prefixes_dataset.jsonl`    | Output file for the prefix dataset (JSONL format).                                   |
 | `--number_of_lines`         | *all lines*                 | Number of lines to process from the input file. Omit or set to `0`/`None` to use entire file. |
@@ -78,7 +78,7 @@ You can customize file paths and how many lines to process using these flags:
 
 ```bash
 python create_dataset.py \
-  --input_file_path all.cs-en.top10M \
+  --input_file_path all.cs-en.top10M.txt \
   --cleaned_dataset_path cleaned_100k.jsonl \
   --prefix_dataset_path prefixes_100k.jsonl \
   --number_of_lines 100000
