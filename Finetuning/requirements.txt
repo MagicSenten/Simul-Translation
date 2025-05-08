@@ -1,0 +1,9 @@
+numpy
+torch
+datasets
+evaluate
+transformers
+accelerate
+sentencepiece
+sacremoses
+sacrebleu

@@ -1,1 +1,9 @@
 .idea
+*venv*/
+
+# Data files
+all.cs-en.top10M.txt
+*.jsonl
+
+# Model folder
+*opus-mt-cs-en*/
