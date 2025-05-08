@@ -104,18 +104,18 @@ def translate(model, tokenizer, input_text, stable_theory, args, verbose=False):
     '''
     is_sent_end = input_text.endswith(".")
     input_ids = tokenizer.encode(input_text, return_tensors="pt")
-    decoder_input_ids = tokenizer.encode(stable_theory, return_tensors="pt")
+    decoder_input_ids = tokenizer.encode(stable_theory, return_tensors="pt") if len(stable_theory) > 0 else None
     """
       cross_attentions (tuple(tuple(torch.FloatTensor)), optional,
       returned when output_attentions=True) —
       Tuple (one element for each generated token) of tuples (one element for each layer of the decoder) of torch.FloatTensor
       of shape (batch_size, num_heads, generated_length, sequence_length).
     """
-    outputs = model.generate(input_ids=input_ids.to(args.device), decoder_input_ids=decoder_input_ids.to(args.device),
+    outputs = model.generate(input_ids=input_ids.to(args.device), decoder_input_ids=decoder_input_ids.to(args.device) if decoder_input_ids is not None else None,
                              return_dict_in_generate=True, output_attentions=True, max_new_tokens=200)
     ca = outputs["cross_attentions"]
     output_ids = outputs["sequences"][0]
-    if args.top_k > 0 or is_sent_end:
+    if args.top_k > 0 and not is_sent_end and not decoder_input_ids is None:
         assert all([x[0].shape[2] == 1 for x in ca[1:]])
         attentions = [sum(x[i] for i in args.layers) for x in ca[1:]]
         attentions = attentions[:len(output_ids) - decoder_input_ids.shape[1]]
@@ -157,12 +157,13 @@ def analyze_dataset(args):
     for x in prefixes[:10]:
         wordsen = x[-1][1].split(" ")
         # We prefix it with some text to not start the translation from nothing.
-        helper_text = "Následující dokument obsahuje přepis proslovu z evropského parlamentu. "
+        helpt = False
+        helper_text = "Následující dokument obsahuje přepis proslovu z evropského parlamentu. " if helpt else ""
         lht = len(helper_text)
-        helper_text_en = "The following document contains a transcript of a speech from the European Parliament. "
+        helper_text_en = "The following document contains a transcript of a speech from the European Parliament. " if helpt else ""
         lhten = len(helper_text_en)
         # We give it some of the first target golden words to make it more stable for evaluation.
-        start = 4
+        start = 0
         lhten_tok = len(tokenizer.tokenize(helper_text_en))
         stable_theory = tokenizer.tokenize(helper_text_en + x[-1][1])[:lhten_tok+int(start*2.5)]
         previous_theory = stable_theory
