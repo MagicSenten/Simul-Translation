@@ -90,10 +90,10 @@ def alignatt(attentions, args):
         top_pos = mean_attentions.argsort(-1)[-args.top_k:].cpu().numpy()
         top_pos[top_pos >= attentions[0].shape[-1]-args.skip_l] = 0
         #print(attentions[i].shape, top_pos, mean_attentions[-mean_attentions.shape[0]//8:])
-        print(i, len(attentions), attentions[0].shape[-1] - top_pos)
         if np.sum(np.less_equal(attentions[0].shape[-1] - args.last_f, top_pos)) > args.count_in:
+            print(i, len(attentions), attentions[0].shape[-1] - top_pos)
             return i
-    print(attentions[0].shape[-1] - top_pos)
+    print(len(attentions), attentions[0].shape[-1] - top_pos)
     return len(attentions)
 
 
@@ -192,7 +192,7 @@ def analyze_dataset(args):
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532
 
 def main():
-    argsdict = {"skip_l": 3, "layers": [4], "top_k": 10, "last_f": 6, "count_in": 5, "heads": list(range(6)), "device": "cuda"}
+    argsdict = {"skip_l": 3, "layers": [4], "top_k": 10, "last_f": 8, "count_in": 3, "heads": list(range(6)), "device": "cuda"}
     args = Namespace(**argsdict)
     analyze_dataset(args)
 
