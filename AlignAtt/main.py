@@ -166,10 +166,11 @@ def analyze_dataset(args):
     wait_for = 2
     metric = Metric()
     for x in prefixes[:10]:
-        if len(x) < wait_for+3:
+        full_input_text = x[-1][0]
+        gold_text = x[-1][1]
+        words = full_input_text.split(" ")
+        if len(words) < wait_for+3:
             continue
-        gold_text = x[-1][0]
-        words = gold_text.split(" ")
         wordsen = x[-1][1].split(" ")
         # We prefix it with some text to not start the translation from nothing.
         helpt = False
@@ -182,14 +183,10 @@ def analyze_dataset(args):
         lhten_tok = len(tokenizer.tokenize(helper_text_en))
         stable_theory = tokenizer.tokenize(helper_text_en + x[-1][1])[:lhten_tok + int(start * 2.5)]
         previous_theory = stable_theory
-        # How much is the english text longer than the czech text.
-        tokens_en = tokenizer.tokenize(x[-1][1])
         for t in range(1, len(words)):
-            input_text = " ".join(words[:t])
-            new_delay = np.zeros(3)
-            total_latency += new_delay
+            partial_input_text = " ".join(words[:t])
             if t >= wait_for:
-                new_theory = translate(model, tokenizer, helper_text + input_text, stable_theory, args, False)
+                new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, False)
                 # If we begin repeating the same tokens, we don't take the output.
                 newtokens = new_theory[len(stable_theory):]
                 if np.unique(newtokens).shape[0] < len(newtokens) // 2:
