@@ -2,14 +2,15 @@
 import json
 import regex
 import numpy as np
+import random
 import argparse
 from itertools import islice
 parser = argparse.ArgumentParser()
 parser.add_argument("--input_file_path", default="all.cs-en.top10M.txt", type=str, help="Path to the downloaded dataset from the readme file. Should be .txt format.")
 parser.add_argument("--cleaned_dataset_path", default="cleaned_dataset.jsonl", type=str, help="Path where to save the cleaned dataset. Should be .jsonl format.")
 parser.add_argument("--prefix_dataset_path", default="prefixes_dataset.jsonl", type=str, help="Path where to save the cleaned dataset. Should be .jsonl format.")
-parser.add_argument("--number_of_lines", default=10, type=int, help="Number of lines used from the downloaded dataset for the prefix dataset. The default is the whole file")
-parser.add_argument("--lines_start", default=0, type=int, help="Number of lines used from the downloaded dataset for the prefix dataset. The default is the whole file")
+parser.add_argument("--number_of_lines", default=10, type=int, help="Number of lines used from the downloaded dataset for the prefix dataset. The default is the whole file.")
+parser.add_argument("--number_of_prefixes_from_sentence", default=2, type=int, help="Number of generated prefixes from one sentence that should be used inside the dataset.")
 #TODO: this part make sure the argument below works
 parser.add_argument("--tokenizer", default=None, type=str, help="Path to the tokenizer on huggingface. NOT IMPLEMENTED YET!")
 parser.add_argument("--create_prefixes_by_aligment", default=False, action="store_true", help="Create the prefix dataset by using aligment tools. NOT IMPLEMENTED YET!")
@@ -23,7 +24,7 @@ class CreateDataset():
         """
         return regex.sub(r'^[^\p{L}\p{N}]+', '', s)
 
-    def prepare_data_from_file(self, input_file: str = "all.cs-en.top10M.txt", output_file: str = "cleaned_dataset.jsonl", number_of_lines: int = None, lines_start: int = None):
+    def prepare_data_from_file(self, input_file: str = "all.cs-en.top10M.txt", output_file: str = "cleaned_dataset.jsonl", number_of_lines: int = None):
         """
         Cleaning function that is build for the 'all.cs-en.top10M.txt' 
         format of dataset downloaded from https://ufallab.ms.mff.cuni.cz/~machacek/cs-en-de-training-data/
@@ -31,7 +32,7 @@ class CreateDataset():
         pairs = []
         last_line = None
         with open(input_file, 'r', encoding='utf-8') as infile:
-            for index, line in islice(enumerate(infile), lines_start, lines_start+number_of_lines):
+            for _, line in islice(enumerate(infile), 0, number_of_lines):
                 cols = line.strip().split('\t')
                 if len(cols) < 4:
                     continue  # skip malformed lines
@@ -53,7 +54,7 @@ class CreateDataset():
         self.save_pairs(output_file, pairs, append=False)
 
 
-    def get_prefixes_by(self, source: str, target: str, tokenizer=None):
+    def get_prefixes_by(self, source: str, target: str, tokenizer=None, number_of_prefixes_from_sentence:int = 2):
         """
         Defaultly creates sentence prefixes based on the number of characters. 
         If a tokenizer is provided, it uses tokens instead of the characters.
@@ -150,6 +151,9 @@ class CreateDataset():
         if source_is_long:
             prefixes = [(src, tgt) for tgt, src in prefixes]
 
+        # Randomly select a subset of prefixes
+        if number_of_prefixes_from_sentence < len(prefixes):
+            prefixes = random.sample(prefixes, number_of_prefixes_from_sentence)
 
         return [{"pref_source": src_pref, "pref_target": tgt_pref}
                 for src_pref, tgt_pref in prefixes]
@@ -171,7 +175,8 @@ class CreateDataset():
                 outfile.write(json.dumps(item, ensure_ascii=False) + '\n')
 
 
-    def create_prefixes(self, cleaned_dataset_file_path: str = "cleaned_dataset.jsonl", prefix_dataset_file_path: str = "prefixes_dataset.jsonl", tokenizer=None):
+    def create_prefixes(self, cleaned_dataset_file_path: str = "cleaned_dataset.jsonl", prefix_dataset_file_path: str = "prefixes_dataset.jsonl", 
+                        tokenizer=None, number_of_prefixes_from_sentence:int = 2):
         """
         Generate incremental prefix pairs for each source-target example in a prepared JSONL file.
         An optional `tokenizer` can be provided for token-based prefix segmentation.
@@ -196,7 +201,7 @@ class CreateDataset():
                 #For each line create the prefixes
                 src = obj["source"]
                 tgt = obj["target"]
-                prefix_pairs = self.get_prefixes_by(src, tgt, tokenizer)
+                prefix_pairs = self.get_prefixes_by(src, tgt, tokenizer, number_of_prefixes_from_sentence)
                 prefix_pairs_collection.extend(prefix_pairs)
                 #Periodic save
                 if lineno % 100 == 0:
@@ -211,7 +216,8 @@ class CreateDataset():
 if __name__ == "__main__":
     main_args = parser.parse_args([] if "__file__" not in globals() else None)
     dataset = CreateDataset()
-    dataset.prepare_data_from_file(input_file=main_args.input_file_path, output_file=main_args.cleaned_dataset_path, number_of_lines=main_args.number_of_lines,lines_start=main_args.lines_start)
+    dataset.prepare_data_from_file(input_file=main_args.input_file_path, output_file=main_args.cleaned_dataset_path, number_of_lines=main_args.number_of_lines)
     #TODO: add the tokenizer path
     #TODO: implement the aligment branch here
-    dataset.create_prefixes(cleaned_dataset_file_path=main_args.cleaned_dataset_path, prefix_dataset_file_path=main_args.prefix_dataset_path)
+    dataset.create_prefixes(cleaned_dataset_file_path=main_args.cleaned_dataset_path, prefix_dataset_file_path=main_args.prefix_dataset_path,
+                             number_of_prefixes_from_sentence=main_args.number_of_prefixes_from_sentence)
