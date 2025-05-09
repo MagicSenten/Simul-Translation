@@ -184,7 +184,7 @@ def analyze_dataset(args):
         stable_theory = tokenizer.tokenize(helper_text_en + x[-1][1])[:lhten_tok + int(start * 2.5)]
         previous_theory = stable_theory
         for t in range(1, len(words)):
-            partial_input_text = " ".join(words[:t])
+            partial_input_text = " ".join(words[:t+1])
             if t >= wait_for:
                 new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, False)
                 # If we begin repeating the same tokens, we don't take the output.
@@ -209,8 +209,13 @@ def analyze_dataset(args):
             print(to_string(new_theory)[lhten:])
             print(x[-1][1])
             previous_theory = new_theory
-        cs += 1
-        print(metric.eval())
+            if len(stable_theory) > 0:
+                new_bleu = bleu.compute(predictions=[to_string(stable_theory)],
+                                    references=[gold_text])
+
+            total_bleu += new_bleu
+            cs += 1
+        print(metric.eval(), new_bleu, total_bleu/cs)
         #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
 
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
