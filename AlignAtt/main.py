@@ -202,15 +202,13 @@ def analyze_dataset(args):
                         print(new_theory[i], previous_theory[i])
                         break
                     stable_theory += [new_theory[i]]
-            metric.update(to_string(stable_theory), to_string(stable_theory), gold_text, tokenizer)
+            metric.update(partial_input_text, full_input_text, to_string(stable_theory), gold_text, tokenizer)
             print("****", len(new_theory) - len(stable_theory))
             print(" ".join(words[:t]))
             print(to_string(stable_theory)[lhten:])
             print(to_string(new_theory)[lhten:])
             print(x[-1][1])
             previous_theory = new_theory
-        new_bleu = bleu.compute(predictions=["".join(new_theory if False else stable_theory).replace("▁", " ")], references=[x[-1][1]])["bleu"] if len(stable_theory) > 0 else 0
-        total_bleu += new_bleu
         cs += 1
         print(metric.eval())
         #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
