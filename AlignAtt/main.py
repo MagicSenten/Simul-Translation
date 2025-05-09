@@ -8,7 +8,7 @@ import argparse
 import jsonlines
 from itertools import islice
 from alignatt import alignatt, visualize_attention
-from evaluation import Metric
+from evaluation import SimuEval
 def parse_args():
     parser = argparse.ArgumentParser()
     id = 0
@@ -164,7 +164,7 @@ def analyze_dataset(args):
     # The total number of prefixes seen.
     cs = 0
     wait_for = 2
-    metric = Metric()
+    metric = SimuEval()
     for x in prefixes[:10]:
         full_input_text = x[-1][0]
         gold_text = x[-1][1]
