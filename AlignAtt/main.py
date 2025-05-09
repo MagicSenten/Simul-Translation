@@ -8,15 +8,16 @@ import argparse
 import jsonlines
 from itertools import islice
 from alignatt import alignatt, visualize_attention
-from evaluation import Metric
+from evaluation import SimuEval
 def parse_args():
     parser = argparse.ArgumentParser()
     id = 0
     keys = ["czech", "english"] if False else ["pref_source", "pref_target"]
     parser.add_argument("--dataset_path", default="../Data_preparation/prefixes_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
+    parser.add_argument("--local_agreement_length", type=int, default=0, help="Number of next tokens it must agree with the previous theory in")
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
     parser.add_argument("--layers", type=int, nargs='+', default=[4], help="List of layer indices")
-    parser.add_argument("--top_attentions", type=int, default=10, help="Top attentions to use, set to zero to disable alignatt.")
+    parser.add_argument("--top_attentions", type=int, default=0, help="Top attentions to use, set to zero to disable alignatt.")
     parser.add_argument("--attention_frame_size", type=int, default=20, help="The excluded frame of last positions size")
     parser.add_argument("--count_in", type=int, default=7, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
     parser.add_argument("--heads", type=int, nargs='+', default=list(range(6)), help="List of attention heads")
@@ -139,7 +140,6 @@ def analyze_dataset(args):
     words = [make_pair(data[i], args) for i in range(len(data))]
     prefixes = [[words[0]]]
     for x in words[1:]:
-        print(x[0], prefixes[-1][-1][0])
         if x[0].startswith(prefixes[-1][-1][0]):
             prefixes[-1].append(x)
         else:
@@ -163,13 +163,14 @@ def analyze_dataset(args):
     total_latency = np.zeros(3)
     # The total number of prefixes seen.
     cs = 0
-    wait_for = 2
-    metric = Metric()
+    wait_for = 0
+    metric = SimuEval()
     for x in prefixes[:10]:
-        if len(x) < wait_for+3:
+        full_input_text = x[-1][0]
+        gold_text = x[-1][1]
+        words = full_input_text.split(" ")
+        if len(words) < wait_for+3:
             continue
-        gold_text = x[-1][0]
-        words = gold_text.split(" ")
         wordsen = x[-1][1].split(" ")
         # We prefix it with some text to not start the translation from nothing.
         helpt = False
@@ -182,14 +183,10 @@ def analyze_dataset(args):
         lhten_tok = len(tokenizer.tokenize(helper_text_en))
         stable_theory = tokenizer.tokenize(helper_text_en + x[-1][1])[:lhten_tok + int(start * 2.5)]
         previous_theory = stable_theory
-        # How much is the english text longer than the czech text.
-        tokens_en = tokenizer.tokenize(x[-1][1])
         for t in range(1, len(words)):
-            input_text = " ".join(words[:t])
-            new_delay = np.zeros(3)
-            total_latency += new_delay
+            partial_input_text = " ".join(words[:t])
             if t >= wait_for:
-                new_theory = translate(model, tokenizer, helper_text + input_text, stable_theory, args, False)
+                new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, False)
                 # If we begin repeating the same tokens, we don't take the output.
                 newtokens = new_theory[len(stable_theory):]
                 if np.unique(newtokens).shape[0] < len(newtokens) // 2:
@@ -197,20 +194,21 @@ def analyze_dataset(args):
                     stable_theory += [tokenizer.tokenize(" ")]
                     continue
                 stop = min(len(new_theory), len(previous_theory))
-                for i in range(len(stable_theory), stop):
-                    if any([new_theory[j] != previous_theory[j] for j in range(i, min(stop, i+1))]) or len(new_theory) > 500:
-                        print(new_theory[i], previous_theory[i])
-                        break
-                    stable_theory += [new_theory[i]]
-            metric.update(to_string(stable_theory), to_string(stable_theory), gold_text, tokenizer)
+                if args.local_agreement_length > 0:
+                    for i in range(len(stable_theory), stop):
+                        if any([new_theory[j] != previous_theory[j] for j in range(i, min(stop, i+args.local_agreement_length))]) or len(new_theory) > 500:
+                            print(new_theory[i], previous_theory[i])
+                            break
+                        stable_theory += [new_theory[i]]
+                    else:
+                        stable_theory = new_theory
+            metric.update(partial_input_text, full_input_text, to_string(stable_theory), gold_text, tokenizer)
             print("****", len(new_theory) - len(stable_theory))
             print(" ".join(words[:t]))
             print(to_string(stable_theory)[lhten:])
             print(to_string(new_theory)[lhten:])
             print(x[-1][1])
             previous_theory = new_theory
-        new_bleu = bleu.compute(predictions=["".join(new_theory if False else stable_theory).replace("▁", " ")], references=[x[-1][1]])["bleu"] if len(stable_theory) > 0 else 0
-        total_bleu += new_bleu
         cs += 1
         print(metric.eval())
         #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
