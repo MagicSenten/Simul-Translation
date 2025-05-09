@@ -7,6 +7,8 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig
 import argparse
 import jsonlines
 from itertools import islice
+from alignatt import alignatt, visualize_attention
+from evaluation import Metric
 def parse_args():
     parser = argparse.ArgumentParser()
     id = 0
@@ -15,8 +17,8 @@ def parse_args():
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
     parser.add_argument("--layers", type=int, nargs='+', default=[4], help="List of layer indices")
     parser.add_argument("--top_attentions", type=int, default=10, help="Top attentions to use, set to zero to disable alignatt.")
-    parser.add_argument("--attention_frame_size", type=int, default=10, help="The excluded frame of last positions size")
-    parser.add_argument("--count_in", type=int, default=5, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
+    parser.add_argument("--attention_frame_size", type=int, default=20, help="The excluded frame of last positions size")
+    parser.add_argument("--count_in", type=int, default=7, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
     parser.add_argument("--heads", type=int, nargs='+', default=list(range(6)), help="List of attention heads")
     parser.add_argument("--device", type=str, default="cuda", help="Device to use")
     parser.add_argument("--words_per_prefix", type=int, default=2, help="Words per prefix shown")
@@ -90,40 +92,6 @@ def make_alignments(datap, args):
 def make_pair(datap, args):
     return datap[args.src_key], datap[args.tgt_key]
 
-def visualize_attention(input_ids, output_ids, attentions, tokenizer, args):
-    def sort_top(l, t):
-        return [y - len(input_ids) for y in l[:-t] + sorted(l[-t:])]
-
-    def get_range(vs):
-        if len(vs) < 3:
-            return ""
-        ids = input_ids[min(vs[-3:]):max(vs[-3:])]
-        r = tokenizer.decode(ids)
-        return r
-
-    # get the top attention positions for the last 5 output tokens (-1 means last input token)
-    print([sort_top(y[0, args.heads, -1, :].mean(0).argsort(-1)[-10:].tolist(), 3) for y in attentions[:-10]])
-    # print the corresponding tokens
-    print([get_range(x[0, args.heads, -1, :].mean(0).argsort(-1)[-10:].tolist()) for x in attentions[-10:-5]])
-    print(tokenizer.decode(output_ids[-10:-5]))
-    print([get_range(x[0, args.heads, -1, :].mean(0).argsort(-1)[-10:].tolist()) for x in attentions[:-5]])
-    print(tokenizer.decode(output_ids[:-5]))
-
-
-def alignatt(attentions, args):
-    for i in range(len(attentions)):
-        # shape (batch_size, num_heads, generated_length, sequence_length)
-        mean_attentions = attentions[i][0, args.heads, -1, :].mean(0)
-        # shape (generated_length)
-        top_pos = mean_attentions.argsort(-1)[-args.top_attentions:].cpu().numpy()
-        top_pos[top_pos >= attentions[0].shape[-1] - args.skip_l] = 0
-        # print(attentions[i].shape, top_pos, mean_attentions[-mean_attentions.shape[0]//8:])
-        if np.sum(np.less_equal(attentions[0].shape[-1] - args.attention_frame_size, top_pos)) > args.count_in:
-            print(i, len(attentions), attentions[0].shape[-1] - top_pos)
-            return i
-    print(len(attentions), "full", attentions[0].shape[-1] - top_pos)
-    return len(attentions)
-
 
 def translate(model, tokenizer, input_text, stable_theory, args, verbose=False):
     '''
@@ -196,9 +164,11 @@ def analyze_dataset(args):
     # The total number of prefixes seen.
     cs = 0
     wait_for = 2
+    metric = Metric()
     for x in prefixes[:10]:
         if len(x) < wait_for+3:
             continue
+        words = x[-1][0].split(" ")
         wordsen = x[-1][1].split(" ")
         # We prefix it with some text to not start the translation from nothing.
         helpt = False
@@ -212,22 +182,13 @@ def analyze_dataset(args):
         stable_theory = tokenizer.tokenize(helper_text_en + x[-1][1])[:lhten_tok + int(start * 2.5)]
         previous_theory = stable_theory
         # How much is the english text longer than the czech text.
-        frac_chars = len(x[-1][1]) / len(x[-1][0]) + 0.5
-        frac_words = len(x[-1][1]) / len(x[-1][0]) + 0.5
-        l_tokens = len(tokens_en)
-        frac_tokens = len(x[-1][1]) / len(x[-1][0]) + 0.5
-        s = int(start * frac_chars)
         tokens_en = tokenizer.tokenize(x[-1][1])
-        for t in range(s, len(x)):
-            # print(frac * len(x[t][0]),  len(stable_theory), len(x[t][0]), len(x[-1][1]))
-            new_delay_chars = (frac_chars * len(x[t][0])) - len(to_string(stable_theory)) / lhten
-            new_delay_words = (frac_words * len(x[t][0].split(" "))) - len(to_string(stable_theory).split(" ")) / l_tokens
-            new_delay_tokens = (frac_tokens * len(tokenizer.tokenize(x[t][0]))) - len(stable_theory) / len(tokens_en)
-            new_delay = np.array([new_delay_chars, new_delay_words, new_delay_tokens])
+        for t in range(1, len(words)):
+            new_delay = np.zeros(3)
             total_latency += new_delay
             if t < wait_for:
                 continue
-            new_theory = translate(model, tokenizer, helper_text + x[t][0], stable_theory, args, False)
+            new_theory = translate(model, tokenizer, helper_text + " ".join(words[:t]), stable_theory, args, False)
             # If we begin repeating the same tokens, we don't take the output.
             newtokens = new_theory[len(stable_theory):]
             if np.unique(newtokens).shape[0] < len(newtokens) // 2:
@@ -240,8 +201,9 @@ def analyze_dataset(args):
                     print(new_theory[i], previous_theory[i])
                     break
                 stable_theory += [new_theory[i]]
+                metric.update()
             print("****", len(new_theory) - len(stable_theory))
-            print(x[t][0])
+            print(" ".join(words[:t]))
             print(to_string(stable_theory)[lhten:])
             print(to_string(new_theory)[lhten:])
             print(x[-1][1])
@@ -249,7 +211,8 @@ def analyze_dataset(args):
         new_bleu = bleu.compute(predictions=["".join(new_theory if False else stable_theory).replace("▁", " ")], references=[x[-1][1]])["bleu"] if len(stable_theory) > 0 else 0
         total_bleu += new_bleu
         cs += 1
-        print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
+        print(metric.eval())
+        #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
 
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532

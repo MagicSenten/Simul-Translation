@@ -1,12 +1,13 @@
 import argparse
-
 import numpy as np
 import torch
 from datasets import load_dataset
 import evaluate
 from transformers import AutoTokenizer, set_seed
 from transformers import AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, Seq2SeqTrainingArguments, Seq2SeqTrainer
+import wandb
 
+wandb.login(key="ac0918f0210f38aab72bfde33cdc9bf878965f2a")
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset_path", default="../Data_preparation/prefixes_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
 parser.add_argument("--epochs", default=10, type=int, help="Number of epochs.")
@@ -29,9 +30,8 @@ def main(args):
 
     tokenizer = AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-cs-en")
     model = AutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-mt-cs-en")
-
-    data = load_dataset("json", data_files=args.dataset_path, split="train")
-    data = data.train_test_split(test_size=0.1, shuffle=True, seed=args.seed)
+    data = load_dataset("json", data_files=args.dataset_path, split="train[:500]")
+    data = data.train_test_split(test_size=0.01, shuffle=True, seed=args.seed)
 
     def preprocess(example):
         model_inputs = tokenizer(
@@ -69,7 +69,8 @@ def main(args):
 
     training_args = Seq2SeqTrainingArguments(
         output_dir=args.output_model_dir,
-        eval_strategy = "epoch",
+        eval_strategy="steps",
+        eval_steps=8,
         learning_rate=args.learning_rate,
         per_device_train_batch_size=args.batch_size,
         per_device_eval_batch_size=args.batch_size,
@@ -79,6 +80,7 @@ def main(args):
         # save_total_limit=3,
         fp16=True,
         seed=args.seed,
+        report_to = "wandb",
     )
 
     metric = evaluate.load("sacrebleu")
@@ -109,7 +111,6 @@ def main(args):
         train_dataset=train_data,
         eval_dataset=test_data,
         compute_metrics=compute_metrics,
-        # report_to=...,
     )
 
     print("Evaluating the model before finetuning...")
