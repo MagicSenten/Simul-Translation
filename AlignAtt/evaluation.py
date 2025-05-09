@@ -1,4 +1,4 @@
-class Metric:
+class SimuEval:
     def __init__(self):
         self.delay_chars = 0
         self.delay_words = 0

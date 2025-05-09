@@ -14,9 +14,10 @@ def parse_args():
     id = 0
     keys = ["czech", "english"] if False else ["pref_source", "pref_target"]
     parser.add_argument("--dataset_path", default="../Data_preparation/prefixes_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
+    parser.add_argument("--local_agreement_length", type=int, default=0, help="Number of next tokens it must agree with the previous theory in")
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
     parser.add_argument("--layers", type=int, nargs='+', default=[4], help="List of layer indices")
-    parser.add_argument("--top_attentions", type=int, default=10, help="Top attentions to use, set to zero to disable alignatt.")
+    parser.add_argument("--top_attentions", type=int, default=0, help="Top attentions to use, set to zero to disable alignatt.")
     parser.add_argument("--attention_frame_size", type=int, default=20, help="The excluded frame of last positions size")
     parser.add_argument("--count_in", type=int, default=7, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
     parser.add_argument("--heads", type=int, nargs='+', default=list(range(6)), help="List of attention heads")
@@ -139,7 +140,6 @@ def analyze_dataset(args):
     words = [make_pair(data[i], args) for i in range(len(data))]
     prefixes = [[words[0]]]
     for x in words[1:]:
-        print(x[0], prefixes[-1][-1][0])
         if x[0].startswith(prefixes[-1][-1][0]):
             prefixes[-1].append(x)
         else:
@@ -163,7 +163,7 @@ def analyze_dataset(args):
     total_latency = np.zeros(3)
     # The total number of prefixes seen.
     cs = 0
-    wait_for = 2
+    wait_for = 0
     metric = SimuEval()
     for x in prefixes[:10]:
         full_input_text = x[-1][0]
@@ -194,11 +194,14 @@ def analyze_dataset(args):
                     stable_theory += [tokenizer.tokenize(" ")]
                     continue
                 stop = min(len(new_theory), len(previous_theory))
-                for i in range(len(stable_theory), stop):
-                    if any([new_theory[j] != previous_theory[j] for j in range(i, min(stop, i+1))]) or len(new_theory) > 500:
-                        print(new_theory[i], previous_theory[i])
-                        break
-                    stable_theory += [new_theory[i]]
+                if args.local_agreement_length > 0:
+                    for i in range(len(stable_theory), stop):
+                        if any([new_theory[j] != previous_theory[j] for j in range(i, min(stop, i+args.local_agreement_length))]) or len(new_theory) > 500:
+                            print(new_theory[i], previous_theory[i])
+                            break
+                        stable_theory += [new_theory[i]]
+                    else:
+                        stable_theory = new_theory
             metric.update(partial_input_text, full_input_text, to_string(stable_theory), gold_text, tokenizer)
             print("****", len(new_theory) - len(stable_theory))
             print(" ".join(words[:t]))
