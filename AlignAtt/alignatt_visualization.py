@@ -168,7 +168,8 @@ def analyze_dataset(args):
     for x in prefixes[:10]:
         if len(x) < wait_for+3:
             continue
-        words = x[-1][0].split(" ")
+        gold_text = x[-1][0]
+        words = gold_text.split(" ")
         wordsen = x[-1][1].split(" ")
         # We prefix it with some text to not start the translation from nothing.
         helpt = False
@@ -184,24 +185,24 @@ def analyze_dataset(args):
         # How much is the english text longer than the czech text.
         tokens_en = tokenizer.tokenize(x[-1][1])
         for t in range(1, len(words)):
+            input_text = " ".join(words[:t])
             new_delay = np.zeros(3)
             total_latency += new_delay
-            if t < wait_for:
-                continue
-            new_theory = translate(model, tokenizer, helper_text + " ".join(words[:t]), stable_theory, args, False)
-            # If we begin repeating the same tokens, we don't take the output.
-            newtokens = new_theory[len(stable_theory):]
-            if np.unique(newtokens).shape[0] < len(newtokens) // 2:
-                print("repeating tokens")
-                stable_theory += [tokenizer.tokenize(" ")]
-                continue
-            stop = min(len(new_theory), len(previous_theory))
-            for i in range(len(stable_theory), stop):
-                if any([new_theory[j] != previous_theory[j] for j in range(i, min(stop, i+1))]) or len(new_theory) > 500:
-                    print(new_theory[i], previous_theory[i])
-                    break
-                stable_theory += [new_theory[i]]
-                metric.update()
+            if t >= wait_for:
+                new_theory = translate(model, tokenizer, helper_text + input_text, stable_theory, args, False)
+                # If we begin repeating the same tokens, we don't take the output.
+                newtokens = new_theory[len(stable_theory):]
+                if np.unique(newtokens).shape[0] < len(newtokens) // 2:
+                    print("repeating tokens")
+                    stable_theory += [tokenizer.tokenize(" ")]
+                    continue
+                stop = min(len(new_theory), len(previous_theory))
+                for i in range(len(stable_theory), stop):
+                    if any([new_theory[j] != previous_theory[j] for j in range(i, min(stop, i+1))]) or len(new_theory) > 500:
+                        print(new_theory[i], previous_theory[i])
+                        break
+                    stable_theory += [new_theory[i]]
+            metric.update(to_string(stable_theory), to_string(stable_theory), gold_text, tokenizer)
             print("****", len(new_theory) - len(stable_theory))
             print(" ".join(words[:t]))
             print(to_string(stable_theory)[lhten:])
