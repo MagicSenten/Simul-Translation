@@ -11,6 +11,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     id = 0
     keys = ["czech", "english"] if False else ["pref_source", "pref_target"]
+    parser.add_argument("--dataset_path", default="../Data_preparation/prefixes_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
     parser.add_argument("--layers", type=int, nargs='+', default=[4], help="List of layer indices")
     parser.add_argument("--top_attentions", type=int, default=10, help="Top attentions to use, set to zero to disable alignatt.")
@@ -160,9 +161,12 @@ def translate(model, tokenizer, input_text, stable_theory, args, verbose=False):
     decoded_align_att = tokenizer.decode(output_ids[:alignatt_result], skip_special_tokens=True)
     return tokenizer.tokenize(decoded_align_att)
 
+def to_string(tokens):
+    return "".join(tokens).replace("▁", " ")
+
 
 def analyze_dataset(args):
-    with jsonlines.open("prefixes_dataset.jsonl") as reader:
+    with jsonlines.open(args.dataset_path) as reader:
         data = list(islice(reader, 200))
     words = [make_pair(data[i], args) for i in range(len(data))]
     prefixes = [[words[0]]]
@@ -188,7 +192,7 @@ def analyze_dataset(args):
     first = True
     bleu = evaluate.load("bleu")
     total_bleu = 0
-    total_delay = 0
+    total_latency = np.zeros(3)
     # The total number of prefixes seen.
     cs = 0
     wait_for = 2
@@ -208,12 +212,19 @@ def analyze_dataset(args):
         stable_theory = tokenizer.tokenize(helper_text_en + x[-1][1])[:lhten_tok + int(start * 2.5)]
         previous_theory = stable_theory
         # How much is the english text longer than the czech text.
-        frac = len(x[-1][1]) / len(x[-1][0]) + 0.5
-        s = int(start * frac)
+        frac_chars = len(x[-1][1]) / len(x[-1][0]) + 0.5
+        frac_words = len(x[-1][1]) / len(x[-1][0]) + 0.5
+        l_tokens = len(tokens_en)
+        frac_tokens = len(x[-1][1]) / len(x[-1][0]) + 0.5
+        s = int(start * frac_chars)
+        tokens_en = tokenizer.tokenize(x[-1][1])
         for t in range(s, len(x)):
             # print(frac * len(x[t][0]),  len(stable_theory), len(x[t][0]), len(x[-1][1]))
-            new_delay = (frac * len(x[t][0])) - len(stable_theory)
-            total_delay += new_delay
+            new_delay_chars = (frac_chars * len(x[t][0])) - len(to_string(stable_theory)) / lhten
+            new_delay_words = (frac_words * len(x[t][0].split(" "))) - len(to_string(stable_theory).split(" ")) / l_tokens
+            new_delay_tokens = (frac_tokens * len(tokenizer.tokenize(x[t][0]))) - len(stable_theory) / len(tokens_en)
+            new_delay = np.array([new_delay_chars, new_delay_words, new_delay_tokens])
+            total_latency += new_delay
             if t < wait_for:
                 continue
             new_theory = translate(model, tokenizer, helper_text + x[t][0], stable_theory, args, False)
@@ -231,14 +242,14 @@ def analyze_dataset(args):
                 stable_theory += [new_theory[i]]
             print("****", len(new_theory) - len(stable_theory))
             print(x[t][0])
-            print("".join(stable_theory).replace("▁", " ")[lhten:])
-            print("".join(new_theory).replace("▁", " ")[lhten:])
+            print(to_string(stable_theory)[lhten:])
+            print(to_string(new_theory)[lhten:])
             print(x[-1][1])
             previous_theory = new_theory
         new_bleu = bleu.compute(predictions=["".join(new_theory if False else stable_theory).replace("▁", " ")], references=[x[-1][1]])["bleu"] if len(stable_theory) > 0 else 0
         total_bleu += new_bleu
         cs += 1
-        print(new_bleu, total_bleu / cs, new_delay, total_delay / cs)
+        print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
 
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532
