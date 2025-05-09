@@ -3,12 +3,13 @@ import json
 import regex
 import numpy as np
 import argparse
-
+from itertools import islice
 parser = argparse.ArgumentParser()
 parser.add_argument("--input_file_path", default="all.cs-en.top10M.txt", type=str, help="Path to the downloaded dataset from the readme file. Should be .txt format.")
 parser.add_argument("--cleaned_dataset_path", default="cleaned_dataset.jsonl", type=str, help="Path where to save the cleaned dataset. Should be .jsonl format.")
 parser.add_argument("--prefix_dataset_path", default="prefixes_dataset.jsonl", type=str, help="Path where to save the cleaned dataset. Should be .jsonl format.")
 parser.add_argument("--number_of_lines", default=10, type=int, help="Number of lines used from the downloaded dataset for the prefix dataset. The default is the whole file")
+parser.add_argument("--lines_start", default=0, type=int, help="Number of lines used from the downloaded dataset for the prefix dataset. The default is the whole file")
 #TODO: this part make sure the argument below works
 parser.add_argument("--tokenizer", default=None, type=str, help="Path to the tokenizer on huggingface. NOT IMPLEMENTED YET!")
 parser.add_argument("--create_prefixes_by_aligment", default=False, action="store_true", help="Create the prefix dataset by using aligment tools. NOT IMPLEMENTED YET!")
@@ -22,7 +23,7 @@ class CreateDataset():
         """
         return regex.sub(r'^[^\p{L}\p{N}]+', '', s)
 
-    def prepare_data_from_file(self, input_file: str = "all.cs-en.top10M.txt", output_file: str = "cleaned_dataset.jsonl", number_of_lines: int = None):
+    def prepare_data_from_file(self, input_file: str = "all.cs-en.top10M.txt", output_file: str = "cleaned_dataset.jsonl", number_of_lines: int = None, lines_start: int = None):
         """
         Cleaning function that is build for the 'all.cs-en.top10M.txt' 
         format of dataset downloaded from https://ufallab.ms.mff.cuni.cz/~machacek/cs-en-de-training-data/
@@ -30,12 +31,7 @@ class CreateDataset():
         pairs = []
         last_line = None
         with open(input_file, 'r', encoding='utf-8') as infile:
-            for index, line in enumerate(infile):
-                #Limit if the user wants to use just a portion of the dataset
-                if number_of_lines is not None:
-                    if index > number_of_lines:
-                        break
-
+            for index, line in islice(enumerate(infile), lines_start, lines_start+number_of_lines):
                 cols = line.strip().split('\t')
                 if len(cols) < 4:
                     continue  # skip malformed lines
@@ -215,7 +211,7 @@ class CreateDataset():
 if __name__ == "__main__":
     main_args = parser.parse_args([] if "__file__" not in globals() else None)
     dataset = CreateDataset()
-    dataset.prepare_data_from_file(input_file=main_args.input_file_path, output_file=main_args.cleaned_dataset_path, number_of_lines=main_args.number_of_lines)
+    dataset.prepare_data_from_file(input_file=main_args.input_file_path, output_file=main_args.cleaned_dataset_path, number_of_lines=main_args.number_of_lines,lines_start=main_args.lines_start)
     #TODO: add the tokenizer path
     #TODO: implement the aligment branch here
     dataset.create_prefixes(cleaned_dataset_file_path=main_args.cleaned_dataset_path, prefix_dataset_file_path=main_args.prefix_dataset_path)
