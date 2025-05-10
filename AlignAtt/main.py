@@ -1,4 +1,5 @@
 import json
+import os
 from argparse import Namespace
 import torch
 import evaluate
@@ -16,16 +17,18 @@ def parse_args():
     parser.add_argument("--dataset_path", default="../Data_preparation/prefixes_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
     parser.add_argument("--local_agreement_length", type=int, default=0, help="Number of next tokens it must agree with the previous theory in")
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
-    parser.add_argument("--layers", type=int, nargs='+', default=[4], help="List of layer indices")
-    parser.add_argument("--top_attentions", type=int, default=0, help="Top attentions to use, set to zero to disable alignatt.")
-    parser.add_argument("--attention_frame_size", type=int, default=20, help="The excluded frame of last positions size")
-    parser.add_argument("--count_in", type=int, default=7, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
+    parser.add_argument("--layers", type=int, nargs='+', default=[3,4], help="List of layer indices")
+    parser.add_argument("--top_attentions", type=int, default=5, help="Top attentions to use, set to 0 to disable alignatt.")
+    parser.add_argument("--attention_frame_size", type=int, default=5, help="The excluded frame of last positions size")
+    parser.add_argument("--count_in", type=int, default=2, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
+    parser.add_argument("--wait_for", type=int, default=0, help="A static wait time to apply on top of alignatt everywhere")
+    parser.add_argument("--wait_for_beginning", type=int, default=5, help="A wait time to apply at the beginning")
     parser.add_argument("--heads", type=int, nargs='+', default=list(range(6)), help="List of attention heads")
     parser.add_argument("--device", type=str, default="cuda", help="Device to use")
     parser.add_argument("--words_per_prefix", type=int, default=2, help="Words per prefix shown")
     parser.add_argument("--forced_bos_token_text", type=str, default=None, help="Forced BOS token text")
     parser.add_argument("--model_id", type=int, default=id, help="Model ID")
-    parser.add_argument("--num_beams", type=int, default=10, help="Setting the num_beams to a multiple of three turns on diverse beam search with num_beams//3 groups.")
+    parser.add_argument("--num_beams", type=int, default=2, help="Setting the num_beams to a multiple of three turns on diverse beam search with num_beams//3 groups.")
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
     parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key")
 
@@ -116,7 +119,7 @@ def translate(model, tokenizer, input_text, stable_theory, args, verbose=False):
                              generation_config=config, renormalize_logits=True, forced_bos_token_id=tokenizer.convert_tokens_to_ids(args.forced_bos_token_text) if args.forced_bos_token_text is not None else None)
     ca = outputs["cross_attentions"]
     output_ids = outputs["sequences"][0]
-    if args.top_attentions > 0 and not is_sent_end and not decoder_input_ids is None:
+    if args.top_attentions > 0 and not decoder_input_ids is None:
         assert all([x[0].shape[2] == 1 for x in ca[1:]])
         attentions = [sum(x[i] for i in args.layers) for x in ca[1:]]
         attentions = attentions[:len(output_ids) - decoder_input_ids.shape[1]]
@@ -131,7 +134,7 @@ def translate(model, tokenizer, input_text, stable_theory, args, verbose=False):
     return tokenizer.tokenize(decoded_align_att)
 
 def to_string(tokens):
-    return "".join(tokens).replace("▁", " ")
+    return "".join(tokens).replace("▁", " ").strip(" ")
 
 
 def analyze_dataset(args):
@@ -163,15 +166,11 @@ def analyze_dataset(args):
     total_latency = np.zeros(3)
     # The total number of prefixes seen.
     cs = 0
-    wait_for = 0
     metric = SimuEval()
     for x in prefixes[:10]:
         full_input_text = x[-1][0]
         gold_text = x[-1][1]
         words = full_input_text.split(" ")
-        if len(words) < wait_for+3:
-            continue
-        wordsen = x[-1][1].split(" ")
         # We prefix it with some text to not start the translation from nothing.
         helpt = False
         helper_text = "Následující dokument obsahuje přepis proslovu z evropského parlamentu. " if helpt else ""
@@ -183,41 +182,46 @@ def analyze_dataset(args):
         lhten_tok = len(tokenizer.tokenize(helper_text_en))
         stable_theory = tokenizer.tokenize(helper_text_en + x[-1][1])[:lhten_tok + int(start * 2.5)]
         previous_theory = stable_theory
+        new_theory = previous_theory
+        new_bleu = 0
         for t in range(1, len(words)):
             partial_input_text = " ".join(words[:t+1])
-            if t >= wait_for:
-                new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, False)
+            if t >= args.wait_for_beginning:
+                new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, True)
                 # If we begin repeating the same tokens, we don't take the output.
                 newtokens = new_theory[len(stable_theory):]
                 if np.unique(newtokens).shape[0] < len(newtokens) // 2:
                     print("repeating tokens")
                     stable_theory += [tokenizer.tokenize(" ")]
                     continue
-                stop = min(len(new_theory), len(previous_theory))
                 if args.local_agreement_length > 0:
+                    stop = min(len(new_theory), len(previous_theory))
                     for i in range(len(stable_theory), stop):
                         if any([new_theory[j] != previous_theory[j] for j in range(i, min(stop, i+args.local_agreement_length))]) or len(new_theory) > 500:
                             print(new_theory[i], previous_theory[i])
                             break
                         stable_theory += [new_theory[i]]
-                    else:
-                        stable_theory = new_theory
+                else:
+                    stable_theory = new_theory
             metric.update(partial_input_text, full_input_text, to_string(stable_theory), gold_text, tokenizer)
             print("****", len(new_theory) - len(stable_theory))
-            print(" ".join(words[:t]))
+            print(partial_input_text)
             print(to_string(stable_theory)[lhten:])
             print(to_string(new_theory)[lhten:])
             print(x[-1][1])
-            previous_theory = new_theory
-            if len(stable_theory) > 0:
-                new_bleu = bleu.compute(predictions=[to_string(stable_theory)],
-                                    references=[gold_text])
-
-            total_bleu += new_bleu
-            cs += 1
+            previous_theory = new_theory[:-args.wait_for]
+        if len(stable_theory) > 0:
+            new_bleu = bleu.compute(predictions=[to_string(stable_theory)],
+                                references=[gold_text])["bleu"]
+        else:
+            new_bleu = 0
+        total_bleu += new_bleu
+        cs += 1
         print(metric.eval(), new_bleu, total_bleu/cs)
         #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
 
+    with open("results.jsonl", "a") as f:
+        f.write(json.dumps({"bleu": total_bleu/cs, "args": vars(args)})+"\n")
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532
 
