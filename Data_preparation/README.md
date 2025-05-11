@@ -66,7 +66,6 @@ After running, you will have:
 - `cleaned_dataset.jsonl`  – the cleaned, newline-delimited JSONL dataset
 - `prefixes_dataset.jsonl` – the extracted prefix dataset in JSONL format
 - `cleaned_eval_dataset.jsonl` - the cleaned, newline-delimited JSONL evaluation dataset
-- `eval_prefix_dataset.jsonl` - the extracted prefix evaluation dataset in JSONL format
 
 #### Optional Arguments
 
@@ -82,8 +81,6 @@ You can customize file paths and how many lines to process using these flags:
 | `--create_only_eval_dataset` | *False*                    | Create only evaluation dataset.                                                         |
 | `--input_eval_file_path` | `iwslt2024_cs_devset.json`     | Path where you saved the iswlt2024_cs_devset.json file.                              |
 | `--cleaned_eval_dataset_path` | `cleaned_eval_dataset.jsonl` | Path where to save the cleaned eval dataset. Should be .jsonl format.             |
-| `--eval_prefix_dataset_path` | `eval_prefix_dataset.jsonl` | Path where to save the evaluation prefix dataset. Should be .jsonl format.          |
-| `--number_of_prefixes_from_sentence_evaluation` | *None* | Number of generated prefixes from one sentence that should be used inside the evaluation dataset. |
 
 
 #### Example: Process only the first 100 000 lines

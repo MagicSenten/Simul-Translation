@@ -7,17 +7,19 @@ import argparse
 from itertools import islice
 parser = argparse.ArgumentParser()
 #The training dataset arguments
+parser.add_argument("--seed", default=42, type=int, help="Random seed.")
 parser.add_argument("--input_file_path", default="all.cs-en.top10M.txt", type=str, help="Path to the downloaded dataset from the readme file. Should be .txt format.")
 parser.add_argument("--cleaned_dataset_path", default="cleaned_dataset.jsonl", type=str, help="Path where to save the cleaned dataset. Should be .jsonl format.")
 parser.add_argument("--prefix_dataset_path", default="prefixes_dataset.jsonl", type=str, help="Path where to save the cleaned dataset. Should be .jsonl format.")
 parser.add_argument("--number_of_lines", default=10, type=int, help="Number of lines used from the downloaded dataset for the prefix dataset. The default is the whole file.")
 parser.add_argument("--number_of_prefixes_from_sentence", default=2, type=int, help="Number of generated prefixes from one sentence that should be used inside the training dataset.")
 #The evaluation dataset arguments
-parser.add_argument("--create_only_eval_dataset", default=True, action="store_true", help="Create only evaluation dataset.")
+parser.add_argument("--create_only_eval_dataset", action="store_true", help="Create only evaluation dataset.")
 parser.add_argument("--input_eval_file_path", default="iwslt2024_cs_devset.json", type=str, help="Path where you saved the iswlt2024_cs_devset.json file.")
 parser.add_argument("--cleaned_eval_dataset_path", default="cleaned_eval_dataset.jsonl", type=str, help="Path where to save the cleaned eval dataset. Should be .jsonl format.")
-parser.add_argument("--eval_prefix_dataset_path", default="eval_prefix_dataset.jsonl", type=str, help="Path where to save the evaluation prefix dataset. Should be .jsonl format.")
-parser.add_argument("--number_of_prefixes_from_sentence_evaluation", default=None, type=int, help="Number of generated prefixes from one sentence that should be used inside the evaluation dataset.")
+    #NOTE: These two parameters are for the prefixes from the evaluation dataset
+    # parser.add_argument("--eval_prefix_dataset_path", default="eval_prefix_dataset.jsonl", type=str, help="Path where to save the evaluation prefix dataset. Should be .jsonl format.")
+    # parser.add_argument("--number_of_prefixes_from_sentence_evaluation", default=None, type=int, help="Number of generated prefixes from one sentence that should be used inside the evaluation dataset.")
 #TODO: this part make sure the argument below works
 parser.add_argument("--tokenizer", default=None, type=str, help="Path to the tokenizer on huggingface. NOT IMPLEMENTED YET!")
 parser.add_argument("--create_prefixes_by_aligment", default=False, action="store_true", help="Create the prefix dataset by using aligment tools. NOT IMPLEMENTED YET!")
@@ -232,16 +234,17 @@ class CreateDataset():
                 prefix_pairs_collection.extend(prefix_pairs)
                 #Periodic save
                 if lineno % 100 == 0:
-                    self.save_pairs(prefix_dataset_file_path, prefix_pairs_collection)
+                    self.save_pairs(prefix_dataset_file_path, prefix_pairs_collection, append=False)
                     prefix_pairs_collection.clear()
 
         #Final save
-        self.save_pairs(prefix_dataset_file_path, prefix_pairs_collection)
+        self.save_pairs(prefix_dataset_file_path, prefix_pairs_collection, append=False)
 
 
 
 if __name__ == "__main__":
     main_args = parser.parse_args([] if "__file__" not in globals() else None)
+    random.seed(main_args.seed)
     dataset = CreateDataset()
     #The training dataset preparation
     if not main_args.create_only_eval_dataset:
@@ -253,5 +256,6 @@ if __name__ == "__main__":
 
     #The eval dataset preparation
     dataset.prepare_eval_data_from_json(input_file=main_args.input_eval_file_path, output_file=main_args.cleaned_eval_dataset_path)
-    dataset.create_prefixes(cleaned_dataset_file_path=main_args.cleaned_eval_dataset_path, prefix_dataset_file_path=main_args.eval_prefix_dataset_path,
-                            number_of_prefixes_from_sentence=main_args.number_of_prefixes_from_sentence_evaluation)
+    #NOTE: If for some reason you need prefixes created from the evaluation dataset, this is the code for it
+    # dataset.create_prefixes(cleaned_dataset_file_path=main_args.cleaned_eval_dataset_path, prefix_dataset_file_path=main_args.eval_prefix_dataset_path,
+    #                         number_of_prefixes_from_sentence=main_args.number_of_prefixes_from_sentence_evaluation)
