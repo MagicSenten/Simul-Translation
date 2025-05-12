@@ -7,3 +7,5 @@ accelerate
 sentencepiece
 sacremoses
 sacrebleu
+
+wandb

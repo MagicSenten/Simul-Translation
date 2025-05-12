@@ -3,11 +3,16 @@ import numpy as np
 import torch
 from datasets import load_dataset
 import evaluate
-from transformers import AutoTokenizer, set_seed
-from transformers import AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, Seq2SeqTrainingArguments, Seq2SeqTrainer
-import wandb
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSeq2SeqLM,
+    DataCollatorForSeq2Seq,
+    Seq2SeqTrainingArguments,
+    Seq2SeqTrainer,
+    GenerationConfig,
+    set_seed,
+)
 
-wandb.login(key="ac0918f0210f38aab72bfde33cdc9bf878965f2a")
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset_path", default="../Data_preparation/prefixes_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
 parser.add_argument("--epochs", default=10, type=int, help="Number of epochs.")
@@ -15,7 +20,8 @@ parser.add_argument("--seed", default=42, type=int, help="Random seed.")
 parser.add_argument("--batch_size", default=64, type=int, help="Batch size.")
 parser.add_argument("--learning_rate", default=2e-5, type=float, help="Initial learning rate.")
 parser.add_argument("--weight_decay", default=0.01, type=float, help="Weight decay.")
-parser.add_argument("--output_model_dir", default="opus-mt-cs-en_finetuned", type=str, help="Directory where the finetuned model is saved.")
+parser.add_argument("--output_model_dir", default="opus-mt-cs-en-Prefix-Finetuned", type=str, help="Directory where the finetuned model is saved.")
+parser.add_argument("--push_to_hub", action="store_true", help="Push the model to Hugging Face. Make sure to login first with `huggingface-cli login`.")
 
 # Translation: Fine-tuning a model with the Trainer API
 # https://huggingface.co/learn/llm-course/chapter7/4#fine-tuning-the-model-with-the-trainer-api
@@ -48,11 +54,6 @@ def main(args):
         batch_size=args.batch_size,
     )
 
-    # return_tensors="pt" doesn't do anything when used with map - use set_format instead
-    # https://discuss.huggingface.co/t/map-with-a-tokenizer-does-not-return-pytorch-tensors/51723/3
-    # data.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
-    # data.set_format(columns=["input_ids", "attention_mask", "labels"])
-
     train_data = data["train"].shuffle(seed=args.seed)
     test_data = data["test"]
 
@@ -63,9 +64,14 @@ def main(args):
         return_tensors="pt",
     )
 
-    # print(train_data)
-    # print(test_data)
-    # print(f"Batch: {data_collator(train_data)}")
+    # Use the same generation config as in AlignAtt/main.py if needed
+    # generation_config = GenerationConfig(
+    #     num_beams=args.num_beams,
+    #     num_beam_groups=args.num_beams//3 if args.num_beams % 3 == 0 else 1,
+    #     diversity_penalty=0.1 if args.num_beams % 3 == 0 and args.num_beams > 3 else 0,
+    #     no_repeat_ngram_size=2,
+    #     length_penalty=0.98,
+    # )
 
     training_args = Seq2SeqTrainingArguments(
         output_dir=args.output_model_dir,
@@ -77,10 +83,12 @@ def main(args):
         num_train_epochs=args.epochs,
         weight_decay=args.weight_decay,
         predict_with_generate=True,
-        # save_total_limit=3,
+        # generation_config=generation_config,
+        save_total_limit=1,
         fp16=True,
         seed=args.seed,
         report_to = "wandb",
+        push_to_hub=args.push_to_hub,
     )
 
     metric = evaluate.load("sacrebleu")
@@ -96,10 +104,6 @@ def main(args):
         # Replace -100s in the labels as we can't decode them
         labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
         decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
-
-        # Some simple post-processing
-        # decoded_preds = [pred.strip() for pred in decoded_preds]
-        # decoded_labels = [[label.strip()] for label in decoded_labels]
 
         result = metric.compute(predictions=decoded_preds, references=decoded_labels)
         return {"bleu": result["score"]}
@@ -119,23 +123,6 @@ def main(args):
     print("Finetuning the model...")
     trainer.train()
     trainer.save_model()
-    return
-
-    print("---Running the model---")
-    src_batch = tokenizer(dataset["cs"], padding="longest", return_tensors="pt")
-    generated_ids = model.generate(**src_batch)
-    decoded = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
-    print(decoded)
-
-    tgt_batch = tokenizer(dataset["en"], padding="longest", return_tensors="pt")
-    generated_ids = model.generate(
-        input_ids=src_batch.input_ids,
-        attention_mask=src_batch.attention_mask,
-        decoder_input_ids=tgt_batch.input_ids,
-        decoder_attention_mask=tgt_batch.attention_mask,
-    )
-    decoded = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
-    print(decoded)
 
 
 if __name__ == "__main__":

@@ -214,6 +214,10 @@ class CreateDataset():
         :param prefix_dataset_file_path: Path to the output JSONL file for storing prefix pairs.
         :param tokenizer: Optional tokenizer for token-based splitting; defaults to None.
         """
+        # Clean the prefix dataset file before writing
+        with open(prefix_dataset_file_path, 'w', encoding='utf-8'):
+            pass
+
         with open(cleaned_dataset_file_path, 'r', encoding='utf-8') as f:
             prefix_pairs_collection = []
             for lineno, line in enumerate(f, start=1):
@@ -234,11 +238,11 @@ class CreateDataset():
                 prefix_pairs_collection.extend(prefix_pairs)
                 #Periodic save
                 if lineno % 100 == 0:
-                    self.save_pairs(prefix_dataset_file_path, prefix_pairs_collection, append=False)
+                    self.save_pairs(prefix_dataset_file_path, prefix_pairs_collection)
                     prefix_pairs_collection.clear()
 
         #Final save
-        self.save_pairs(prefix_dataset_file_path, prefix_pairs_collection, append=False)
+        self.save_pairs(prefix_dataset_file_path, prefix_pairs_collection)
 
 
 
