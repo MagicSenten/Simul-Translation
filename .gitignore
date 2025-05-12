@@ -7,3 +7,5 @@ all.cs-en.top10M.txt
 
 # Model folder
 *opus-mt-cs-en*/
+
+wandb/
