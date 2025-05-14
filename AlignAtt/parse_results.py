@@ -10,6 +10,9 @@ def print_top(data):
     top_attentions = np.array([x["top_attentions"] for x in data])
     top_attentions_inds = np.where(top_attentions > 0)[0]
     top_np_attentions_inds = np.where(top_attentions == 0)[0]
+    if len(top_attentions_inds) == 0 or len(top_np_attentions_inds) == 0:
+        print("not enough representatives")
+        return
     best_att = top_attentions_inds[np.argmax(bleus[top_attentions_inds])]
     best_no_att = top_np_attentions_inds[np.argmax(bleus[top_np_attentions_inds])]
     print("best attention", data[best_att])

@@ -29,10 +29,11 @@ def parse_args():
     parser.add_argument("--forced_bos_token_text", type=str, default=None, help="Forced BOS token text")
     parser.add_argument("--model_id", type=int, default=0, help="Model ID")
     parser.add_argument("--num_beams", type=int, default=5, help="Setting the num_beams to a multiple of three turns on diverse beam search with num_beams//3 groups.")
+    parser.add_argument("--num_swaps", type=int, default=0, help="Number of word pairs to blindly swap.")
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
     parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key")
 
-    return parser.parse_args([])
+    return parser.parse_args()
 
 class States:
     def __init__(self):
@@ -111,7 +112,19 @@ def get_data(args):
         else:
             prefixes.append([x])
     print([len(x) for x in prefixes])
-    return [x for x in prefixes if len(x[-1][0]) > 100]
+
+    data = [x for x in prefixes if len(x[-1][0]) > 100]
+    r = []
+    for x in data:
+        words = x[-1][0].split(" ")
+        inds = list(range(len(words)))
+        np.random.shuffle(inds)
+        def swap(i, j):
+            words[inds[i]], words[inds[j]] = words[inds[j]], words[inds[i]]
+        for i in range(args.num_swaps):
+            swap(i*2, i*2+1)
+        r.append((words, x[-1][1].split(" ")))
+    return r
 
 def translate_LLM(model, tokenizer, input_text, stable_theory, args, verbose=False):
     '''
@@ -123,7 +136,7 @@ def translate_LLM(model, tokenizer, input_text, stable_theory, args, verbose=Fal
     #decoder_text = tokenizer.decode(input_ids[0], skip_special_tokens=True)
     turns = [[{"role": "system", "text": "You are a simultaneous translation API. Translate the czech partial output of an ASR system given to English. Only output the english sentence do not explain your output."},
              {"role": "user", "text": input_text}]]
-    input_ids = tokenizer.apply_chat_teplate(turns, return_tensors="pt").input_ids
+    input_ids = tokenizer.apply_chat_template(turns, return_tensors="pt").input_ids
     inputlen = input_ids.shape[1]
     input_ids = torch.cat([input_ids, decoder_input_ids], 1)
     """
@@ -207,32 +220,25 @@ def analyze_dataset(args, model, tokenizer, prefixes):
     # The total number of prefixes seen.
     cs = 0
     metric = SimuEval()
-    for x in prefixes[:10]:
-        full_input_text = x[-1][0]
-        gold_text = x[-1][1]
-        words = full_input_text.split(" ")
-        inds = list(range(len(words)))
-        np.random.shuffle(inds)
-        def swap(i, j):
-            words[inds[i]], words[inds[j]] = words[inds[j]], words[inds[i]]
-        swap(0, 1)
-        swap(2, 3)
+    for datap in prefixes[:10]:
+        print(datap)
+        words = datap[0]
+        gold_text = " ".join(datap[1])
         # We prefix it with some text to not start the translation from nothing.
         helpt = False
         helper_text = "Následující dokument obsahuje přepis proslovu z evropského parlamentu. " if helpt else ""
-        lht = len(helper_text)
         helper_text_en = "The following document contains a transcript of a speech from the European Parliament. " if helpt else ""
         lhten = len(helper_text_en)
         # We give it some of the first target golden words to make it more stable for evaluation.
         start = 0
         lhten_tok = len(tokenizer.tokenize(helper_text_en))
-        stable_theory = tokenizer.tokenize(helper_text_en + x[-1][1])[:lhten_tok + int(start * 2.5)]
+        stable_theory = tokenizer.tokenize(helper_text_en + gold_text)[:lhten_tok + int(start * 2.5)]
         previous_theory = []
         new_theory = previous_theory
         new_bleu = 0
         output_theories = []
         inputs = []
-        for t in range(1, len(words)):
+        for t in range(1, len(words), 2):
             partial_input_text = " ".join(words[:t+1])
             if t >= args.wait_for_beginning:
                 if args.isLLM:
@@ -243,7 +249,7 @@ def analyze_dataset(args, model, tokenizer, prefixes):
                 newtokens = new_theory[len(stable_theory):]
                 if np.unique(newtokens).shape[0] < len(newtokens) // 2:
                     print("repeating tokens")
-                    stable_theory += [tokenizer.tokenize(" ")]
+                    stable_theory += tokenizer.tokenize(" ")
                     continue
                 if args.local_agreement_length > 0 and len(previous_theory) > 0:
                     stop = min(len(new_theory), len(previous_theory))
@@ -258,7 +264,7 @@ def analyze_dataset(args, model, tokenizer, prefixes):
             print(partial_input_text)
             print(to_string(stable_theory)[lhten:])
             print(to_string(new_theory)[lhten:])
-            print(x[-1][1])
+            print(gold_text)
             inputs.append(partial_input_text)
             output_theories.append(to_string(stable_theory)[lhten:])
             previous_theory = new_theory
@@ -282,13 +288,13 @@ def analyze_dataset(args, model, tokenizer, prefixes):
 def main():
     random.seed(42)
     args = parse_args()
-    args.model_id = 0
+    args.model_id = 4
     names = ["Helsinki-NLP/opus-mt-cs-en",
              "facebook/nllb-200-3.3B",
              "facebook/nllb-200-1.3B",
              "facebook/nllb-200-distilled-600M",
-             "utter-project/EuroLLM-1.7B",
-             "utter-project/EuroLLM-9B"]
+             "utter-project/EuroLLM-1.7B-Instruct",
+             "utter-project/EuroLLM-9B-Instruct"]
     args.isLLM = "LLM" in names[args.model_id]
     print(args.isLLM, names[args.model_id])
     if args.isLLM:
@@ -303,9 +309,6 @@ def main():
           args.wait_for_beginning = random.randint(1, 5)
           for x in range(4):
             args.num_beams = random.randint(1, 9)
-            args.top_attentions = 0
-            args.local_agreement_length = 0
-            analyze_dataset(args, model, tokenizer, prefixes)
             args.top_attentions = 0
             args.local_agreement_length = 0
             analyze_dataset(args, model, tokenizer, prefixes)
