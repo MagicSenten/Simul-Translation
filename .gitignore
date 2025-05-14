@@ -1,5 +1,6 @@
 .idea
 *venv*/
+__pycache__
 
 # Data files
 all.cs-en.top10M.txt
