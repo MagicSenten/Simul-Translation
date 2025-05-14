@@ -1,7 +1,23 @@
 # Finetuning
+TLDR: Just use the [finetuned model](#🚀-use-the-finetuned-model).  
+If you want to finetune, follow the [steps further below](#📊-create-dataset-for-finetuning).
+
+## 🚀 Use the finetuned model
+The finetuned model is accessible at https://huggingface.co/davidruda/opus-mt-cs-en-Prefix-Finetuned.  
+You can load the finetuned model directly from the 🤗Hugging Face Hub using the following code:
+
+```python
+# Load model directly
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+tokenizer = AutoTokenizer.from_pretrained("davidruda/opus-mt-cs-en-Prefix-Finetuned")
+model = AutoModelForSeq2SeqLM.from_pretrained("davidruda/opus-mt-cs-en-Prefix-Finetuned")
+```
+
+---
 
 ## 📊 Create dataset for finetuning
-First, create data for finetuning in `Data_prepation` folder. For serious finetuning, use at least 100k lines of the original file, e.g.
+First, create data for finetuning in `Data_preparation` folder. For serious finetuning, use at least 100k lines of the original file, e.g.
 ```bash
 cd ../Data_preparation
 python create_dataset.py \
@@ -59,15 +75,4 @@ See [`📈finetuning.log`](./finetuning.log) for the logs of the finetuning proc
 
 The finetuned model is accesible on the 🤗Hugging Face Hub at https://huggingface.co/davidruda/opus-mt-cs-en-Prefix-Finetuned.  
 Check it out for details and for evaluation metrics.
-
-## 🚀 Use the finetuned model
-The finetuned model is accessible at https://huggingface.co/davidruda/opus-mt-cs-en-Prefix-Finetuned.  
-You can load the finetuned model directly from the 🤗Hugging Face Hub using the following code:
-
-```python
-# Load model directly
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-
-tokenizer = AutoTokenizer.from_pretrained("davidruda/opus-mt-cs-en-Prefix-Finetuned")
-model = AutoModelForSeq2SeqLM.from_pretrained("davidruda/opus-mt-cs-en-Prefix-Finetuned")
-```
+[Just use the finetuned model](#-use-the-finetuned-model). 
