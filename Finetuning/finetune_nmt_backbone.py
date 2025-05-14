@@ -36,7 +36,8 @@ def main(args):
 
     tokenizer = AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-cs-en")
     model = AutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-mt-cs-en")
-    data = load_dataset("json", data_files=args.dataset_path, split="train[:500]")
+    # data = load_dataset("json", data_files=args.dataset_path, split="train[:500]")
+    data = load_dataset("json", data_files=args.dataset_path, split="train")
     data = data.train_test_split(test_size=0.01, shuffle=True, seed=args.seed)
 
     def preprocess(example):
@@ -75,8 +76,9 @@ def main(args):
 
     training_args = Seq2SeqTrainingArguments(
         output_dir=args.output_model_dir,
-        eval_strategy="steps",
-        eval_steps=8,
+        # eval_strategy="steps",
+        # eval_steps=8,
+        eval_strategy="epoch",
         learning_rate=args.learning_rate,
         per_device_train_batch_size=args.batch_size,
         per_device_eval_batch_size=args.batch_size,
