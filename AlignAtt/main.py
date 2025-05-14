@@ -222,7 +222,7 @@ def analyze_dataset(args, model, tokenizer, prefixes):
     # The total number of prefixes seen.
     cs = 0
     metric = SimuEval()
-    data = prefixes[:100]
+    data = prefixes
     for sentid, datap in enumerate(data):
         words = datap[0]
         gold_text = " ".join(datap[1])
