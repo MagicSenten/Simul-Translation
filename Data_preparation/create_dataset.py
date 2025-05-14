@@ -7,13 +7,14 @@ import argparse
 from itertools import islice
 parser = argparse.ArgumentParser()
 #The training dataset arguments
+parser.add_argument("--seed", default=42, type=int, help="Random seed.")
 parser.add_argument("--input_file_path", default="all.cs-en.top10M.txt", type=str, help="Path to the downloaded dataset from the readme file. Should be .txt format.")
 parser.add_argument("--cleaned_dataset_path", default="cleaned_dataset.jsonl", type=str, help="Path where to save the cleaned dataset. Should be .jsonl format.")
 parser.add_argument("--prefix_dataset_path", default="prefixes_dataset.jsonl", type=str, help="Path where to save the cleaned dataset. Should be .jsonl format.")
 parser.add_argument("--number_of_lines", default=10, type=int, help="Number of lines used from the downloaded dataset for the prefix dataset. The default is the whole file.")
 parser.add_argument("--number_of_prefixes_from_sentence", default=2, type=int, help="Number of generated prefixes from one sentence that should be used inside the training dataset.")
 #The evaluation dataset arguments
-parser.add_argument("--create_only_eval_dataset", default=True, action="store_true", help="Create only evaluation dataset.")
+parser.add_argument("--create_only_eval_dataset", action="store_true", help="Create only evaluation dataset.")
 parser.add_argument("--input_eval_file_path", default="iwslt2024_cs_devset.json", type=str, help="Path where you saved the iswlt2024_cs_devset.json file.")
 parser.add_argument("--cleaned_eval_dataset_path", default="cleaned_eval_dataset.jsonl", type=str, help="Path where to save the cleaned eval dataset. Should be .jsonl format.")
     #NOTE: These two parameters are for the prefixes from the evaluation dataset
@@ -213,6 +214,10 @@ class CreateDataset():
         :param prefix_dataset_file_path: Path to the output JSONL file for storing prefix pairs.
         :param tokenizer: Optional tokenizer for token-based splitting; defaults to None.
         """
+        # Clean the prefix dataset file before writing
+        with open(prefix_dataset_file_path, 'w', encoding='utf-8'):
+            pass
+
         with open(cleaned_dataset_file_path, 'r', encoding='utf-8') as f:
             prefix_pairs_collection = []
             for lineno, line in enumerate(f, start=1):
@@ -243,6 +248,7 @@ class CreateDataset():
 
 if __name__ == "__main__":
     main_args = parser.parse_args([] if "__file__" not in globals() else None)
+    random.seed(main_args.seed)
     dataset = CreateDataset()
     #The training dataset preparation
     if not main_args.create_only_eval_dataset:
