@@ -5,7 +5,7 @@ import torch
 import evaluate
 import random
 import numpy as np
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig, AutoModelForCausalLM
 import argparse
 import jsonlines
 from itertools import islice
@@ -13,7 +13,6 @@ from alignatt import alignatt, visualize_attention
 from evaluation import SimuEval
 def parse_args():
     parser = argparse.ArgumentParser()
-    id = 0
     keys = ["czech", "english"] if True else (["source", "target"] if False else ["pref_source", "pref_target"])
     parser.add_argument("--dataset_path", default="../Data_preparation/iwslt2024_cs_devset.json", type=str, help="Path to the jsonl file with data.")
     parser.add_argument("--local_agreement_length", type=int, default=0, help="Number of next tokens it must agree with the previous theory in")
@@ -28,7 +27,7 @@ def parse_args():
     parser.add_argument("--device", type=str, default="cuda", help="Device to use")
     parser.add_argument("--words_per_prefix", type=int, default=2, help="Words per prefix shown")
     parser.add_argument("--forced_bos_token_text", type=str, default=None, help="Forced BOS token text")
-    parser.add_argument("--model_id", type=int, default=id, help="Model ID")
+    parser.add_argument("--model_id", type=int, default=0, help="Model ID")
     parser.add_argument("--num_beams", type=int, default=5, help="Setting the num_beams to a multiple of three turns on diverse beam search with num_beams//3 groups.")
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
     parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key")
@@ -97,6 +96,23 @@ def make_alignments(datap, args):
 def make_pair(datap, args):
     return datap[args.src_key], datap[args.tgt_key]
 
+def get_data(args):
+    if args.dataset_path.endswith(".jsonl"):
+        with jsonlines.open(args.dataset_path) as reader:
+            data = list(islice(reader, 200))
+    else:
+        with open(args.dataset_path, "r") as f:
+            data = json.load(f)
+    words = [make_pair(data[i], args) for i in range(len(data))]
+    prefixes = [[words[0]]]
+    for x in words[1:]:
+        if x[0].startswith(prefixes[-1][-1][0]):
+            prefixes[-1].append(x)
+        else:
+            prefixes.append([x])
+    print([len(x) for x in prefixes])
+    return [x for x in prefixes if len(x[-1][0]) > 100]
+
 def translate_LLM(model, tokenizer, input_text, stable_theory, args, verbose=False):
     '''
         - 'prefix' Refers to a substring, for each substring.
@@ -125,6 +141,7 @@ def translate_LLM(model, tokenizer, input_text, stable_theory, args, verbose=Fal
     output_ids = outputs["sequences"][0]
     if args.top_attentions > 0 and not decoder_input_ids is None and len(ca[1:]) > 0:
         print([x[0].shape for x in ca[1:]])
+        raise Exception()
         assert all([x[0].shape[2] == 1 for x in ca[1:]])
         attentions = [sum(x[i][:, :, :, :inputlen] for i in args.layers) for x in ca[1:]]
         attentions = attentions[:len(output_ids) - decoder_input_ids.shape[1]]
@@ -177,22 +194,8 @@ def to_string(tokens):
     return "".join(tokens).replace("▁", " ").strip(" ")
 
 
-def analyze_dataset(args, model, tokenizer):
-    if args.dataset_path.endswith(".jsonl"):
-        with jsonlines.open(args.dataset_path) as reader:
-            data = list(islice(reader, 200))
-    else:
-        with open(args.dataset_path, "r") as f:
-            data = json.load(f)
-    words = [make_pair(data[i], args) for i in range(len(data))]
-    prefixes = [[words[0]]]
-    for x in words[1:]:
-        if x[0].startswith(prefixes[-1][-1][0]):
-            prefixes[-1].append(x)
-        else:
-            prefixes.append([x])
-    print([len(x) for x in prefixes])
-    prefixes = [x for x in prefixes if len(x[-1][0]) > 100]
+def analyze_dataset(args, model, tokenizer, prefixes):
+
     ''''
       the model names used
       first model will be compared to the other modesl
@@ -232,7 +235,10 @@ def analyze_dataset(args, model, tokenizer):
         for t in range(1, len(words)):
             partial_input_text = " ".join(words[:t+1])
             if t >= args.wait_for_beginning:
-                new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, True)
+                if args.isLLM:
+                    translate_LLM(model, tokenizer, helper_text + partial_input_text, stable_theory, args, True)
+                else:
+                    new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, True)
                 # If we begin repeating the same tokens, we don't take the output.
                 newtokens = new_theory[len(stable_theory):]
                 if np.unique(newtokens).shape[0] < len(newtokens) // 2:
@@ -276,38 +282,7 @@ def analyze_dataset(args, model, tokenizer):
 def main():
     random.seed(42)
     args = parse_args()
-    names = ["Helsinki-NLP/opus-mt-cs-en",
-             "facebook/nllb-200-3.3B",
-             "facebook/nllb-200-1.3B",
-             "facebook/nllb-200-distilled-600M",
-             "utter-project/EuroLLM-1.7B",
-             "utter-project/EuroLLM-9B"]
-    tokenizer = AutoTokenizer.from_pretrained(names[args.model_id],  src_lang="ces_Latn", tgt_lang="eng_Latn")
-    model = AutoModelForSeq2SeqLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
-    while True:
-      args = parse_args()
-      args.wait_for_beginning = random.randint(1, 3)
-      for x in range(4):
-        args.num_beams = random.randint(1, 9)
-        args.top_attentions = 0
-        args.local_agreement_length = 0
-        analyze_dataset(args, model, tokenizer)
-        args.top_attentions = 0
-        args.local_agreement_length = 1
-        analyze_dataset(args, model, tokenizer)
-        args.top_attentions = 0
-        args.local_agreement_length = 2
-        analyze_dataset(args, model, tokenizer)
-        for x in range(6):
-          args.local_agreement_length = random.randint(0, 2)
-          args.layers = [random.randint(1, 5)]
-          args.count_in = random.randint(2, 5)
-          args.attention_frame_size = random.randint(2, 5)
-          args.top_attentions = args.count_in+random.randint(1, 3)
-          analyze_dataset(args, model, tokenizer)
-
-def mainoild():
-    args = parse_args()
+    args.model_id = 0
     names = ["Helsinki-NLP/opus-mt-cs-en",
              "facebook/nllb-200-3.3B",
              "facebook/nllb-200-1.3B",
@@ -315,23 +290,37 @@ def mainoild():
              "utter-project/EuroLLM-1.7B",
              "utter-project/EuroLLM-9B"]
     args.isLLM = "LLM" in names[args.model_id]
-    tokenizer = AutoTokenizer.from_pretrained(names[args.model_id], src_lang="ces_Latn", tgt_lang="eng_Latn")
-    model = AutoModelForSeq2SeqLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
-    print("*layer1")
-    args.layers = [1]
-    analyze_dataset(args, model, tokenizer)
-    print("*layer2")
-    args.layers = [2]
-    analyze_dataset(args, model, tokenizer)
-    print("*layer3")
-    args.layers = [3]
-    analyze_dataset(args, model, tokenizer)
-    print("*layer4")
-    args.layers = [4]
-    analyze_dataset(args, model, tokenizer)
-    print("*layer5")
-    args.layers = [5]
-    analyze_dataset(args, model, tokenizer)
+    print(args.isLLM, names[args.model_id])
+    if args.isLLM:
+        tokenizer = AutoTokenizer.from_pretrained(names[args.model_id])
+        model = AutoModelForCausalLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(names[args.model_id], src_lang="ces_Latn", tgt_lang="eng_Latn")
+        model = AutoModelForSeq2SeqLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
+    prefixes = get_data(args)
 
+    while True:
+          args.wait_for_beginning = random.randint(1, 5)
+          for x in range(4):
+            args.num_beams = random.randint(1, 9)
+            args.top_attentions = 0
+            args.local_agreement_length = 0
+            analyze_dataset(args, model, tokenizer, prefixes)
+            args.top_attentions = 0
+            args.local_agreement_length = 0
+            analyze_dataset(args, model, tokenizer, prefixes)
+            args.top_attentions = 0
+            args.local_agreement_length = 1
+            analyze_dataset(args, model, tokenizer, prefixes)
+            args.top_attentions = 0
+            args.local_agreement_length = 2
+            analyze_dataset(args, model, tokenizer, prefixes)
+            for x in range(6):
+              args.local_agreement_length = random.randint(0, 2)
+              args.layers = [random.randint(1, 5)]
+              args.count_in = random.randint(2, 5)
+              args.attention_frame_size = random.randint(2, 5)
+              args.top_attentions = args.count_in+random.randint(1, 3)
+              analyze_dataset(args, model, tokenizer, prefixes)
 
 main()
