@@ -4,22 +4,24 @@ from argparse import Namespace
 import torch
 import evaluate
 import random
+from tqdm import tqdm
 import numpy as np
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig, AutoModelForCausalLM
 import argparse
+from itertools import islice
 import jsonlines
 from alignatt import alignatt, visualize_attention
 from evaluation import SimuEval
 def parse_args():
     parser = argparse.ArgumentParser()
-    keys = ["czech", "english"] if True else (["source", "target"] if False else ["pref_source", "pref_target"])
+    keys = ["czech", "english"] if False else (["source", "target"] if True else ["pref_source", "pref_target"])
     parser.add_argument("--dataset_path", default="../Data_preparation/cleaned_eval_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
     parser.add_argument("--local_agreement_length", type=int, default=0, help="Number of next tokens it must agree with the previous theory in")
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
     parser.add_argument("--layers", type=int, nargs='+', default=[3,4], help="List of layer indices")
-    parser.add_argument("--top_attentions", type=int, default=3, help="Top attentions to use, set to 0 to disable alignatt.")
+    parser.add_argument("--top_attentions", type=int, default=1, help="Top attentions to use, set to 0 to disable alignatt.")
     parser.add_argument("--attention_frame_size", type=int, default=10, help="The excluded frame of last positions size")
-    parser.add_argument("--count_in", type=int, default=2, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
+    parser.add_argument("--count_in", type=int, default=1, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
     parser.add_argument("--wait_for", type=int, default=0, help="A static wait time to apply on top of alignatt everywhere")
     parser.add_argument("--wait_for_beginning", type=int, default=5, help="A wait time to apply at the beginning")
     parser.add_argument("--heads", type=int, nargs='+', default=list(range(6)), help="List of attention heads")
@@ -31,6 +33,7 @@ def parse_args():
     parser.add_argument("--num_swaps", type=int, default=0, help="Number of word pairs to blindly swap.")
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
     parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key")
+    parser.add_argument("--verbose", action="store_true", default=False)
 
     return parser.parse_args()
 
@@ -99,7 +102,7 @@ def make_pair(datap, args):
 def get_data(args):
     if args.dataset_path.endswith(".jsonl"):
         with jsonlines.open(args.dataset_path) as reader:
-            data = list(islice(reader, 200))
+            data = list(islice(reader, 10000))
     else:
         with open(args.dataset_path, "r") as f:
             data = json.load(f)
@@ -112,7 +115,7 @@ def get_data(args):
             prefixes.append([x])
     print([len(x) for x in prefixes])
 
-    data = [x for x in prefixes if len(x[-1][0]) > 100]
+    data = [x for x in prefixes if len(x[-1][0]) > 0]
     r = []
     for x in data:
         words = x[-1][0].split(" ")
@@ -207,11 +210,11 @@ def to_string(tokens):
 
 
 def analyze_dataset(args, model, tokenizer, prefixes):
-
     ''''
       the model names used
       first model will be compared to the other modesl
     '''
+    print(vars(args))
     first = True
     bleu = evaluate.load("sacrebleu")
     total_bleu = 0
@@ -219,8 +222,8 @@ def analyze_dataset(args, model, tokenizer, prefixes):
     # The total number of prefixes seen.
     cs = 0
     metric = SimuEval()
-    for datap in prefixes[:1000]:
-        print(datap)
+    data = prefixes[:100]
+    for sentid, datap in enumerate(data):
         words = datap[0]
         gold_text = " ".join(datap[1])
         # We prefix it with some text to not start the translation from nothing.
@@ -241,11 +244,11 @@ def analyze_dataset(args, model, tokenizer, prefixes):
         for t in range(1, len(words)+per, per):
             t = min(t, len(words))
             partial_input_text = " ".join(words[:t+1])
-            if t >= args.wait_for_beginning:
+            if t >= args.wait_for_beginning or t == len(words):
                 if args.isLLM:
-                    translate_LLM(model, tokenizer, helper_text + partial_input_text, stable_theory, args, True)
+                    translate_LLM(model, tokenizer, helper_text + partial_input_text, stable_theory, args, args.verbose)
                 else:
-                    new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, True)
+                    new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, args.verbose)
                 # If we begin repeating the same tokens, we don't take the output.
                 newtokens = new_theory[len(stable_theory):]
                 if np.unique(newtokens).shape[0] < len(newtokens) // 2:
@@ -256,16 +259,16 @@ def analyze_dataset(args, model, tokenizer, prefixes):
                     stop = min(len(new_theory), len(previous_theory))
                     for i in range(len(stable_theory), stop):
                         if any([new_theory[j] != previous_theory[j] for j in range(i, min(stop, i+args.local_agreement_length))]):
-                            print(new_theory[i], previous_theory[i])
                             break
                         stable_theory += [new_theory[i]]
                 else:
                     stable_theory = new_theory
-            print("****", len(new_theory) - len(stable_theory))
-            print(partial_input_text)
-            print(to_string(stable_theory)[lhten:])
-            print(to_string(new_theory)[lhten:])
-            print(gold_text)
+            if args.verbose:
+                print("****", len(new_theory) - len(stable_theory))
+                print(partial_input_text)
+                print(to_string(stable_theory)[lhten:])
+                print(to_string(new_theory)[lhten:])
+                print(gold_text)
             inputs.append(partial_input_text)
             output_theories.append(to_string(stable_theory)[lhten:])
             previous_theory = new_theory
@@ -278,7 +281,7 @@ def analyze_dataset(args, model, tokenizer, prefixes):
             new_bleu = 0
         total_bleu += new_bleu
         cs += 1
-        print(metric.eval(), new_bleu, total_bleu/cs)
+        print(f"sent{sentid} of{len(data)}", metric.eval(), new_bleu, total_bleu/cs, vars(args))
         #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
 
     with open("results.jsonl", "a") as f:
@@ -289,7 +292,6 @@ def analyze_dataset(args, model, tokenizer, prefixes):
 def main():
     random.seed(42)
     args = parse_args()
-    args.model_id = 4
     names = ["Helsinki-NLP/opus-mt-cs-en",
              "facebook/nllb-200-3.3B",
              "facebook/nllb-200-1.3B",
@@ -306,25 +308,12 @@ def main():
         model = AutoModelForSeq2SeqLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
     prefixes = get_data(args)
 
-    while True:
-          args.wait_for_beginning = random.randint(1, 5)
-          for x in range(4):
-            args.num_beams = random.randint(1, 4)
-            args.top_attentions = 0
-            args.local_agreement_length = 0
-            analyze_dataset(args, model, tokenizer, prefixes)
+    for num_beams in range(1, 4):
+        for wait_for_beginning in range(1, 4):
             args.top_attentions = 0
             args.local_agreement_length = 1
+            args.num_beams = num_beams
+            args.wait_for_beginning = wait_for_beginning
             analyze_dataset(args, model, tokenizer, prefixes)
-            args.top_attentions = 0
-            args.local_agreement_length = 2
-            analyze_dataset(args, model, tokenizer, prefixes)
-            for x in range(0):
-              args.local_agreement_length = random.randint(0, 2)
-              args.layers = [random.randint(1, 5)]
-              args.count_in = 1
-              args.attention_frame_size = random.randint(2, 5)
-              args.top_attentions = 1
-              analyze_dataset(args, model, tokenizer, prefixes)
 
 main()
