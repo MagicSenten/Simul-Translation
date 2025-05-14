@@ -6,17 +6,20 @@ def visualize_attention(input_ids, output_ids, attentions, tokenizer, args):
     def get_range(vs):
         if len(vs) < 3:
             return ""
-        ids = input_ids[min(vs[-3:]):max(vs[-3:])]
+        ids = input_ids[min(vs[-3:]):max(vs[-3:])+1]
         r = tokenizer.decode(ids)
         return r
-
+    top = 10
+    last = 10
     # get the top attention positions for the last 5 output tokens (-1 means last input token)
-    print([sort_top(y[0, args.heads, -1, :].mean(0).argsort(-1)[-10:].tolist(), 3) for y in attentions[:-10]])
+    print([sort_top(y[0, args.heads, -1, :].mean(0).argsort(-1)[-top:].tolist(), 3) for y in attentions[-last:]])
     # print the corresponding tokens
-    print([get_range(x[0, args.heads, -1, :].mean(0).argsort(-1)[-10:].tolist()) for x in attentions[-10:-5]])
-    print(tokenizer.decode(output_ids[-10:-5]))
-    print([get_range(x[0, args.heads, -1, :].mean(0).argsort(-1)[-10:].tolist()) for x in attentions[:-5]])
-    print(tokenizer.decode(output_ids[:-5]))
+    print([get_range(x[0, args.heads, -1, :].mean(0).argsort(-1)[-top:].tolist()) for x in attentions[:last]])
+    print(tokenizer.decode(output_ids[:last]))
+    print([get_range(x[0, args.heads, -1, :].mean(0).argsort(-1)[-top:].tolist()) for x in attentions[-last:-last//2]])
+    print(tokenizer.decode(output_ids[-last:-last//2]))
+    print([get_range(x[0, args.heads, -1, :].mean(0).argsort(-1)[-top:].tolist()) for x in attentions[-last//2:]])
+    print(tokenizer.decode(output_ids[-last//2:]))
 
 
 def alignatt(attentions, args):
