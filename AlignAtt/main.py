@@ -8,13 +8,12 @@ import numpy as np
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig, AutoModelForCausalLM
 import argparse
 import jsonlines
-from itertools import islice
 from alignatt import alignatt, visualize_attention
 from evaluation import SimuEval
 def parse_args():
     parser = argparse.ArgumentParser()
     keys = ["czech", "english"] if True else (["source", "target"] if False else ["pref_source", "pref_target"])
-    parser.add_argument("--dataset_path", default="../Data_preparation/iwslt2024_cs_devset.json", type=str, help="Path to the jsonl file with data.")
+    parser.add_argument("--dataset_path", default="../Data_preparation/cleaned_eval_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
     parser.add_argument("--local_agreement_length", type=int, default=0, help="Number of next tokens it must agree with the previous theory in")
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
     parser.add_argument("--layers", type=int, nargs='+', default=[3,4], help="List of layer indices")
@@ -220,7 +219,7 @@ def analyze_dataset(args, model, tokenizer, prefixes):
     # The total number of prefixes seen.
     cs = 0
     metric = SimuEval()
-    for datap in prefixes[:10]:
+    for datap in prefixes[:1000]:
         print(datap)
         words = datap[0]
         gold_text = " ".join(datap[1])
@@ -238,7 +237,9 @@ def analyze_dataset(args, model, tokenizer, prefixes):
         new_bleu = 0
         output_theories = []
         inputs = []
-        for t in range(1, len(words), 2):
+        per = 1
+        for t in range(1, len(words)+per, per):
+            t = min(t, len(words))
             partial_input_text = " ".join(words[:t+1])
             if t >= args.wait_for_beginning:
                 if args.isLLM:
@@ -308,7 +309,7 @@ def main():
     while True:
           args.wait_for_beginning = random.randint(1, 5)
           for x in range(4):
-            args.num_beams = random.randint(1, 9)
+            args.num_beams = random.randint(1, 4)
             args.top_attentions = 0
             args.local_agreement_length = 0
             analyze_dataset(args, model, tokenizer, prefixes)
@@ -318,12 +319,12 @@ def main():
             args.top_attentions = 0
             args.local_agreement_length = 2
             analyze_dataset(args, model, tokenizer, prefixes)
-            for x in range(6):
+            for x in range(0):
               args.local_agreement_length = random.randint(0, 2)
               args.layers = [random.randint(1, 5)]
-              args.count_in = random.randint(2, 5)
+              args.count_in = 1
               args.attention_frame_size = random.randint(2, 5)
-              args.top_attentions = args.count_in+random.randint(1, 3)
+              args.top_attentions = 1
               analyze_dataset(args, model, tokenizer, prefixes)
 
 main()

@@ -1,6 +1,6 @@
 import json
 import numpy as np
-with open("results.jsonl") as file:
+with open("resultscolab.jsonl") as file:
     data = [json.loads(x) for x in file.read().split("\n") if len(x) > 0]
 for x in data:
     x.update(x["args"])
