@@ -292,7 +292,7 @@ def analyze_dataset(args, model, tokenizer, prefixes):
         #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
 
     with open("results.jsonl", "a") as f:
-        f.write(json.dumps({"bleu": total_bleu/cs, "args": vars(args), "all_metrics": metric.eval(), "stuck_count": repeating_tokens_num, "data": {"inputs": all_inputs, "outputs": all_outputs, "texts": all_texts}})+"\n")
+        f.write(json.dumps({"bleu": total_bleu/cs, "args": vars(args), "all_metrics": metric.eval(), "stuck_count": repeating_tokens_num, "data": {"inputs": all_inputs, "outputs": all_outputs, "texts": all_texts}}, ensure_ascii=False)+"\n")
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532
 
