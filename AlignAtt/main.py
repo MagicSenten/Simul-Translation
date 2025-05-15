@@ -28,7 +28,7 @@ def parse_args():
     parser.add_argument("--device", type=str, default="cuda", help="Device to use")
     parser.add_argument("--words_per_prefix", type=int, default=2, help="Words per prefix shown")
     parser.add_argument("--forced_bos_token_text", type=str, default=None, help="Forced BOS token text")
-    parser.add_argument("--model_id", type=int, default=0, help="Model ID")
+    parser.add_argument("--model_id", type=int, default=-1, help="Model ID")
     parser.add_argument("--num_beams", type=int, default=5, help="Setting the num_beams to a multiple of three turns on diverse beam search with num_beams//3 groups.")
     parser.add_argument("--num_swaps", type=int, default=0, help="Number of word pairs to blindly swap.")
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
@@ -223,6 +223,10 @@ def analyze_dataset(args, model, tokenizer, prefixes):
     cs = 0
     metric = SimuEval()
     data = prefixes
+    all_inputs = []
+    all_outputs = []
+    all_texts = []
+    repeating_tokens_num = 0
     for sentid, datap in enumerate(data):
         words = datap[0]
         gold_text = " ".join(datap[1])
@@ -252,7 +256,7 @@ def analyze_dataset(args, model, tokenizer, prefixes):
                 # If we begin repeating the same tokens, we don't take the output.
                 newtokens = new_theory[len(stable_theory):]
                 if np.unique(newtokens).shape[0] < len(newtokens) // 2:
-                    print("repeating tokens")
+                    repeating_tokens_num += 1
                     stable_theory += tokenizer.tokenize(" ")
                     continue
                 if args.local_agreement_length > 0 and len(previous_theory) > 0:
@@ -274,6 +278,9 @@ def analyze_dataset(args, model, tokenizer, prefixes):
             previous_theory = new_theory
 
         metric.update(inputs, output_theories, gold_text, tokenizer)
+        all_inputs.append(inputs)
+        all_outputs.append(output_theories)
+        all_texts.append(gold_text)
         if len(stable_theory) > 0:
             new_bleu = bleu.compute(predictions=[to_string(stable_theory)],
                                 references=[gold_text])["score"]
@@ -281,11 +288,11 @@ def analyze_dataset(args, model, tokenizer, prefixes):
             new_bleu = 0
         total_bleu += new_bleu
         cs += 1
-        print(f"sent{sentid} of{len(data)}", metric.eval(), new_bleu, total_bleu/cs, vars(args))
+        print(f"sent{sentid} of{len(data)}", new_bleu, total_bleu/cs, metric.eval(), vars(args))
         #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
 
     with open("results.jsonl", "a") as f:
-        f.write(json.dumps({"bleu": total_bleu/cs, "args": vars(args), "all_metrics": metric.eval()})+"\n")
+        f.write(json.dumps({"bleu": total_bleu/cs, "args": vars(args), "all_metrics": metric.eval(), "stuck_count": repeating_tokens_num, "data": {"inputs": all_inputs, "outputs": all_outputs, "texts": all_texts}})+"\n")
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532
 
@@ -297,7 +304,8 @@ def main():
              "facebook/nllb-200-1.3B",
              "facebook/nllb-200-distilled-600M",
              "utter-project/EuroLLM-1.7B-Instruct",
-             "utter-project/EuroLLM-9B-Instruct"]
+             "utter-project/EuroLLM-9B-Instruct",
+             "davidruda/opus-mt-cs-en-Prefix-Finetuned"]
     args.isLLM = "LLM" in names[args.model_id]
     print(args.isLLM, names[args.model_id])
     if args.isLLM:

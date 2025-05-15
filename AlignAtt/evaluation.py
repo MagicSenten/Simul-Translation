@@ -31,7 +31,6 @@ class SimuEval:
 
     # return the latency ratio for given chars, words or tokens
     def calc_latency_ratio(self, partial, full,  pred, gold):
-        print(len(gold) / len(full) * len(partial), len(pred), len(gold), max(len(gold) / len(full) * len(partial) - len(pred), 0) / len(gold))
         absolute = max(len(gold) / len(full) * len(partial) - len(pred), 0)
         return absolute / len(gold), absolute
 
