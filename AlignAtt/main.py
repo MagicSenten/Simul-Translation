@@ -6,7 +6,7 @@ import evaluate
 import random
 from tqdm import tqdm
 import numpy as np
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig, AutoModelForCausalLM, BitsAndBytesConfig
 import argparse
 from itertools import islice
 import jsonlines
@@ -28,12 +28,12 @@ def parse_args():
     parser.add_argument("--device", type=str, default="cuda", help="Device to use")
     parser.add_argument("--words_per_prefix", type=int, default=2, help="Words per prefix shown")
     parser.add_argument("--forced_bos_token_text", type=str, default=None, help="Forced BOS token text")
-    parser.add_argument("--model_id", type=int, default=-1, help="Model ID")
+    parser.add_argument("--model_id", type=int, default=4, help="Model ID")
     parser.add_argument("--num_beams", type=int, default=5, help="Setting the num_beams to a multiple of three turns on diverse beam search with num_beams//3 groups.")
     parser.add_argument("--num_swaps", type=int, default=0, help="Number of word pairs to blindly swap.")
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
     parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key")
-    parser.add_argument("--verbose", action="store_true", default=False)
+    parser.add_argument("--verbose", action="store_true", default=True)
 
     return parser.parse_args()
 
@@ -134,39 +134,41 @@ def translate_LLM(model, tokenizer, input_text, stable_theory, args, verbose=Fal
         - 'pt': Return as pytorch tensor.
     '''
     is_sent_end = input_text.endswith(".")
-    decoder_input_ids = torch.tensor(tokenizer.convert_tokens_to_ids()).unsqueeze(0) if len(stable_theory) > 0 else None
+    decoder_input_ids = torch.tensor(tokenizer.convert_tokens_to_ids(stable_theory)).unsqueeze(0) if len(stable_theory) > 0 else None
     #decoder_text = tokenizer.decode(input_ids[0], skip_special_tokens=True)
-    turns = [[{"role": "system", "text": "You are a simultaneous translation API. Translate the czech partial output of an ASR system given to English. Only output the english sentence do not explain your output."},
-             {"role": "user", "text": input_text}]]
-    input_ids = tokenizer.apply_chat_template(turns, return_tensors="pt").input_ids
-    inputlen = input_ids.shape[1]
-    input_ids = torch.cat([input_ids, decoder_input_ids], 1)
+    input_text = f'<|im_start|>system\nYou are simultaneous interpreter from Czech to English, you translate incomplete sentences, please make sure you only translate what is explicitly stated in the input segment.<|im_end|>\n<|im_start|>user\nTranslate the following Czech source text to English.\nCzech: {input_text}\nEnglish: <|im_end|>\n<|im_start|>assistant\n'
+    input_ids = tokenizer.encode(input_text, return_tensors="pt")
+    all_input_ids = torch.cat([input_ids, decoder_input_ids], 1) if decoder_input_ids is not None else input_ids
     """
       cross_attentions (tuple(tuple(torch.FloatTensor)), optional,
       returned when output_attentions=True) —
       Tuple (one element for each generated token) of tuples (one element for each layer of the decoder) of torch.FloatTensor
       of shape (batch_size, num_heads, generated_length, sequence_length).
     """
+    bad_words = ["English:", "Czech:", "<0x0A>", "Reference:"]
     config = GenerationConfig(num_beams=args.num_beams, num_beam_groups=args.num_beams//3 if args.num_beams % 3 == 0 else 1, diversity_penalty=0.1 if args.num_beams % 3 == 0 and args.num_beams > 3 else 0, no_repeat_ngram_size=2,
-                              length_penalty=0.98)
-    outputs = model.generate(input_ids=input_ids.to(args.device),
-                             return_dict_in_generate=True, output_attentions=True, max_new_tokens=20,
-                             generation_config=config, renormalize_logits=True, forced_bos_token_id=tokenizer.convert_tokens_to_ids(args.forced_bos_token_text) if args.forced_bos_token_text is not None else None)
+                              length_penalty=0.98 if args.num_beams > 1 else 1.0, bad_words_ids= [tokenizer.encode(x) for x in bad_words])
+    outputs = model.generate(input_ids=all_input_ids.to(args.device), generation_config=config,
+                             return_dict_in_generate=True, output_attentions=True, max_new_tokens=min(2, input_ids.shape[1]*1.5-len(stable_theory)), renormalize_logits=True, forced_bos_token_id=tokenizer.convert_tokens_to_ids(args.forced_bos_token_text) if args.forced_bos_token_text is not None else None, pad_token_id=tokenizer.pad_token_id)
+    #print(tokenizer.decode(outputs["sequences"][0], skip_special_tokens=True))
+    #print(outputs["sequences"][0].shape, input_ids.shape[1])
+    #print(len(tokenizer.decode(outputs["sequences"][0][input_ids.shape[1]:], skip_special_tokens=True)))
     ca = outputs["attentions"]
-    output_ids = outputs["sequences"][0]
+    output_ids = outputs["sequences"][0][input_ids.shape[1]:]
     if args.top_attentions > 0 and not decoder_input_ids is None and len(ca[1:]) > 0:
         print([x[0].shape for x in ca[1:]])
         raise Exception()
         assert all([x[0].shape[2] == 1 for x in ca[1:]])
-        attentions = [sum(x[i][:, :, :, :inputlen] for i in args.layers) for x in ca[1:]]
+        attentions = [sum(x[i][:, :, :, all_input_ids.shape[1]:] for i in args.layers) for x in ca[1:]]
         attentions = attentions[:len(output_ids) - decoder_input_ids.shape[1]]
         if verbose:
             visualize_attention(input_ids[0], output_ids[decoder_input_ids.shape[1]:], attentions, tokenizer, args)
-        alignatt_result = decoder_input_ids.shape[1] + alignatt(attentions, args)
+        alignatt_result = (all_input_ids.shape[1] - input_ids.shape[1]) + alignatt(attentions, args)
     else:
         alignatt_result = len(output_ids)
-
+    print(len(output_ids))
     decoded_align_att = tokenizer.decode(output_ids[:alignatt_result], skip_special_tokens=True)
+    print(decoded_align_att, tokenizer.tokenize(decoded_align_att))
     return tokenizer.tokenize(decoded_align_att)
 
 def translate(model, tokenizer, input_text, stable_theory, args, verbose=False):
@@ -184,7 +186,7 @@ def translate(model, tokenizer, input_text, stable_theory, args, verbose=False):
       of shape (batch_size, num_heads, generated_length, sequence_length).
     """
     config = GenerationConfig(num_beams=args.num_beams, num_beam_groups=args.num_beams//3 if args.num_beams % 3 == 0 else 1, diversity_penalty=0.1 if args.num_beams % 3 == 0 and args.num_beams > 3 else 0, no_repeat_ngram_size=2,
-                              length_penalty=0.98)
+                              length_penalty=0.98 if args.num_beams > 1 else 1.0)
     outputs = model.generate(input_ids=input_ids.to(args.device), decoder_input_ids=decoder_input_ids.to(
         args.device) if decoder_input_ids is not None else None,
                              return_dict_in_generate=True, output_attentions=True, max_new_tokens=20,
@@ -250,7 +252,7 @@ def analyze_dataset(args, model, tokenizer, prefixes):
             partial_input_text = " ".join(words[:t+1])
             if t >= args.wait_for_beginning or t == len(words):
                 if args.isLLM:
-                    translate_LLM(model, tokenizer, helper_text + partial_input_text, stable_theory, args, args.verbose)
+                    new_theory = translate_LLM(model, tokenizer, helper_text + partial_input_text, stable_theory, args, args.verbose)
                 else:
                     new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, args.verbose)
                 # If we begin repeating the same tokens, we don't take the output.
@@ -309,8 +311,11 @@ def main():
     args.isLLM = "LLM" in names[args.model_id]
     print(args.isLLM, names[args.model_id])
     if args.isLLM:
-        tokenizer = AutoTokenizer.from_pretrained(names[args.model_id])
-        model = AutoModelForCausalLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
+        tokenizer = AutoTokenizer.from_pretrained(names[args.model_id], token = "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")
+        args.forced_bos_token_text = None
+        quantization_config = BitsAndBytesConfig(load_in_4bit=True,
+                                                 bnb_4bit_compute_dtype=torch.bfloat16)
+        model = AutoModelForCausalLM.from_pretrained(names[args.model_id], attn_implementation="eager", quantization_config=quantization_config, token = "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").to(args.device)
     else:
         tokenizer = AutoTokenizer.from_pretrained(names[args.model_id], src_lang="ces_Latn", tgt_lang="eng_Latn")
         model = AutoModelForSeq2SeqLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
