@@ -3,6 +3,7 @@ from jiwer import wer
 import sacrebleu
 import json
 
+# סעמק
 
 def load_jsonl_to_dict(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
