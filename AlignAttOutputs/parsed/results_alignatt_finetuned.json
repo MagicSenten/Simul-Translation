@@ -1,0 +1,92 @@
+[
+    {
+        "bleu": 16.20169187355736,
+        "delay_words": 4.109345643096411,
+        "attention_frame_size": 10,
+        "layers": [
+            0
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.20169187355736,
+        "delay_words": 4.109345643096411,
+        "attention_frame_size": 10,
+        "layers": [
+            0
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.20169187355736,
+        "delay_words": 4.109345643096411,
+        "attention_frame_size": 10,
+        "layers": [
+            0
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.20169187355736,
+        "delay_words": 4.109345643096411,
+        "attention_frame_size": 10,
+        "layers": [
+            1
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.20169187355736,
+        "delay_words": 4.109345643096411,
+        "attention_frame_size": 10,
+        "layers": [
+            1
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.20169187355736,
+        "delay_words": 4.109345643096411,
+        "attention_frame_size": 10,
+        "layers": [
+            1
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.20169187355736,
+        "delay_words": 4.109345643096411,
+        "attention_frame_size": 10,
+        "layers": [
+            2
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.20169187355736,
+        "delay_words": 4.109345643096411,
+        "attention_frame_size": 10,
+        "layers": [
+            2
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.20169187355736,
+        "delay_words": 4.109345643096411,
+        "attention_frame_size": 10,
+        "layers": [
+            2
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    }
+]

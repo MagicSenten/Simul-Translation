@@ -1,0 +1,56 @@
+[
+    {
+        "bleu": 15.857314133124,
+        "delay_words": 4.039740845517522,
+        "num_beams": 2,
+        "wait_for_beginning": 2
+    },
+    {
+        "bleu": 15.575818585222223,
+        "delay_words": 3.645213395528945,
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 15.51632050863685,
+        "delay_words": 3.8801986333951755,
+        "num_beams": 3,
+        "wait_for_beginning": 2
+    },
+    {
+        "bleu": 15.477308456721376,
+        "delay_words": 4.952395167681028,
+        "num_beams": 1,
+        "wait_for_beginning": 1
+    },
+    {
+        "bleu": 15.331780752103073,
+        "delay_words": 3.803363619900081,
+        "num_beams": 3,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 14.996696259396254,
+        "delay_words": 3.8048396209208666,
+        "num_beams": 2,
+        "wait_for_beginning": 1
+    },
+    {
+        "bleu": 14.618129515446123,
+        "delay_words": 3.741351959843924,
+        "num_beams": 1,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 14.56029285963585,
+        "delay_words": 4.144907924301257,
+        "num_beams": 1,
+        "wait_for_beginning": 2
+    },
+    {
+        "bleu": 14.218297991493978,
+        "delay_words": 3.5211740174735007,
+        "num_beams": 3,
+        "wait_for_beginning": 1
+    }
+]
