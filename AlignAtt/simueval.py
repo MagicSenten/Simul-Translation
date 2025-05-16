@@ -198,3 +198,10 @@ class SimuEval:
         self.bleu = bleu.score
 
         return bleu.score
+
+    def eval(self):
+        return {
+            "bleu": self.calc_sacreBLEU(),
+            "wer": self.calc_WER(),
+            "AL": self._AL,
+        }

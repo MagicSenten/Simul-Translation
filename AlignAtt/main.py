@@ -193,17 +193,15 @@ def translate(model, tokenizer: PreTrainedTokenizerBase, input_text, stable_theo
     print(len(ca), len(ca[0]), len(ca[0][0]), len(ca[0][0][0]))
     outputsequence = outputs["sequences"][0].cpu()
     print(tokenizer.convert_ids_to_tokens(outputsequence))
-    if decoder_input_ids is not None:
+    if False:
         print(tokenizer.convert_ids_to_tokens(decoder_input_ids[0]))
         assert len(ca) - 2 == len(outputsequence) - decoder_input_ids.shape[1] - 1, f"or {len(ca)} {len(outputsequence)} {decoder_input_ids.shape[1]}"
     if outputsequence[-1] == tokenizer.eos_token_id:
         outputsequence = outputsequence[:-1]
-        ca = ca[:-1]
     len_output = len(outputsequence)
     output_ids = outputsequence[decoder_input_ids.shape[1] if decoder_input_ids is not None else 0:].cpu()
     if args.top_attentions > 0 and not decoder_input_ids is None and len(ca) > 1:
         assert all([x[0].shape[2] == 1 for x in ca[1:]])
-        ca = ca[1:]
         #assert len(ca) == len(output_ids), f"or {len(ca)} {len(output_ids)}"
         attentions = [sum(x[-1-i][:1, :, -1:] for i in args.layers) for x in ca]
         if verbose:
@@ -303,7 +301,7 @@ def analyze_dataset(args, model, tokenizer, prefixes):
             output_theories.append(to_string(stable_theory, tokenizer)[lhten:])
             previous_theory = new_theory
 
-        metric.update(inputs, output_theories, gold_text, tokenizer)
+        metric.update(inputs, output_theories, gold_text)
         all_inputs.append(inputs)
         for i in range(len(output_theories)-1):
             assert output_theories[i+1].startswith(output_theories[i]), str(output_theories)
