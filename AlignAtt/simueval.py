@@ -193,7 +193,7 @@ class SimuEval:
             self.bleu: Set to the calculated BLEU score.
         """
         # compute BLEU
-        bleu = sacrebleu.corpus_bleu(self.predictions, [[x] for x in self.golden_trans])
+        bleu = sacrebleu.corpus_bleu(self.predictions, [[x for x in self.golden_trans]])
 
         self.bleu = bleu.score
         return bleu.score
@@ -202,5 +202,5 @@ class SimuEval:
         return {
             "bleu": self.calc_sacreBLEU(),
             "wer": self.calc_WER()[1],
-            "AL": np.mean(self._AL),
+            "AL": float(np.mean(self._AL)),
         }

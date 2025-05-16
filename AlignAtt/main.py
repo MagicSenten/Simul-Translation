@@ -2,7 +2,6 @@ import json
 import os
 from argparse import Namespace
 import torch
-import evaluate
 import random
 from tqdm import tqdm
 import numpy as np
@@ -230,6 +229,18 @@ def translate(model, tokenizer: PreTrainedTokenizerBase, input_text, stable_theo
 def to_string(tokens, tokenizer: PreTrainedTokenizerBase):
     return tokenizer.decode(tokenizer.convert_tokens_to_ids(tokens), skip_special_tokens=True)
 
+def analyze_dataset_from_jsonl(args, data):
+    inputs = data["inputs"]
+    outputs = data["outputs"]
+    texts = data["texts"]
+    metric = SimuEval()
+    for input, output, text in zip(inputs, outputs, texts):
+        for x in range(len(input)):
+            metric.update(input[x], output[x], text)
+    with open(args.output_file, "a") as f:
+        f.write(json.dumps({"bleu": metric.eval()["bleu"], "all_metrics": metric.eval()})+"\n")
+
+
 
 def analyze_dataset(args, model, tokenizer, prefixes):
     ''''
@@ -238,8 +249,6 @@ def analyze_dataset(args, model, tokenizer, prefixes):
     '''
     print(vars(args))
     first = True
-    bleu = evaluate.load("sacrebleu")
-    total_bleu = 0
     total_latency = np.zeros(3)
     # The total number of prefixes seen.
     cs = 0
@@ -264,7 +273,6 @@ def analyze_dataset(args, model, tokenizer, prefixes):
         stable_theory = tokenizer.tokenize(helper_text_en + gold_text)[:lhten_tok + int(start * 2.5)]
         previous_theory = []
         new_theory = previous_theory
-        new_bleu = 0
         output_theories = []
         inputs = []
         per = 1
@@ -307,18 +315,11 @@ def analyze_dataset(args, model, tokenizer, prefixes):
             assert output_theories[i+1].startswith(output_theories[i]), str(output_theories)
         all_outputs.append(output_theories)
         all_texts.append(gold_text)
-        if len(stable_theory) > 0:
-            new_bleu = bleu.compute(predictions=[to_string(stable_theory, tokenizer)],
-                                references=[gold_text])["score"]
-        else:
-            new_bleu = 0
-        total_bleu += new_bleu
         cs += 1
-        print(f"sent{sentid} of{len(data)}", new_bleu, total_bleu/cs, computation_stats, metric.eval(), vars(args))
-        #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
+        print(f"sent{sentid} of{len(data)}", computation_stats, metric.eval(), vars(args))
 
     with open(args.output_file, "a") as f:
-        f.write(json.dumps({"bleu": total_bleu/cs, "total": cs, "computation_stats": computation_stats, "args": vars(args), "all_metrics": metric.eval(), "stuck_count": repeating_tokens_num, "data": {"inputs": all_inputs, "outputs": all_outputs, "texts": all_texts}}, ensure_ascii=False)+"\n")
+        f.write(json.dumps({"bleu": metric.eval()["bleu"], "total": cs, "computation_stats": computation_stats, "args": vars(args), "all_metrics": metric.eval(), "stuck_count": repeating_tokens_num, "data": {"inputs": all_inputs, "outputs": all_outputs, "texts": all_texts}}, ensure_ascii=False)+"\n")
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532
 
@@ -364,7 +365,8 @@ def main():
         print(tokenizer.supported_language_codes)
     prefixes = get_data(args)
 
-    run_align_att(args, model, tokenizer, prefixes)
+    run_local_agreement(args, model, tokenizer, prefixes)
+    #run_align_att(args, model, tokenizer, prefixes)
 
 
 if __name__ == "__main__":
