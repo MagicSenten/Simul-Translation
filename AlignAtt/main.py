@@ -23,13 +23,13 @@ def parse_args():
     parser.add_argument("--attention_frame_size", type=int, default=10, help="The excluded frame of last positions size")
     parser.add_argument("--count_in", type=int, default=1, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
     parser.add_argument("--wait_for", type=int, default=0, help="A static wait time to apply on top of alignatt everywhere")
-    parser.add_argument("--wait_for_beginning", type=int, default=5, help="A wait time to apply at the beginning")
+    parser.add_argument("--wait_for_beginning", type=int, default=3, help="A wait time to apply at the beginning")
     parser.add_argument("--heads", type=int, nargs='+', default=list(range(6)), help="List of attention heads")
     parser.add_argument("--device", type=str, default="cuda", help="Device to use")
     parser.add_argument("--words_per_prefix", type=int, default=2, help="Words per prefix shown")
     parser.add_argument("--forced_bos_token_text", type=str, default=None, help="Forced BOS token text")
-    parser.add_argument("--model_id", type=int, default=4, help="Model ID")
-    parser.add_argument("--num_beams", type=int, default=5, help="Setting the num_beams to a multiple of three turns on diverse beam search with num_beams//3 groups.")
+    parser.add_argument("--model_id", type=int, default=0, help="Model ID")
+    parser.add_argument("--num_beams", type=int, default=2, help="Setting the num_beams to a multiple of three turns on diverse beam search with num_beams//3 groups.")
     parser.add_argument("--num_swaps", type=int, default=0, help="Number of word pairs to blindly swap.")
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
     parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key")
@@ -159,7 +159,7 @@ def translate_LLM(model, tokenizer, input_text, stable_theory, args, verbose=Fal
         print([x[0].shape for x in ca[1:]])
         raise Exception()
         assert all([x[0].shape[2] == 1 for x in ca[1:]])
-        attentions = [sum(x[i][:, :, :, all_input_ids.shape[1]:] for i in args.layers) for x in ca[1:]]
+        attentions = [sum(x[-1-i][:, :, :, all_input_ids.shape[1]:] for i in args.layers) for x in ca[1:]]
         attentions = attentions[:len(output_ids) - decoder_input_ids.shape[1]]
         if verbose:
             visualize_attention(input_ids[0], output_ids[decoder_input_ids.shape[1]:], attentions, tokenizer, args)
@@ -189,13 +189,13 @@ def translate(model, tokenizer, input_text, stable_theory, args, verbose=False):
                               length_penalty=0.98 if args.num_beams > 1 else 1.0)
     outputs = model.generate(input_ids=input_ids.to(args.device), decoder_input_ids=decoder_input_ids.to(
         args.device) if decoder_input_ids is not None else None,
-                             return_dict_in_generate=True, output_attentions=True, max_new_tokens=20,
+                             return_dict_in_generate=True, output_attentions=True, max_new_tokens=10,
                              generation_config=config, renormalize_logits=True, forced_bos_token_id=tokenizer.convert_tokens_to_ids(args.forced_bos_token_text) if args.forced_bos_token_text is not None else None)
     ca = outputs["cross_attentions"]
     output_ids = outputs["sequences"][0]
     if args.top_attentions > 0 and not decoder_input_ids is None and len(ca[1:]) > 0:
         assert all([x[0].shape[2] == 1 for x in ca[1:]])
-        attentions = [sum(x[i] for i in args.layers) for x in ca[1:]]
+        attentions = [sum(x[-1-i] for i in args.layers) for x in ca[1:]]
         attentions = attentions[:len(output_ids) - decoder_input_ids.shape[1]]
         if verbose:
             visualize_attention(input_ids[0], output_ids[decoder_input_ids.shape[1]:], attentions, tokenizer, args)
@@ -298,6 +298,24 @@ def analyze_dataset(args, model, tokenizer, prefixes):
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532
 
+
+def run_local_agreement(args, model, tokenizer, prefixes):
+    for num_beams in range(1, 4):
+        for wait_for_beginning in range(1, 4):
+            args.top_attentions = 0
+            args.local_agreement_length = 1
+            args.num_beams = num_beams
+            args.wait_for_beginning = wait_for_beginning
+            analyze_dataset(args, model, tokenizer, prefixes)
+
+
+def run_align_att(args, model, tokenizer, prefixes):
+    for layer in range(0, 3):
+        for frame_size in range(1, 4):
+            args.frame_size = frame_size
+            args.layers = [layer]
+            analyze_dataset(args, model, tokenizer, prefixes)
+
 def main():
     random.seed(42)
     args = parse_args()
@@ -321,12 +339,9 @@ def main():
         model = AutoModelForSeq2SeqLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
     prefixes = get_data(args)
 
-    for num_beams in range(1, 4):
-        for wait_for_beginning in range(1, 4):
-            args.top_attentions = 0
-            args.local_agreement_length = 1
-            args.num_beams = num_beams
-            args.wait_for_beginning = wait_for_beginning
-            analyze_dataset(args, model, tokenizer, prefixes)
+    run_align_att(args, model, tokenizer, prefixes)
 
-main()
+
+if __name__ == "__main__":
+    torch.
+    main()

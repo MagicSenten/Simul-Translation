@@ -3,3 +3,4 @@ transformers==4.51.0
 jsonlines=4.0.0
 sacrebleu=2.5.1
 evaluate=0.4.3
+bitsandbytes=0.45.5

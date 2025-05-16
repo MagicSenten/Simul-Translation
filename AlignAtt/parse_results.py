@@ -5,8 +5,8 @@ import numpy as np
 def write_results(name):
     with open(name) as file:
         data = [json.loads(x) for x in file.read().split("\n") if len(x) > 0]
-    os.makedirs("parsed", exist_ok=True)
-    outp = os.path.join("parsed", os.path.splitext(os.path.basename(name))[0]) + ".json"
+    os.makedirs("../AlignAttOutputs/parsed", exist_ok=True)
+    outp = os.path.join("../AlignAttOutputs/parsed", os.path.splitext(os.path.basename(name))[0]) + ".json"
     with open(outp, "w") as f:
         all_data = []
         for x in data:
@@ -38,7 +38,7 @@ def write_results(name):
 
 if __name__ == "__main__":
     print(os.getcwd())
-    root = "./results"
+    root = "../AlignAttOutputs/results"
     for x in os.listdir(root):
         if x.endswith(".jsonl"):
             write_results(os.path.join(root,x))
