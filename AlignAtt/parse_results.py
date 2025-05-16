@@ -6,12 +6,12 @@ def write_results(name):
     with open(name) as file:
         data = [json.loads(x) for x in file.read().split("\n") if len(x) > 0]
     os.makedirs("parsed", exist_ok=True)
-    outp = os.path.join("parsed", os.path.splitext(os.path.basename(name))[0])
+    outp = os.path.join("parsed", os.path.splitext(os.path.basename(name))[0]) + ".json"
     with open(outp, "w") as f:
         all_data = []
         for x in data:
             if x["args"]["local_agreement_length"] > 0:
-                    all_data.append({"bleu":x["bleu"], "num_beams":x["args"]["num_beams"], "wait_for_beginning":x["args"]["wait_for_beginning"]})
+                    all_data.append({"bleu":x["bleu"], "delay_words":x["all_metrics"]["delay_words_absolute"], "num_beams":x["args"]["num_beams"], "wait_for_beginning":x["args"]["wait_for_beginning"]})
         json.dump(sorted(all_data, key=lambda x: x["bleu"], reverse=True), f, indent=4, ensure_ascii=False)
 
     for x in data:
