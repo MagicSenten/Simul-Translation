@@ -199,9 +199,6 @@ def translate(model, tokenizer: PreTrainedTokenizerBase, input_text, stable_theo
     if outputsequence[-1] == tokenizer.eos_token_id:
         outputsequence = outputsequence[:-1]
         ca = ca[:-1]
-    if decoder_input_ids is not None and outputsequence[0] == tokenizer.pad_token_id:
-        outputsequence = outputsequence[1:]
-    print(tokenizer.convert_ids_to_tokens(outputsequence))
     len_output = len(outputsequence)
     output_ids = outputsequence[decoder_input_ids.shape[1] if decoder_input_ids is not None else 0:].cpu()
     if args.top_attentions > 0 and not decoder_input_ids is None and len(ca) > 1:
