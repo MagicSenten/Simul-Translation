@@ -30,7 +30,7 @@ def alignatt(attentions, args):
         top_pos = mean_attentions.argsort(-1)[-args.top_attentions:].cpu().numpy()
         top_pos[top_pos >= attentions[0].shape[-1] - args.skip_l] = 0
         # print(attentions[i].shape, top_pos, mean_attentions[-mean_attentions.shape[0]//8:])
-        if np.sum(np.less_equal(attentions[0].shape[-1] - args.attention_frame_size, top_pos)) > args.count_in:
+        if np.sum(np.less_equal(attentions[0].shape[-1] - args.attention_frame_size, top_pos)) >= args.count_in:
             print(i, len(attentions), attentions[0].shape[-1] - top_pos)
             return i
     print(len(attentions), "full", attentions[0].shape[-1] - top_pos)
