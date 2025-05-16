@@ -3,6 +3,7 @@ from jiwer import wer
 import sacrebleu
 import json
 
+
 # נו כבר
 
 def load_jsonl_to_dict(filepath):
@@ -215,8 +216,6 @@ class SimuEval:
         self.bleu = bleu.score
 
         return bleu.score
-
-
 
 # # Example usage
 # filename = r"O:\Charles\LLMProject\Simul-Translation\AlignAttOutputs\results\results_la_finetuned.jsonl"
