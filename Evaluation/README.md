@@ -22,7 +22,7 @@ Ensure these files are in your project directory. If you cloned a repository con
 # Example: if files are in a directory named 'simueval_toolkit'
 cd path/to/simueval_toolkit
 
-2. Create and Activate a Virtual Environment
+### 2. Create and Activate a Virtual Environment
 
 It's highly recommended to use a virtual environment to manage dependencies:
 
