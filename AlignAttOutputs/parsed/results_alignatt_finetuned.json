@@ -47,162 +47,126 @@
     {
         "bleu": 16.39855285922514,
         "attention_frame_size": 2,
-        "layers": [
-            3
-        ],
+        "layers": 3,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 16.180338166313575,
         "attention_frame_size": 1,
-        "layers": [
-            3
-        ],
+        "layers": 3,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 15.902742332200138,
         "attention_frame_size": 3,
-        "layers": [
-            3
-        ],
+        "layers": 3,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 15.266962979801258,
         "attention_frame_size": 2,
-        "layers": [
-            3
-        ],
+        "layers": 3,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 15.19238000161528,
         "attention_frame_size": 1,
-        "layers": [
-            3
-        ],
+        "layers": 3,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 15.152155069427332,
         "attention_frame_size": 3,
-        "layers": [
-            3
-        ],
+        "layers": 3,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 12.61003329828135,
         "attention_frame_size": 1,
-        "layers": [
-            2
-        ],
+        "layers": 2,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 12.468409505370914,
         "attention_frame_size": 2,
-        "layers": [
-            2
-        ],
+        "layers": 2,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 12.360740757564098,
         "attention_frame_size": 3,
-        "layers": [
-            2
-        ],
+        "layers": 2,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 12.283826016524467,
         "attention_frame_size": 1,
-        "layers": [
-            1
-        ],
+        "layers": 1,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 12.159552412690088,
         "attention_frame_size": 2,
-        "layers": [
-            1
-        ],
+        "layers": 1,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 12.059186442093432,
         "attention_frame_size": 3,
-        "layers": [
-            1
-        ],
+        "layers": 1,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 8.920197975169584,
         "attention_frame_size": 1,
-        "layers": [
-            2
-        ],
+        "layers": 2,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 8.873232504937901,
         "attention_frame_size": 3,
-        "layers": [
-            2
-        ],
+        "layers": 2,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 8.802193406034691,
         "attention_frame_size": 2,
-        "layers": [
-            2
-        ],
+        "layers": 2,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 8.33635643883621,
         "attention_frame_size": 1,
-        "layers": [
-            1
-        ],
+        "layers": 1,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 8.243405194743888,
         "attention_frame_size": 2,
-        "layers": [
-            1
-        ],
+        "layers": 1,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 8.067760454892019,
         "attention_frame_size": 3,
-        "layers": [
-            1
-        ],
+        "layers": 1,
         "num_beams": 2,
         "wait_for_beginning": 3
     }
