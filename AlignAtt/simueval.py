@@ -1,8 +1,5 @@
 from typing import List, Union
-
-
-def calc_latency_ratio(partial, full, pred, gold):
-    return (len(gold) / len(full) * len(partial) - len(pred)) / len(gold)
+import sacrebleu
 
 
 def compute(
@@ -44,21 +41,28 @@ class SimuEval:
         self.counter = 0
         self.delays = []
 
-        self._AL = []
+        self.predictions = []
+        self.golden_trans = []
 
-        self.latency_scorer = []
-        self.quality_scorer = []
+        self._AL = []
+        self.bleu = 0
+
+        # self.latency_scorer = []
+        # self.quality_scorer = []
 
         self.words__latency = 0
 
     def update(self, inputs, pred_outputs, gold_text, tokenizer):
         delays = []
-        ALs = []
 
-        # prints to be deleted
-        print("##############################")
-        print(inputs)
-        print(pred_outputs)
+        # save the data for the sacreBLEU evaluation
+        self.predictions.append(pred_outputs[-1])
+        self.golden_trans.append(gold_text)
+
+        # # prints to be deleted
+        # print("##############################")
+        # print(inputs)
+        # print(pred_outputs)
 
         # keep track of previously seen output words
         prev_output_words = []
@@ -83,6 +87,14 @@ class SimuEval:
             # update previous output words
             prev_output_words = output_words
 
+        self.delays.append(delays)
+
+        # computes AL scores for the input and output and stores the results
+        self.call_AL_compute(inputs, gold_text, delays)
+
+    def call_AL_compute(self, inputs, gold_text, delays):
+        ALs = []
+
         # compute latency score using current delays
         source_len = len(inputs[-1].strip().split())
         target_len = len(gold_text)
@@ -92,12 +104,19 @@ class SimuEval:
             AL = compute(delays, source_len, target_len)
             ALs.append(AL)
 
-        self.delays.append(delays)
         self._AL.append(ALs)
 
-        # prints to be deleted
-        print(f"Current AL: {self._AL}")
-        print("##############################")
+        # # prints to be deleted
+        # print(f"Current AL: {self._AL}")
+        # print("##############################")
+
+    def calc_sacreBLEU(self):
+
+        # compute BLEU
+        bleu = sacrebleu.corpus_bleu(self.predictions, self.golden_trans)
+
+        # print(f"bleu: {bleu.score}")
+        self.bleu = bleu.score
 
     def eval(self):
         return {
