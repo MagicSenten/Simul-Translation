@@ -18,7 +18,7 @@ def parse_args():
     parser.add_argument("--local_agreement_length", type=int, default=0, help="Number of next tokens it must agree with the previous theory in")
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
     parser.add_argument("--layers", type=int, nargs='+', default=[3,4], help="List of layer indices")
-    parser.add_argument("--top_attentions", type=int, default=1, help="Top attentions to use, set to 0 to disable alignatt.")
+    parser.add_argument("--top_attentions", type=int, default=0, help="Top attentions to use, set to 0 to disable alignatt.")
     parser.add_argument("--output_file", type=str, default="results.jsonl")
     parser.add_argument("--attention_frame_size", type=int, default=10, help="The excluded frame of last positions size")
     parser.add_argument("--count_in", type=int, default=1, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
@@ -34,7 +34,7 @@ def parse_args():
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
     parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key")
     parser.add_argument("--verbose", action="store_true", default=True)
-    parser.add_argument("--experiment_type", type=str, default="alignatt")
+    parser.add_argument("--experiment_type", type=str, default="none")
 
     return parser.parse_args()
 
@@ -330,6 +330,12 @@ def analyze_dataset(args, model, tokenizer, prefixes):
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532
 
+def run_param_search(args, model, tokenizer, prefixes):
+    for num_beams in range(1, 4):
+        for wait_for_beginning in range(1, 4):
+            args.num_beams = num_beams
+            args.wait_for_beginning = wait_for_beginning
+            analyze_dataset(args, model, tokenizer, prefixes)
 
 def run_local_agreement(args, model, tokenizer, prefixes):
     for num_beams in range(1, 4):
@@ -372,7 +378,7 @@ def main():
         print(tokenizer.supported_language_codes)
     prefixes = get_data(args)
     if args.experiment_type == "none":
-        analyze_dataset(args, model, tokenizer, prefixes)
+        run_param_search(args, model, tokenizer, prefixes)
     elif args.experiment_type == "alignatt":
         run_align_att(args, model, tokenizer, prefixes)
     elif args.experiment_type == "local_agreement":

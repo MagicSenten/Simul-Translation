@@ -2,46 +2,550 @@
     {
         "bleu": 16.965769990638663,
         "num_beams": 3,
-        "wait_for_beginning": 3
+        "wait_for_beginning": 3,
+        "example_sentances": [
+            [
+                [
+                    "Dalším viníkem",
+                    "",
+                    "Dalším viníkem stávající situace podle",
+                    "Another culprit of the current situation",
+                    "Dalším viníkem stávající situace podle pana ministra je",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda",
+                    "Another culprit of the current situation, according to the minister,",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda Petr Rafaj.",
+                    "Another culprit of the current situation, according to the minister, is ÚOHS and his personal favorite President, Petr Rafaj."
+                ],
+                "Another person responsible for the current situation is according to Mr minister the ÚOHS and his personal favourite chairman Petr Rafaj."
+            ],
+            [
+                [
+                    "V materiálu,",
+                    "",
+                    "V materiálu, který mám připravený,",
+                    "In the material I",
+                    "V materiálu, který mám připravený, je krásný argument,",
+                    "In the material I have prepared,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme",
+                    "In the material I have prepared, there is a",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie",
+                    "In the material I have prepared, there is a beautiful argument that if we limit",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti,",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road road",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, so",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených,",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílít",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlít",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlítící",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlítící",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlítící",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet přestupků spáchaných.",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlítícíítílící který předvětící osvrátek."
+                ],
+                "In the material I have had prepared, there is a beautiful argument for limiting the powers of local police when it comes to gauging speed or observing the safety of road users, which will of course lower the number of discovered offenses, which would otherwise be found out about and fined, however it will not reduce the number of offenses themselves."
+            ]
+        ]
     },
     {
         "bleu": 16.789254407905595,
         "num_beams": 2,
-        "wait_for_beginning": 3
+        "wait_for_beginning": 3,
+        "example_sentances": [
+            [
+                [
+                    "Dalším viníkem",
+                    "",
+                    "Dalším viníkem stávající situace podle",
+                    "Another culprit of the current situation",
+                    "Dalším viníkem stávající situace podle pana ministra je",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda",
+                    "Another culprit of the current situation, according to the minister,",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda Petr Rafaj.",
+                    "Another culprit of the current situation, according to the minister, is ÚOHS and his personal favorite President, Petr Rafaj."
+                ],
+                "Another person responsible for the current situation is according to Mr minister the ÚOHS and his personal favourite chairman Petr Rafaj."
+            ],
+            [
+                [
+                    "V materiálu,",
+                    "",
+                    "V materiálu, který mám připravený,",
+                    "In the material I",
+                    "V materiálu, který mám připravený, je krásný argument,",
+                    "In the material I have prepared,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme",
+                    "In the material I have prepared, there is a beautiful",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti,",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených,",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number of offences",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number of offences unveiled",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number of offences unveiled,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number of offences unveiled, which were",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet přestupků spáchaných.",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number of offences unveiled, which were were fined but do not reduce the count of trespasses committed."
+                ],
+                "In the material I have had prepared, there is a beautiful argument for limiting the powers of local police when it comes to gauging speed or observing the safety of road users, which will of course lower the number of discovered offenses, which would otherwise be found out about and fined, however it will not reduce the number of offenses themselves."
+            ]
+        ]
     },
     {
         "bleu": 16.74090500551541,
         "num_beams": 1,
-        "wait_for_beginning": 3
+        "wait_for_beginning": 3,
+        "example_sentances": [
+            [
+                [
+                    "Dalším viníkem",
+                    "",
+                    "Dalším viníkem stávající situace podle",
+                    "Another culprit of the current situation",
+                    "Dalším viníkem stávající situace podle pana ministra je",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda",
+                    "Another culprit of the current situation, according to the minister,",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda Petr Rafaj.",
+                    "Another culprit of the current situation, according to the minister, is ÚOHS and his personal favorite President, Petr Rafaj."
+                ],
+                "Another person responsible for the current situation is according to Mr minister the ÚOHS and his personal favourite chairman Petr Rafaj."
+            ],
+            [
+                [
+                    "V materiálu,",
+                    "",
+                    "V materiálu, který mám připravený,",
+                    "In the material I",
+                    "V materiálu, který mám připravený, je krásný argument,",
+                    "In the material I have prepared, there is",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme",
+                    "In the material I have prepared, there is a beautiful",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie",
+                    "In the material I have prepared, there is a beautiful that if we limit the",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti,",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených,",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of offences revealed,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of offences revealed, which",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of offences revealed, which were fined, but we will not",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet přestupků spáchaných.",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of offences revealed, which were fined, but we will not reduce the count of trespasses committed."
+                ],
+                "In the material I have had prepared, there is a beautiful argument for limiting the powers of local police when it comes to gauging speed or observing the safety of road users, which will of course lower the number of discovered offenses, which would otherwise be found out about and fined, however it will not reduce the number of offenses themselves."
+            ]
+        ]
     },
     {
         "bleu": 16.422352769546343,
         "num_beams": 2,
-        "wait_for_beginning": 2
+        "wait_for_beginning": 2,
+        "example_sentances": [
+            [
+                [
+                    "Dalším viníkem",
+                    "",
+                    "Dalším viníkem stávající situace podle",
+                    "Another culprit of the current situation",
+                    "Dalším viníkem stávající situace podle pana ministra je",
+                    "Another culprit of the current situation, according to",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho",
+                    "Another culprit of the current situation, according to the",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda",
+                    "Another culprit of the current situation, according to the minister,",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda Petr Rafaj.",
+                    "Another culprit of the current situation, according to the minister, is ÚOHS and his personal favorite President, Petr Rafaj."
+                ],
+                "Another person responsible for the current situation is according to Mr minister the ÚOHS and his personal favourite chairman Petr Rafaj."
+            ],
+            [
+                [
+                    "V materiálu,",
+                    "",
+                    "V materiálu, který mám připravený,",
+                    "In a material",
+                    "V materiálu, který mám připravený, je krásný argument,",
+                    "In a material",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme",
+                    "In a material I have prepared, there is a beautiful",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie",
+                    "In a material I have prepared, there is a beautiful that if we limit the",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of the municipal police in the area of speed",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of the municipal police in the area of speed speed",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti,",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of the municipal police in the area of speed speed speed speed or road traffic safety",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of the municipal police in the area of speed speed speed speed or road traffic safety, so",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených,",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of the municipal police in the area of speed speed speed speed or road traffic safety, so",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of the municipal police in the area of speed speed speed speed or road traffic safety, so",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of the municipal police in the area of speed speed speed speed or road traffic safety, so pedition d'",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of the municipal police in the area of speed speed speed speed or road traffic safety, so pedition d'état, pased",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of the municipal police in the area of speed speed speed speed or road traffic safety, so pedition d'état, pasedítí",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet přestupků spáchaných.",
+                    "In a material I have prepared, there is a beautiful that if we limit the authority of the municipal police in the area of speed speed speed speed or road traffic safety, so pedition d'état, pasedítí nebud"
+                ],
+                "In the material I have had prepared, there is a beautiful argument for limiting the powers of local police when it comes to gauging speed or observing the safety of road users, which will of course lower the number of discovered offenses, which would otherwise be found out about and fined, however it will not reduce the number of offenses themselves."
+            ]
+        ]
     },
     {
         "bleu": 16.09960750349044,
         "num_beams": 1,
-        "wait_for_beginning": 2
+        "wait_for_beginning": 2,
+        "example_sentances": [
+            [
+                [
+                    "Dalším viníkem",
+                    "",
+                    "Dalším viníkem stávající situace podle",
+                    "Another culprit of the current situation",
+                    "Dalším viníkem stávající situace podle pana ministra je",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda",
+                    "Another culprit of the current situation, according to the minister,",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda Petr Rafaj.",
+                    "Another culprit of the current situation, according to the minister, is ÚOHS and his personal favorite President, Petr Rafaj."
+                ],
+                "Another person responsible for the current situation is according to Mr minister the ÚOHS and his personal favourite chairman Petr Rafaj."
+            ],
+            [
+                [
+                    "V materiálu,",
+                    "",
+                    "V materiálu, který mám připravený,",
+                    "In a material",
+                    "V materiálu, který mám připravený, je krásný argument,",
+                    "In a material material I have prepared,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme",
+                    "In a material material I have prepared, there is a beautiful",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie",
+                    "In a material material I have prepared, there is a beautiful",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police precisely in terms of",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti,",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police precisely in terms of speed measurement or",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police precisely in terms of speed measurement or road traffic safety, so",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených,",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police precisely in terms of speed measurement or road traffic safety, sožílí",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police precisely in terms of speed measurement or road traffic safety, sožílítí",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police precisely in terms of speed measurement or road traffic safety, sožílítí předvode, které",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police precisely in terms of speed measurement or road traffic safety, sožílítí předvode, kterée před",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police precisely in terms of speed measurement or road traffic safety, sožílítí předvode, kterée předklamé, kterýílít",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet přestupků spáchaných.",
+                    "In a material material I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police precisely in terms of speed measurement or road traffic safety, sožílítí předvode, kterée předklamé, kterýílítt nebřezení představené."
+                ],
+                "In the material I have had prepared, there is a beautiful argument for limiting the powers of local police when it comes to gauging speed or observing the safety of road users, which will of course lower the number of discovered offenses, which would otherwise be found out about and fined, however it will not reduce the number of offenses themselves."
+            ]
+        ]
     },
     {
         "bleu": 15.92326361633076,
         "num_beams": 3,
-        "wait_for_beginning": 2
+        "wait_for_beginning": 2,
+        "example_sentances": [
+            [
+                [
+                    "Dalším viníkem",
+                    "",
+                    "Dalším viníkem stávající situace podle",
+                    "Another culprit of the current situation",
+                    "Dalším viníkem stávající situace podle pana ministra je",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda",
+                    "Another culprit of the current situation, according to the minister,",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda Petr Rafaj.",
+                    "Another culprit of the current situation, according to the minister, is ÚOHS and his personal favorite President, Petr Rafaj."
+                ],
+                "Another person responsible for the current situation is according to Mr minister the ÚOHS and his personal favourite chairman Petr Rafaj."
+            ],
+            [
+                [
+                    "V materiálu,",
+                    "",
+                    "V materiálu, který mám připravený,",
+                    "In a material",
+                    "V materiálu, který mám připravený, je krásný argument,",
+                    "In a material that I have prepared, there is",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme",
+                    "In a material that I have prepared, there is a beautiful",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police's",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police's power",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti,",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police's power power power",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police's power power power in the area of speed measurement or road traffic and speed safety",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených,",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police's power power power in the area of speed measurement or road traffic and speed safety, we will reduce",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police's power power power in the area of speed measurement or road traffic and speed safety, we will reduce",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police's power power power in the area of speed measurement or road traffic and speed safety, we will reduce",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police's power power power in the area of speed measurement or road traffic and speed safety, we will reduce the number of",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police's power power power in the area of speed measurement or road traffic and speed safety, we will reduce the number of offences",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet přestupků spáchaných.",
+                    "In a material that I have prepared, there is a beautifullist argument that if we limit the authority of the municipal police's power power power in the area of speed measurement or road traffic and speed safety, we will reduce the number of offences unveiled, which have been fined, but do not reduce the count of trespasses committed."
+                ],
+                "In the material I have had prepared, there is a beautiful argument for limiting the powers of local police when it comes to gauging speed or observing the safety of road users, which will of course lower the number of discovered offenses, which would otherwise be found out about and fined, however it will not reduce the number of offenses themselves."
+            ]
+        ]
     },
     {
         "bleu": 15.834185101996848,
         "num_beams": 3,
-        "wait_for_beginning": 1
+        "wait_for_beginning": 1,
+        "example_sentances": [
+            [
+                [
+                    "Dalším viníkem",
+                    "Another",
+                    "Dalším viníkem stávající situace podle",
+                    "Another culprit of the current situation",
+                    "Dalším viníkem stávající situace podle pana ministra je",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda",
+                    "Another culprit of the current situation, according to the minister,",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda Petr Rafaj.",
+                    "Another culprit of the current situation, according to the minister, is ÚOHS and his personal favorite President, Petr Rafaj."
+                ],
+                "Another person responsible for the current situation is according to Mr minister the ÚOHS and his personal favourite chairman Petr Rafaj."
+            ],
+            [
+                [
+                    "V materiálu,",
+                    "In",
+                    "V materiálu, který mám připravený,",
+                    "In the material I",
+                    "V materiálu, který mám připravený, je krásný argument,",
+                    "In the material I have prepared,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme",
+                    "In the material I have prepared, there is a",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie",
+                    "In the material I have prepared, there is a beautiful argument that if we limit",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti,",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road road",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, so",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených,",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílít",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlít",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlítící",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlítící",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlítící",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet přestupků spáchaných.",
+                    "In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlítícíítílící který předvětící osvrátek."
+                ],
+                "In the material I have had prepared, there is a beautiful argument for limiting the powers of local police when it comes to gauging speed or observing the safety of road users, which will of course lower the number of discovered offenses, which would otherwise be found out about and fined, however it will not reduce the number of offenses themselves."
+            ]
+        ]
     },
     {
         "bleu": 15.793006991736611,
         "num_beams": 2,
-        "wait_for_beginning": 1
+        "wait_for_beginning": 1,
+        "example_sentances": [
+            [
+                [
+                    "Dalším viníkem",
+                    "Another",
+                    "Dalším viníkem stávající situace podle",
+                    "Another culprit of the current",
+                    "Dalším viníkem stávající situace podle pana ministra je",
+                    "Another culprit of the current situation, according to",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho",
+                    "Another culprit of the current situation, according to the",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda",
+                    "Another culprit of the current situation, according to the minister,",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda Petr Rafaj.",
+                    "Another culprit of the current situation, according to the minister, is ÚOHS and his personal favorite President, Petr Rafaj."
+                ],
+                "Another person responsible for the current situation is according to Mr minister the ÚOHS and his personal favourite chairman Petr Rafaj."
+            ],
+            [
+                [
+                    "V materiálu,",
+                    "In",
+                    "V materiálu, který mám připravený,",
+                    "In the material I",
+                    "V materiálu, který mám připravený, je krásný argument,",
+                    "In the material I have prepared,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme",
+                    "In the material I have prepared, there is a beautiful",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti,",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených,",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number of offences",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number of offences unveiled",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number of offences unveiled,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number of offences unveiled, which were",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet přestupků spáchaných.",
+                    "In the material I have prepared, there is a beautifullist argument that if we limit the authority of the municipale's power to measure speed or to check road traffic safety and speed, we will reduce the number of offences unveiled, which were were fined but do not reduce the count of trespasses committed."
+                ],
+                "In the material I have had prepared, there is a beautiful argument for limiting the powers of local police when it comes to gauging speed or observing the safety of road users, which will of course lower the number of discovered offenses, which would otherwise be found out about and fined, however it will not reduce the number of offenses themselves."
+            ]
+        ]
     },
     {
         "bleu": 15.714286240723204,
         "num_beams": 1,
-        "wait_for_beginning": 1
+        "wait_for_beginning": 1,
+        "example_sentances": [
+            [
+                [
+                    "Dalším viníkem",
+                    "Another culprit",
+                    "Dalším viníkem stávající situace podle",
+                    "Another culprit of the current situation",
+                    "Dalším viníkem stávající situace podle pana ministra je",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho",
+                    "Another culprit of the current situation, according",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda",
+                    "Another culprit of the current situation, according to the minister,",
+                    "Dalším viníkem stávající situace podle pana ministra je ÚOHS a jeho osobně oblíbený předseda Petr Rafaj.",
+                    "Another culprit of the current situation, according to the minister, is ÚOHS and his personal favorite President, Petr Rafaj."
+                ],
+                "Another person responsible for the current situation is according to Mr minister the ÚOHS and his personal favourite chairman Petr Rafaj."
+            ],
+            [
+                [
+                    "V materiálu,",
+                    "In",
+                    "V materiálu, který mám připravený,",
+                    "In the material I",
+                    "V materiálu, který mám připravený, je krásný argument,",
+                    "In the material I have prepared, there is",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme",
+                    "In the material I have prepared, there is a beautiful",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie",
+                    "In the material I have prepared, there is a beautiful that if we limit the",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti,",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených,",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of offences revealed,",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of offences revealed, which",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of offences revealed, which were fined, but we will not",
+                    "V materiálu, který mám připravený, je krásný argument, že pokud omezíme pravomoc obecní policie právě v oblasti měření rychlosti nebo kontroly bezpečnosti silničního provozu a rychlosti, tak sice snížíme počet přestupků odhalených, na které se přišlo a které byly pokutovány, ale rozhodně nesnížíme počet přestupků spáchaných.",
+                    "In the material I have prepared, there is a beautiful that if we limit the authority of the municipal police's power power in the area of speed measurement or road traffic safety, we will reduce the number of offences revealed, which were fined, but we will not reduce the count of trespasses committed."
+                ],
+                "In the material I have had prepared, there is a beautiful argument for limiting the powers of local police when it comes to gauging speed or observing the safety of road users, which will of course lower the number of discovered offenses, which would otherwise be found out about and fined, however it will not reduce the number of offenses themselves."
+            ]
+        ]
     }
 ]

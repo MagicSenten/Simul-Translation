@@ -11,7 +11,7 @@ def write_results(name):
     with open(outp, "w") as f:
         all_data = []
         for x in data:
-            make_e = False
+            make_e = True
             def make_examples(count, reduce):
                 return [(list(itertools.chain.from_iterable(islice(zip(x, y), 0, len(x), reduce))), z)
                 for x, y, z in zip(x["data"]["inputs"], x["data"]["outputs"], x["data"]["texts"])][:count]
