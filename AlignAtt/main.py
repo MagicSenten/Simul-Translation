@@ -169,7 +169,7 @@ def translate_LLM(model, tokenizer, input_text, stable_theory, args, computation
     decoded_align_att = tokenizer.convert_ids_to_tokens(output_ids[:alignatt_result], skip_special_tokens=True)
     return decoded_align_att
 
-def translate(model, tokenizer, input_text, stable_theory, computation_stats, args, verbose=False):
+def translate(model, tokenizer: PreTrainedTokenizerBase, input_text, stable_theory, computation_stats, args, verbose=False):
     '''
         - 'prefix' Refers to a substring, for each substring.
         - 'pt': Return as pytorch tensor.
@@ -190,15 +190,27 @@ def translate(model, tokenizer, input_text, stable_theory, computation_stats, ar
                              return_dict_in_generate=True, output_attentions=True, max_new_tokens=10,
                              generation_config=config, renormalize_logits=True, forced_bos_token_id=tokenizer.convert_tokens_to_ids(args.forced_bos_token_text) if args.forced_bos_token_text is not None else None)
     ca = outputs["cross_attentions"]
-    len_output = len(outputs["sequences"][0])
-    output_ids = outputs["sequences"][0][decoder_input_ids.shape[1]+1 if decoder_input_ids is not None else 0:].cpu()
-    if args.top_attentions > 0 and not decoder_input_ids is None and len(ca) > 0:
+    print(len(ca), len(ca[0]), len(ca[0][0]), len(ca[0][0][0]))
+    outputsequence = outputs["sequences"][0].cpu()
+    print(tokenizer.convert_ids_to_tokens(outputsequence))
+    if decoder_input_ids is not None:
+        print(tokenizer.convert_ids_to_tokens(decoder_input_ids[0]))
+        assert len(ca) - 2 == len(outputsequence) - decoder_input_ids.shape[1] - 1, f"or {len(ca)} {len(outputsequence)} {decoder_input_ids.shape[1]}"
+    if outputsequence[-1] == tokenizer.eos_token_id:
+        outputsequence = outputsequence[:-1]
+        ca = ca[:-1]
+    if decoder_input_ids is not None and outputsequence[0] == tokenizer.pad_token_id:
+        outputsequence = outputsequence[1:]
+    print(tokenizer.convert_ids_to_tokens(outputsequence))
+    len_output = len(outputsequence)
+    output_ids = outputsequence[decoder_input_ids.shape[1] if decoder_input_ids is not None else 0:].cpu()
+    if args.top_attentions > 0 and not decoder_input_ids is None and len(ca) > 1:
         assert all([x[0].shape[2] == 1 for x in ca[1:]])
+        ca = ca[1:]
+        #assert len(ca) == len(output_ids), f"or {len(ca)} {len(output_ids)}"
         attentions = [sum(x[-1-i][:1, :, -1:] for i in args.layers) for x in ca]
-        #If some tokens (eos tokens) have been dropped exclude them from the attention
-        attentions = attentions[:len_output - decoder_input_ids.shape[1]]
         if verbose:
-            visualize_attention(input_ids[0], output_ids[decoder_input_ids.shape[1]:], attentions, tokenizer, args)
+            visualize_attention(input_ids[0], output_ids, attentions, tokenizer, args)
         alignatt_relative = alignatt(attentions, args)
         #If for some reason the attentions are too short remove from allignatt result
         extra_length =  (len_output - decoder_input_ids.shape[1]) - len(attentions)
@@ -211,13 +223,13 @@ def translate(model, tokenizer, input_text, stable_theory, computation_stats, ar
         computation_stats["total_its"] = computation_stats.get("total_its", 0) + 1
         if alignatt_is_zero:
             computation_stats["alignatt_is_zero"] = computation_stats.get("alignatt_is_zero", 0) + 1
-        if alignatt_is_zero and len(input_text.split(" ")) % 3 != 0:
+        if alignatt_is_zero and len(input_text.split(" ")) % 4 == 0:
             alignatt_relative = 1
         alignatt_result = alignatt_relative
     else:
         alignatt_result = len(output_ids)
 
-    decoded_align_att = tokenizer.convert_ids_to_tokens(output_ids[:alignatt_result], skip_special_tokens=True)
+    decoded_align_att = tokenizer.convert_ids_to_tokens(output_ids[:alignatt_result], skip_special_tokens=False)
     return decoded_align_att
 
 def to_string(tokens, tokenizer: PreTrainedTokenizerBase):
