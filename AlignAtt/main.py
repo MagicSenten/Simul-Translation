@@ -34,7 +34,7 @@ def parse_args():
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
     parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key")
     parser.add_argument("--verbose", action="store_true", default=True)
-    parser.add_argument("--experiment_type", type=str, default="none")
+    parser.add_argument("--experiment_type", type=str, default="alignatt")
 
     return parser.parse_args()
 
