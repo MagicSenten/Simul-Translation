@@ -34,6 +34,7 @@ def parse_args():
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
     parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key")
     parser.add_argument("--verbose", action="store_true", default=True)
+    parser.add_argument("--experiment_type", type=str, default="none")
 
     return parser.parse_args()
 
@@ -364,10 +365,12 @@ def main():
         model = AutoModelForSeq2SeqLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
         print(tokenizer.supported_language_codes)
     prefixes = get_data(args)
-
-    run_local_agreement(args, model, tokenizer, prefixes)
-    #run_align_att(args, model, tokenizer, prefixes)
-
+    if args.experiment_type == "none":
+        analyze_dataset(args, model, tokenizer, prefixes)
+    elif args.experiment_type == "alignatt":
+        run_align_att(args, model, tokenizer, prefixes)
+    elif args.experiment_type == "local_agreement":
+        run_local_agreement(args, model, tokenizer, prefixes)
 
 if __name__ == "__main__":
     torch.backends.cuda.matmul.allow_tf32 = True
