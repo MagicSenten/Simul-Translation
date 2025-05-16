@@ -343,5 +343,5 @@ def main():
 
 
 if __name__ == "__main__":
-    torch.
+    torch.backends.cuda.matmul.allow_tf32 = True
     main()
