@@ -1,5 +1,5 @@
 from typing import List, Union
-# added comment for commit
+
 
 def calc_latency_ratio(partial, full, pred, gold):
     return (len(gold) / len(full) * len(partial) - len(pred)) / len(gold)
@@ -41,66 +41,63 @@ def compute(
 
 class SimuEval:
     def __init__(self):
-        self.gold_text = ""
-        self.cur_pred_pos = 0
-
+        self.counter = 0
         self.delays = []
+
+        self._AL = []
 
         self.latency_scorer = []
         self.quality_scorer = []
 
         self.words__latency = 0
-        # self.chars__latency = 0
-        # self.tokens_latency = 0
-
-        self.cs = 0
 
     def update(self, inputs, pred_outputs, gold_text, tokenizer):
-        print(f"inputs: {inputs}")
-        # init current delay list
-        cur_delay = []
+        delays = []
+        ALs = []
 
-        # the length of the inputs and output
-        prefix_len = len(inputs)
+        # prints to be deleted
+        print("##############################")
+        print(inputs)
+        print(pred_outputs)
 
-        for i in range(prefix_len):
-            pred_len = len(pred_outputs[i].strip().split(" "))
-            for _ in range(pred_len):
-                inp_len = len(inputs[i].strip().split(" "))
-                cur_delay.append(inp_len)
+        # keep track of previously seen output words
+        prev_output_words = []
 
-            self.cur_pred_pos = pred_len
-        self.delays.append(cur_delay)
+        for i, output in enumerate(pred_outputs):
+            # print(inputs)
+            # print(output)
+            # print(i)
 
-        # # marks the new iteration of a new gold_label
-        # if self.gold_text != gold_text:
-        #     '''
-        #         init for each pair:
-        #         - save the delay list for that pair in the delays list
-        #         - init cur_delay list
-        #         - init cur_pred_pos
-        #     '''
-        #     self.gold_text = gold_text
-        #     # only append non empty lists
-        #     if len(self.cur_delay) > 0:
-        #         self.delays.append(self.cur_delay)
-        #     self.cur_delay = []
-        #     self.cur_pred_pos = 0
-        #
-        # # calcs how many words were predicted, makes sure to clean trailing spaces before splitting
-        # pred_len = len(predicted_text.strip().split(" "))
-        # # calcs the position we had to read to in input to get the stabalized output
-        # part_len = len(partial_input_text.split(" "))
-        #
-        # for i in range(self.cur_pred_pos, pred_len):
-        #     self.cur_delay.append(part_len)
-        #
-        # # update the cur position to be read to
-        # self.cur_pred_pos = pred_len
-        #
-        # # returns the updated delays list
-        # return self.delays
-        return None
+            # split current output into words
+            output_words = output.strip().split()
+
+            # get new words compared to previous step
+            new_words = output_words[len(prev_output_words):]
+
+            # count how many input words were read
+            delay = len(inputs[i].strip().split())
+
+            # assign current delay to each new word
+            delays.extend([delay] * len(new_words))
+
+            # update previous output words
+            prev_output_words = output_words
+
+        # compute latency score using current delays
+        source_len = len(inputs[-1].strip().split())
+        target_len = len(gold_text)
+
+        # calc AL only if there are calculated delays
+        if len(delays) > 0:
+            AL = compute(delays, source_len, target_len)
+            ALs.append(AL)
+
+        self.delays.append(delays)
+        self._AL.append(ALs)
+
+        # prints to be deleted
+        print(f"Current AL: {self._AL}")
+        print("##############################")
 
     def eval(self):
         return {
