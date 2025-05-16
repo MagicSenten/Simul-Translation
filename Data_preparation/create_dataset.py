@@ -17,6 +17,7 @@ parser.add_argument("--number_of_prefixes_from_sentence", default=2, type=int, h
 parser.add_argument("--create_only_eval_dataset", action="store_true", help="Create only evaluation dataset.")
 parser.add_argument("--input_eval_file_path", default="iwslt2024_cs_devset.json", type=str, help="Path where you saved the iswlt2024_cs_devset.json file.")
 parser.add_argument("--cleaned_eval_dataset_path", default="cleaned_eval_dataset.jsonl", type=str, help="Path where to save the cleaned eval dataset. Should be .jsonl format.")
+parser.add_argument("--size_of_eval_dataset", default=300, type=int, help="Size of the eval dataset. Max is 1600.")
     #NOTE: These two parameters are for the prefixes from the evaluation dataset
     # parser.add_argument("--eval_prefix_dataset_path", default="eval_prefix_dataset.jsonl", type=str, help="Path where to save the evaluation prefix dataset. Should be .jsonl format.")
     # parser.add_argument("--number_of_prefixes_from_sentence_evaluation", default=None, type=int, help="Number of generated prefixes from one sentence that should be used inside the evaluation dataset.")
@@ -62,7 +63,7 @@ class CreateDataset():
 
         self.save_pairs(output_file, pairs, append=False)
 
-    def prepare_eval_data_from_json(self, input_file: str = "iwslt2024_cs_devset.json", output_file: str = "cleaned_eval_dataset.jsonl"):
+    def prepare_eval_data_from_json(self, input_file: str = "iwslt2024_cs_devset.json", output_file: str = "cleaned_eval_dataset.jsonl", size_of_the_subset:int = 300):
         """
         Processes a JSON file containing Czech and English text pairs and saves them in a JSONL format.
         The Czech text is used as the source and the English text as the target.
@@ -78,7 +79,7 @@ class CreateDataset():
                         "source": source,
                         "target": target
                     })
-
+        pairs = random.sample(pairs, size_of_the_subset)
         self.save_pairs(output_file, pairs, append=False)
 
     def get_prefixes_by(self, source: str, target: str, tokenizer=None, number_of_prefixes_from_sentence:int = 2):
@@ -259,7 +260,12 @@ if __name__ == "__main__":
     #TODO: implement the aligment branch here
 
     #The eval dataset preparation
-    dataset.prepare_eval_data_from_json(input_file=main_args.input_eval_file_path, output_file=main_args.cleaned_eval_dataset_path)
+    if main_args.size_of_eval_dataset > 1600:
+        main_args.size_of_eval_dataset = 1600
+    elif main_args.size_of_eval_dataset < 0:
+        main_args.size_of_eval_dataset = 100
+
+    dataset.prepare_eval_data_from_json(input_file=main_args.input_eval_file_path, output_file=main_args.cleaned_eval_dataset_path, size_of_the_subset=main_args.size_of_eval_dataset)
     #NOTE: If for some reason you need prefixes created from the evaluation dataset, this is the code for it
     # dataset.create_prefixes(cleaned_dataset_file_path=main_args.cleaned_eval_dataset_path, prefix_dataset_file_path=main_args.eval_prefix_dataset_path,
     #                         number_of_prefixes_from_sentence=main_args.number_of_prefixes_from_sentence_evaluation)

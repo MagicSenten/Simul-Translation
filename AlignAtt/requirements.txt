@@ -2,3 +2,4 @@ numpy==1.24.3
 transformers==4.51.0
 jsonlines=4.0.0
 sacrebleu=2.5.1
+evaluate=0.4.3

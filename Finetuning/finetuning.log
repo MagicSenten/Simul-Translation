@@ -1,0 +1,111 @@
+(venv) (BOOKWORM)USERNAME@bee5:/scratch.shared/5/USERNAME/job_10805162.pbs-m1/Simul-Translation/Finetuning$ time python finetune_nmt_backbone.py --dataset_path "../Data_preparation/prefixes_1M.jsonl" --push_to_hub --train_batch_size 220 --eval_batch_size 700
+Generating train split: 1738793 examples [00:00, 1867267.64 examples/s]
+Map: 100%|██████████████████████████████████████| 1733793/1733793 [02:44<00:00, 10549.96 examples/s]
+Map: 100%|████████████████████████████████████████████| 5000/5000 [00:00<00:00, 11686.49 examples/s]
+Evaluating the model before finetuning...
+100%|█████████████████████████████████████████████████████████████████| 8/8 [00:13<00:00,  1.53s/it]wandb: WARNING The `run_name` is currently set to the same value as `TrainingArguments.output_dir`. If this was not intended, please specify a different run name by setting the `TrainingArguments.run_name` parameter.
+wandb: Currently logged in as: davidruda (davidruda-charles-university) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.11
+wandb: Run data is saved locally in /scratch.shared/5/USERNAME/job_10805162.pbs-m1/Simul-Translation/Finetuning/wandb/run-20250514_191656-stewk7aj
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run opus-mt-cs-en-Prefix-Finetuned
+wandb: ⭐️ View project at https://wandb.ai/davidruda-charles-university/huggingface
+wandb: 🚀 View run at https://wandb.ai/davidruda-charles-university/huggingface/runs/stewk7aj
+100%|█████████████████████████████████████████████████████████████████| 8/8 [00:31<00:00,  3.92s/it]
+{'eval_loss': 1.2841356992721558, 'eval_model_preparation_time': 0.0019, 'eval_bleu': 55.80422360689162, 'eval_runtime': 33.5089, 'eval_samples_per_second': 149.214, 'eval_steps_per_second': 0.239}
+Finetuning the model...
+{'loss': 0.9029, 'grad_norm': 1.5517557859420776, 'learning_rate': 1.9873620098972212e-05, 'epoch': 0.06}
+{'loss': 0.8371, 'grad_norm': 1.486993432044983, 'learning_rate': 1.97467326481411e-05, 'epoch': 0.13}
+{'loss': 0.8188, 'grad_norm': 1.518174171447754, 'learning_rate': 1.9619845197309987e-05, 'epoch': 0.19}
+{'loss': 0.8027, 'grad_norm': 1.6335761547088623, 'learning_rate': 1.9492957746478875e-05, 'epoch': 0.25}
+{'loss': 0.7962, 'grad_norm': 1.8085991144180298, 'learning_rate': 1.9366070295647762e-05, 'epoch': 0.32}
+{'loss': 0.7914, 'grad_norm': 1.689613699913025, 'learning_rate': 1.923918284481665e-05, 'epoch': 0.38}
+{'loss': 0.7859, 'grad_norm': 1.668256402015686, 'learning_rate': 1.9112295393985537e-05, 'epoch': 0.44}
+{'loss': 0.7771, 'grad_norm': 1.2799797058105469, 'learning_rate': 1.8985407943154424e-05, 'epoch': 0.51}
+{'loss': 0.7699, 'grad_norm': 1.506669044494629, 'learning_rate': 1.8858520492323312e-05, 'epoch': 0.57}
+{'loss': 0.7696, 'grad_norm': 1.5928109884262085, 'learning_rate': 1.87316330414922e-05, 'epoch': 0.63}
+{'loss': 0.7647, 'grad_norm': 1.4599976539611816, 'learning_rate': 1.8604745590661083e-05, 'epoch': 0.7}
+{'loss': 0.7646, 'grad_norm': 2.2150256633758545, 'learning_rate': 1.847785813982997e-05, 'epoch': 0.76}
+{'loss': 0.7556, 'grad_norm': 1.6586371660232544, 'learning_rate': 1.835122446390052e-05, 'epoch': 0.82}
+{'loss': 0.7451, 'grad_norm': 1.5998528003692627, 'learning_rate': 1.822433701306941e-05, 'epoch': 0.89}
+{'loss': 0.749, 'grad_norm': 1.5170739889144897, 'learning_rate': 1.8097449562238296e-05, 'epoch': 0.95}
+{'eval_loss': 0.707438588142395, 'eval_model_preparation_time': 0.0019, 'eval_bleu': 63.312323949109114, 'eval_runtime': 32.7915, 'eval_samples_per_second': 152.478, 'eval_steps_per_second': 0.244, 'epoch': 1.0}
+ 10%|█████▌                                                  | 7881/78810 [21:38<3:15:52,  6.04it/s/scratch.shared/5/USERNAME/job_10805162.pbs-m1/Simul-Translation/venv/lib/python3.11/site-packages/transformers/modeling_utils.py:3339: UserWarning: Moving the following attributes in the config to the generation config: {'max_length': 512, 'num_beams': 4, 'bad_words_ids': [[62508]]}. You are seeing this warning because you've set generation parameters in the model config, as opposed to in the generation config.
+  warnings.warn(
+{'loss': 0.733, 'grad_norm': 1.7748987674713135, 'learning_rate': 1.7970562111407184e-05, 'epoch': 1.02}
+{'loss': 0.7044, 'grad_norm': 1.3822369575500488, 'learning_rate': 1.7843928435477734e-05, 'epoch': 1.08}
+{'loss': 0.703, 'grad_norm': 1.4452570676803589, 'learning_rate': 1.7717040984646622e-05, 'epoch': 1.14}
+{'loss': 0.7073, 'grad_norm': 1.5551644563674927, 'learning_rate': 1.7590153533815506e-05, 'epoch': 1.21}
+{'loss': 0.7048, 'grad_norm': 1.5895206928253174, 'learning_rate': 1.7463266082984393e-05, 'epoch': 1.27}
+{'loss': 0.7021, 'grad_norm': 1.6627413034439087, 'learning_rate': 1.7336632407054944e-05, 'epoch': 1.33}
+{'loss': 0.6985, 'grad_norm': 1.5343031883239746, 'learning_rate': 1.720974495622383e-05, 'epoch': 1.4}
+{'loss': 0.7002, 'grad_norm': 1.4277265071868896, 'learning_rate': 1.708285750539272e-05, 'epoch': 1.46}
+{'loss': 0.7029, 'grad_norm': 1.4690804481506348, 'learning_rate': 1.6955970054561607e-05, 'epoch': 1.52}
+{'loss': 0.6916, 'grad_norm': 1.4388827085494995, 'learning_rate': 1.6829082603730494e-05, 'epoch': 1.59}
+{'loss': 0.7002, 'grad_norm': 1.6391149759292603, 'learning_rate': 1.670244892780104e-05, 'epoch': 1.65}
+{'loss': 0.6974, 'grad_norm': 1.5403650999069214, 'learning_rate': 1.657556147696993e-05, 'epoch': 1.71}
+{'loss': 0.6935, 'grad_norm': 1.6657161712646484, 'learning_rate': 1.6448674026138816e-05, 'epoch': 1.78}
+{'loss': 0.6914, 'grad_norm': 1.6043760776519775, 'learning_rate': 1.6321786575307704e-05, 'epoch': 1.84}
+{'loss': 0.6957, 'grad_norm': 1.516714096069336, 'learning_rate': 1.619515289937825e-05, 'epoch': 1.9}
+{'loss': 0.6925, 'grad_norm': 1.569597840309143, 'learning_rate': 1.6068265448547142e-05, 'epoch': 1.97}
+{'eval_loss': 0.6926854848861694, 'eval_model_preparation_time': 0.0019, 'eval_bleu': 63.99719871446238, 'eval_runtime': 34.3629, 'eval_samples_per_second': 145.506, 'eval_steps_per_second': 0.233, 'epoch': 2.0}
+{'loss': 0.6715, 'grad_norm': 1.4372117519378662, 'learning_rate': 1.594163177261769e-05, 'epoch': 2.03}
+{'loss': 0.6544, 'grad_norm': 1.6476243734359741, 'learning_rate': 1.5814744321786577e-05, 'epoch': 2.09}
+{'loss': 0.6568, 'grad_norm': 1.769768476486206, 'learning_rate': 1.5687856870955464e-05, 'epoch': 2.16}
+{'loss': 0.6628, 'grad_norm': 1.5527806282043457, 'learning_rate': 1.556096942012435e-05, 'epoch': 2.22}
+{'loss': 0.6608, 'grad_norm': 1.469590187072754, 'learning_rate': 1.543408196929324e-05, 'epoch': 2.28}
+{'loss': 0.6532, 'grad_norm': 1.4340827465057373, 'learning_rate': 1.5307194518462126e-05, 'epoch': 2.35}
+{'loss': 0.6486, 'grad_norm': 1.43501615524292, 'learning_rate': 1.5180307067631012e-05, 'epoch': 2.41}
+{'loss': 0.6616, 'grad_norm': 1.735254168510437, 'learning_rate': 1.50534196167999e-05, 'epoch': 2.47}
+{'loss': 0.6547, 'grad_norm': 1.5013521909713745, 'learning_rate': 1.492678594087045e-05, 'epoch': 2.54}
+{'loss': 0.6565, 'grad_norm': 1.6013554334640503, 'learning_rate': 1.4799898490039338e-05, 'epoch': 2.6}
+{'loss': 0.656, 'grad_norm': 1.4132715463638306, 'learning_rate': 1.4673011039208222e-05, 'epoch': 2.66}
+{'loss': 0.6589, 'grad_norm': 1.5732686519622803, 'learning_rate': 1.4546123588377111e-05, 'epoch': 2.73}
+{'loss': 0.6565, 'grad_norm': 1.4282755851745605, 'learning_rate': 1.441948991244766e-05, 'epoch': 2.79}
+{'loss': 0.6483, 'grad_norm': 1.6405391693115234, 'learning_rate': 1.4292602461616547e-05, 'epoch': 2.85}
+{'loss': 0.6543, 'grad_norm': 1.7545195817947388, 'learning_rate': 1.4165715010785435e-05, 'epoch': 2.92}
+{'loss': 0.6529, 'grad_norm': 1.5997521877288818, 'learning_rate': 1.4038827559954322e-05, 'epoch': 2.98}
+{'eval_loss': 0.6869001388549805, 'eval_model_preparation_time': 0.0019, 'eval_bleu': 64.45924311180566, 'eval_runtime': 33.0432, 'eval_samples_per_second': 151.317, 'eval_steps_per_second': 0.242, 'epoch': 3.0}
+{'loss': 0.631, 'grad_norm': 1.5859992504119873, 'learning_rate': 1.391194010912321e-05, 'epoch': 3.05}
+{'loss': 0.6259, 'grad_norm': 1.4199182987213135, 'learning_rate': 1.3785306433193759e-05, 'epoch': 3.11}
+{'loss': 0.6263, 'grad_norm': 1.5281586647033691, 'learning_rate': 1.3658418982362644e-05, 'epoch': 3.17}
+{'loss': 0.6252, 'grad_norm': 1.603593111038208, 'learning_rate': 1.3531531531531532e-05, 'epoch': 3.24}
+{'loss': 0.6236, 'grad_norm': 1.6335901021957397, 'learning_rate': 1.340464408070042e-05, 'epoch': 3.3}
+{'loss': 0.6245, 'grad_norm': 1.7220650911331177, 'learning_rate': 1.3278010404770968e-05, 'epoch': 3.36}
+{'loss': 0.6265, 'grad_norm': 1.4372279644012451, 'learning_rate': 1.3151122953939856e-05, 'epoch': 3.43}
+{'loss': 0.6271, 'grad_norm': 1.347059726715088, 'learning_rate': 1.3024235503108745e-05, 'epoch': 3.49}
+{'loss': 0.6236, 'grad_norm': 1.6836645603179932, 'learning_rate': 1.2897348052277632e-05, 'epoch': 3.55}
+{'loss': 0.626, 'grad_norm': 1.9258785247802734, 'learning_rate': 1.2770714376348181e-05, 'epoch': 3.62}
+{'loss': 0.6268, 'grad_norm': 1.4743611812591553, 'learning_rate': 1.2643826925517067e-05, 'epoch': 3.68}
+{'loss': 0.6226, 'grad_norm': 1.497317910194397, 'learning_rate': 1.2516939474685955e-05, 'epoch': 3.74}
+{'loss': 0.625, 'grad_norm': 1.4027631282806396, 'learning_rate': 1.2390052023854842e-05, 'epoch': 3.81}
+{'loss': 0.6249, 'grad_norm': 1.2653692960739136, 'learning_rate': 1.226316457302373e-05, 'epoch': 3.87}
+{'loss': 0.6325, 'grad_norm': 1.4829047918319702, 'learning_rate': 1.2136530897094279e-05, 'epoch': 3.93}
+{'loss': 0.626, 'grad_norm': 1.6377618312835693, 'learning_rate': 1.2009643446263166e-05, 'epoch': 4.0}
+{'eval_loss': 0.6817032098770142, 'eval_model_preparation_time': 0.0019, 'eval_bleu': 63.83781949355115, 'eval_runtime': 33.698, 'eval_samples_per_second': 148.377, 'eval_steps_per_second': 0.237, 'epoch': 4.0}
+{'loss': 0.6006, 'grad_norm': 1.5844762325286865, 'learning_rate': 1.1882755995432053e-05, 'epoch': 4.06}
+{'loss': 0.6022, 'grad_norm': 1.5166090726852417, 'learning_rate': 1.175586854460094e-05, 'epoch': 4.12}
+{'loss': 0.6027, 'grad_norm': 1.406101942062378, 'learning_rate': 1.1629234868671488e-05, 'epoch': 4.19}
+{'loss': 0.5979, 'grad_norm': 1.5826462507247925, 'learning_rate': 1.1502347417840376e-05, 'epoch': 4.25}
+{'loss': 0.6037, 'grad_norm': 1.4940879344940186, 'learning_rate': 1.1375459967009263e-05, 'epoch': 4.31}
+{'loss': 0.5981, 'grad_norm': 1.6660836935043335, 'learning_rate': 1.124857251617815e-05, 'epoch': 4.38}
+{'loss': 0.6041, 'grad_norm': 1.2241785526275635, 'learning_rate': 1.1121938840248701e-05, 'epoch': 4.44}
+{'loss': 0.6034, 'grad_norm': 1.4698867797851562, 'learning_rate': 1.0995051389417589e-05, 'epoch': 4.5}
+{'loss': 0.6053, 'grad_norm': 1.748682975769043, 'learning_rate': 1.0868163938586476e-05, 'epoch': 4.57}
+{'loss': 0.6031, 'grad_norm': 1.359771966934204, 'learning_rate': 1.0741276487755362e-05, 'epoch': 4.63}
+{'loss': 0.606, 'grad_norm': 1.3933873176574707, 'learning_rate': 1.0614642811825911e-05, 'epoch': 4.69}
+{'loss': 0.602, 'grad_norm': 1.3497064113616943, 'learning_rate': 1.0487755360994798e-05, 'epoch': 4.76}
+{'loss': 0.5994, 'grad_norm': 1.3361659049987793, 'learning_rate': 1.0360867910163686e-05, 'epoch': 4.82}
+{'loss': 0.6076, 'grad_norm': 1.701123595237732, 'learning_rate': 1.0233980459332573e-05, 'epoch': 4.89}
+{'loss': 0.5989, 'grad_norm': 1.4664983749389648, 'learning_rate': 1.010709300850146e-05, 'epoch': 4.95}
+{'eval_loss': 0.6819551587104797, 'eval_model_preparation_time': 0.0019, 'eval_bleu': 64.27183901595076, 'eval_runtime': 31.8856, 'eval_samples_per_second': 156.81, 'eval_steps_per_second': 0.251, 'epoch': 5.0}
+ 50%|██████████████████████████▌                          | 39405/78810 [1:48:20<1:32:07,  7.13it/sThere were missing keys in the checkpoint model loaded: ['model.encoder.embed_tokens.weight', 'model.encoder.embed_positions.weight', 'model.decoder.embed_tokens.weight', 'model.decoder.embed_positions.weight', 'lm_head.weight'].
+{'train_runtime': 6502.7552, 'train_samples_per_second': 2666.244, 'train_steps_per_second': 12.119, 'train_loss': 0.6737204174268762, 'epoch': 5.0}
+ 50%|██████████████████████████▌                          | 39405/78810 [1:48:22<1:48:22,  6.06it/s]
+wandb:
+wandb: 🚀 View run opus-mt-cs-en-Prefix-Finetuned at: https://wandb.ai/davidruda-charles-university/huggingface/runs/stewk7aj
+wandb: Find logs at: wandb/run-20250514_191656-stewk7aj/logs
+
+real    112m19.709s
+user    76m51.035s
+sys     34m48.185s
