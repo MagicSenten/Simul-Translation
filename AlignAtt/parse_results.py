@@ -12,6 +12,8 @@ def write_results(name):
         for x in data:
             if x["args"]["local_agreement_length"] > 0:
                     all_data.append({"bleu":x["bleu"], "delay_words":x["all_metrics"]["delay_words_absolute"], "num_beams":x["args"]["num_beams"], "wait_for_beginning":x["args"]["wait_for_beginning"]})
+            if x["args"]["local_agreement_length"] == 0:
+                    all_data.append({"bleu":x["bleu"], "delay_words":x["all_metrics"]["delay_words_absolute"], "attention_frame_size": x["args"]["attention_frame_size"], "layers": x["args"]["layers"], "num_beams":x["args"]["num_beams"], "wait_for_beginning":x["args"]["wait_for_beginning"]})
         json.dump(sorted(all_data, key=lambda x: x["bleu"], reverse=True), f, indent=4, ensure_ascii=False)
 
     for x in data:

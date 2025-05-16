@@ -6,12 +6,12 @@ import evaluate
 import random
 from tqdm import tqdm
 import numpy as np
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig, AutoModelForCausalLM, BitsAndBytesConfig, PreTrainedTokenizerBase
 import argparse
 from itertools import islice
 import jsonlines
 from alignatt import alignatt, visualize_attention
-from evaluation import SimuEval
+from simueval import SimuEval
 def parse_args():
     parser = argparse.ArgumentParser()
     keys = ["czech", "english"] if False else (["source", "target"] if True else ["pref_source", "pref_target"])
@@ -20,6 +20,7 @@ def parse_args():
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
     parser.add_argument("--layers", type=int, nargs='+', default=[3,4], help="List of layer indices")
     parser.add_argument("--top_attentions", type=int, default=1, help="Top attentions to use, set to 0 to disable alignatt.")
+    parser.add_argument("--output_file", type=str, default="results.jsonl")
     parser.add_argument("--attention_frame_size", type=int, default=10, help="The excluded frame of last positions size")
     parser.add_argument("--count_in", type=int, default=1, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
     parser.add_argument("--wait_for", type=int, default=0, help="A static wait time to apply on top of alignatt everywhere")
@@ -128,14 +129,14 @@ def get_data(args):
         r.append((words, x[-1][1].split(" ")))
     return r
 
-def translate_LLM(model, tokenizer, input_text, stable_theory, args, verbose=False):
+def translate_LLM(model, tokenizer, input_text, stable_theory, args, computation_stats, verbose=False):
     '''
         - 'prefix' Refers to a substring, for each substring.
         - 'pt': Return as pytorch tensor.
     '''
     is_sent_end = input_text.endswith(".")
     decoder_input_ids = torch.tensor(tokenizer.convert_tokens_to_ids(stable_theory)).unsqueeze(0) if len(stable_theory) > 0 else None
-    #decoder_text = tokenizer.decode(input_ids[0], skip_special_tokens=True)
+
     input_text = f'<|im_start|>system\nYou are simultaneous interpreter from Czech to English, you translate incomplete sentences, please make sure you only translate what is explicitly stated in the input segment.<|im_end|>\n<|im_start|>user\nTranslate the following Czech source text to English.\nCzech: {input_text}\nEnglish: <|im_end|>\n<|im_start|>assistant\n'
     input_ids = tokenizer.encode(input_text, return_tensors="pt")
     all_input_ids = torch.cat([input_ids, decoder_input_ids], 1) if decoder_input_ids is not None else input_ids
@@ -150,11 +151,10 @@ def translate_LLM(model, tokenizer, input_text, stable_theory, args, verbose=Fal
                               length_penalty=0.98 if args.num_beams > 1 else 1.0, bad_words_ids= [tokenizer.encode(x) for x in bad_words])
     outputs = model.generate(input_ids=all_input_ids.to(args.device), generation_config=config,
                              return_dict_in_generate=True, output_attentions=True, max_new_tokens=min(2, input_ids.shape[1]*1.5-len(stable_theory)), renormalize_logits=True, forced_bos_token_id=tokenizer.convert_tokens_to_ids(args.forced_bos_token_text) if args.forced_bos_token_text is not None else None, pad_token_id=tokenizer.pad_token_id)
-    #print(tokenizer.decode(outputs["sequences"][0], skip_special_tokens=True))
-    #print(outputs["sequences"][0].shape, input_ids.shape[1])
-    #print(len(tokenizer.decode(outputs["sequences"][0][input_ids.shape[1]:], skip_special_tokens=True)))
+
     ca = outputs["attentions"]
-    output_ids = outputs["sequences"][0][input_ids.shape[1]:]
+    len_output_ids = len(outputs["sequences"][0])
+    output_ids = outputs["sequences"][0][decoder_input_ids.shape[1]+1 if decoder_input_ids is not None else 0:].cpu()
     if args.top_attentions > 0 and not decoder_input_ids is None and len(ca[1:]) > 0:
         print([x[0].shape for x in ca[1:]])
         raise Exception()
@@ -163,15 +163,13 @@ def translate_LLM(model, tokenizer, input_text, stable_theory, args, verbose=Fal
         attentions = attentions[:len(output_ids) - decoder_input_ids.shape[1]]
         if verbose:
             visualize_attention(input_ids[0], output_ids[decoder_input_ids.shape[1]:], attentions, tokenizer, args)
-        alignatt_result = (all_input_ids.shape[1] - input_ids.shape[1]) + alignatt(attentions, args)
+        alignatt_result = alignatt(attentions, args)
     else:
         alignatt_result = len(output_ids)
-    print(len(output_ids))
-    decoded_align_att = tokenizer.decode(output_ids[:alignatt_result], skip_special_tokens=True)
-    print(decoded_align_att, tokenizer.tokenize(decoded_align_att))
-    return tokenizer.tokenize(decoded_align_att)
+    decoded_align_att = tokenizer.convert_ids_to_tokens(output_ids[:alignatt_result], skip_special_tokens=True)
+    return decoded_align_att
 
-def translate(model, tokenizer, input_text, stable_theory, args, verbose=False):
+def translate(model, tokenizer, input_text, stable_theory, computation_stats, args, verbose=False):
     '''
         - 'prefix' Refers to a substring, for each substring.
         - 'pt': Return as pytorch tensor.
@@ -192,23 +190,38 @@ def translate(model, tokenizer, input_text, stable_theory, args, verbose=False):
                              return_dict_in_generate=True, output_attentions=True, max_new_tokens=10,
                              generation_config=config, renormalize_logits=True, forced_bos_token_id=tokenizer.convert_tokens_to_ids(args.forced_bos_token_text) if args.forced_bos_token_text is not None else None)
     ca = outputs["cross_attentions"]
-    output_ids = outputs["sequences"][0]
-    if args.top_attentions > 0 and not decoder_input_ids is None and len(ca[1:]) > 0:
+    len_output = len(outputs["sequences"][0])
+    output_ids = outputs["sequences"][0][decoder_input_ids.shape[1]+1 if decoder_input_ids is not None else 0:].cpu()
+    if args.top_attentions > 0 and not decoder_input_ids is None and len(ca) > 0:
         assert all([x[0].shape[2] == 1 for x in ca[1:]])
-        attentions = [sum(x[-1-i] for i in args.layers) for x in ca[1:]]
-        attentions = attentions[:len(output_ids) - decoder_input_ids.shape[1]]
+        attentions = [sum(x[-1-i][:1, :, -1:] for i in args.layers) for x in ca]
+        #If some tokens (eos tokens) have been dropped exclude them from the attention
+        attentions = attentions[:len_output - decoder_input_ids.shape[1]]
         if verbose:
             visualize_attention(input_ids[0], output_ids[decoder_input_ids.shape[1]:], attentions, tokenizer, args)
-        alignatt_result = decoder_input_ids.shape[1] + alignatt(attentions, args)
+        alignatt_relative = alignatt(attentions, args)
+        #If for some reason the attentions are too short remove from allignatt result
+        extra_length =  (len_output - decoder_input_ids.shape[1]) - len(attentions)
+        if extra_length > 0:
+            computation_stats["attentions_too_short{extra_length}"] = computation_stats.get("attentions_too_short", 0) + 1
+            alignatt_relative = alignatt_relative - extra_length
+
+        alignatt_relative = max(0, alignatt_relative)
+        alignatt_is_zero = alignatt_relative == 0
+        computation_stats["total_its"] = computation_stats.get("total_its", 0) + 1
+        if alignatt_is_zero:
+            computation_stats["alignatt_is_zero"] = computation_stats.get("alignatt_is_zero", 0) + 1
+        if alignatt_is_zero and len(input_text.split(" ")) % 3 != 0:
+            alignatt_relative = 1
+        alignatt_result = alignatt_relative
     else:
         alignatt_result = len(output_ids)
 
-    decoded = tokenizer.decode(output_ids, skip_special_tokens=True)
-    decoded_align_att = tokenizer.decode(output_ids[:alignatt_result], skip_special_tokens=True)
-    return tokenizer.tokenize(decoded_align_att)
+    decoded_align_att = tokenizer.convert_ids_to_tokens(output_ids[:alignatt_result], skip_special_tokens=True)
+    return decoded_align_att
 
-def to_string(tokens):
-    return "".join(tokens).replace("▁", " ").strip(" ")
+def to_string(tokens, tokenizer: PreTrainedTokenizerBase):
+    return tokenizer.decode(tokenizer.convert_tokens_to_ids(tokens), skip_special_tokens=True)
 
 
 def analyze_dataset(args, model, tokenizer, prefixes):
@@ -228,6 +241,7 @@ def analyze_dataset(args, model, tokenizer, prefixes):
     all_inputs = []
     all_outputs = []
     all_texts = []
+    computation_stats = {}
     repeating_tokens_num = 0
     for sentid, datap in enumerate(data):
         words = datap[0]
@@ -247,14 +261,15 @@ def analyze_dataset(args, model, tokenizer, prefixes):
         output_theories = []
         inputs = []
         per = 1
+
         for t in range(1, len(words)+per, per):
             t = min(t, len(words))
             partial_input_text = " ".join(words[:t+1])
             if t >= args.wait_for_beginning or t == len(words):
                 if args.isLLM:
-                    new_theory = translate_LLM(model, tokenizer, helper_text + partial_input_text, stable_theory, args, args.verbose)
+                    new_theory = stable_theory + translate_LLM(model, tokenizer, helper_text + partial_input_text, stable_theory, args, args.verbose)
                 else:
-                    new_theory = translate(model, tokenizer, helper_text + partial_input_text, stable_theory, args, args.verbose)
+                    new_theory = stable_theory + translate(model, tokenizer, helper_text + partial_input_text, stable_theory, computation_stats, args, args.verbose)
                 # If we begin repeating the same tokens, we don't take the output.
                 newtokens = new_theory[len(stable_theory):]
                 if np.unique(newtokens).shape[0] < len(newtokens) // 2:
@@ -272,29 +287,31 @@ def analyze_dataset(args, model, tokenizer, prefixes):
             if args.verbose:
                 print("****", len(new_theory) - len(stable_theory))
                 print(partial_input_text)
-                print(to_string(stable_theory)[lhten:])
-                print(to_string(new_theory)[lhten:])
+                print(to_string(stable_theory, tokenizer)[lhten:])
+                print(to_string(new_theory, tokenizer)[lhten:])
                 print(gold_text)
             inputs.append(partial_input_text)
-            output_theories.append(to_string(stable_theory)[lhten:])
+            output_theories.append(to_string(stable_theory, tokenizer)[lhten:])
             previous_theory = new_theory
 
         metric.update(inputs, output_theories, gold_text, tokenizer)
         all_inputs.append(inputs)
+        for i in range(len(output_theories)-1):
+            assert output_theories[i+1].startswith(output_theories[i]), str(output_theories)
         all_outputs.append(output_theories)
         all_texts.append(gold_text)
         if len(stable_theory) > 0:
-            new_bleu = bleu.compute(predictions=[to_string(stable_theory)],
+            new_bleu = bleu.compute(predictions=[to_string(stable_theory, tokenizer)],
                                 references=[gold_text])["score"]
         else:
             new_bleu = 0
         total_bleu += new_bleu
         cs += 1
-        print(f"sent{sentid} of{len(data)}", new_bleu, total_bleu/cs, metric.eval(), vars(args))
+        print(f"sent{sentid} of{len(data)}", new_bleu, total_bleu/cs, computation_stats, metric.eval(), vars(args))
         #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
 
-    with open("results.jsonl", "a") as f:
-        f.write(json.dumps({"bleu": total_bleu/cs, "args": vars(args), "all_metrics": metric.eval(), "stuck_count": repeating_tokens_num, "data": {"inputs": all_inputs, "outputs": all_outputs, "texts": all_texts}}, ensure_ascii=False)+"\n")
+    with open(args.output_file, "a") as f:
+        f.write(json.dumps({"bleu": total_bleu/cs, "total": cs, "computation_stats": computation_stats, "args": vars(args), "all_metrics": metric.eval(), "stuck_count": repeating_tokens_num, "data": {"inputs": all_inputs, "outputs": all_outputs, "texts": all_texts}}, ensure_ascii=False)+"\n")
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532
 
@@ -310,9 +327,9 @@ def run_local_agreement(args, model, tokenizer, prefixes):
 
 
 def run_align_att(args, model, tokenizer, prefixes):
-    for layer in range(0, 3):
+    for layer in range(1, 4):
         for frame_size in range(1, 4):
-            args.frame_size = frame_size
+            args.attention_frame_size = frame_size
             args.layers = [layer]
             analyze_dataset(args, model, tokenizer, prefixes)
 
@@ -337,6 +354,7 @@ def main():
     else:
         tokenizer = AutoTokenizer.from_pretrained(names[args.model_id], src_lang="ces_Latn", tgt_lang="eng_Latn")
         model = AutoModelForSeq2SeqLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
+        print(tokenizer.supported_language_codes)
     prefixes = get_data(args)
 
     run_align_att(args, model, tokenizer, prefixes)
