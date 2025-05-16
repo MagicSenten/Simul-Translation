@@ -6,3 +6,4 @@ evaluate==0.4.3
 torch
 tqdm
 bitsandbytes
+accelerate
