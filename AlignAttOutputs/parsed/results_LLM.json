@@ -1,55 +1,46 @@
 [
     {
         "bleu": 11.66403446194933,
-        "delay_words": 6.629919777802735,
         "num_beams": 1,
         "wait_for_beginning": 1
     },
     {
         "bleu": 11.467210538998133,
-        "delay_words": 6.8769827188752615,
         "num_beams": 2,
         "wait_for_beginning": 2
     },
     {
         "bleu": 11.437959203546976,
-        "delay_words": 6.809951887781551,
         "num_beams": 1,
         "wait_for_beginning": 2
     },
     {
         "bleu": 11.420179552607966,
-        "delay_words": 6.499646899911923,
         "num_beams": 2,
         "wait_for_beginning": 1
     },
     {
         "bleu": 11.297795720470178,
-        "delay_words": 6.536900719404549,
         "num_beams": 3,
         "wait_for_beginning": 1
     },
     {
         "bleu": 11.223624734722826,
-        "delay_words": 6.820544490198707,
         "num_beams": 3,
         "wait_for_beginning": 2
     },
     {
         "bleu": 10.212979023889737,
-        "delay_words": 7.357730432440683,
         "num_beams": 3,
         "wait_for_beginning": 3
     },
     {
         "bleu": 10.028299293592948,
-        "delay_words": 7.3795573496699,
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
         "bleu": 9.98100202363053,
-        "delay_words": 7.338546099537108,
         "num_beams": 1,
         "wait_for_beginning": 3
     }

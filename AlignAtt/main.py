@@ -230,16 +230,22 @@ def translate(model, tokenizer: PreTrainedTokenizerBase, input_text, stable_theo
 def to_string(tokens, tokenizer: PreTrainedTokenizerBase):
     return tokenizer.decode(tokenizer.convert_tokens_to_ids(tokens), skip_special_tokens=True)
 
-def analyze_dataset_from_jsonl(args, data):
-    inputs = data["inputs"]
-    outputs = data["outputs"]
-    texts = data["texts"]
-    metric = SimuEval()
-    for input, output, text in zip(inputs, outputs, texts):
-        for x in range(len(input)):
-            metric.update(input[x], output[x], text)
-    with open(args.output_file, "a") as f:
-        f.write(json.dumps({"bleu": metric.eval()["bleu"], "all_metrics": metric.eval()})+"\n")
+def analyze_dataset_from_jsonl(inf):
+    with jsonlines.open(inf) as reader:
+        data_list = list(reader)
+    out_data = []
+    for data in data_list:
+        inputs = data["data"]["inputs"]
+        outputs = data["data"]["outputs"]
+        texts = data["data"]["texts"]
+        metric = SimuEval()
+        for input, output, text in zip(inputs, outputs, texts):
+            metric.update(input, output, text)
+        data["all_metrics"]= metric.eval()
+        out_data.append(data)
+    with open(inf+"reevaluated.jsonl", "w") as f:
+        for data in out_data:
+            f.write(json.dumps(data)+"\n")
 
 
 
@@ -373,5 +379,10 @@ def main():
         run_local_agreement(args, model, tokenizer, prefixes)
 
 if __name__ == "__main__":
+    try:
+        analyze_dataset_from_jsonl("../AlignAttOutputs/results/results_LLM.jsonl")
+        analyze_dataset_from_jsonl("../AlignAttOutputs/results/results_la_finetuned.jsonl")
+    except:
+        pass
     torch.backends.cuda.matmul.allow_tf32 = True
     main()

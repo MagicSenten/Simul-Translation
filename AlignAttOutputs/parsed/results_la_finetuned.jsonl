@@ -1,0 +1,47 @@
+[
+    {
+        "bleu": 16.965769990638663,
+        "num_beams": 3,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.789254407905595,
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.74090500551541,
+        "num_beams": 1,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 16.422352769546343,
+        "num_beams": 2,
+        "wait_for_beginning": 2
+    },
+    {
+        "bleu": 16.09960750349044,
+        "num_beams": 1,
+        "wait_for_beginning": 2
+    },
+    {
+        "bleu": 15.92326361633076,
+        "num_beams": 3,
+        "wait_for_beginning": 2
+    },
+    {
+        "bleu": 15.834185101996848,
+        "num_beams": 3,
+        "wait_for_beginning": 1
+    },
+    {
+        "bleu": 15.793006991736611,
+        "num_beams": 2,
+        "wait_for_beginning": 1
+    },
+    {
+        "bleu": 15.714286240723204,
+        "num_beams": 1,
+        "wait_for_beginning": 1
+    }
+]

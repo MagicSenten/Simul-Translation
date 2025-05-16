@@ -1,56 +1,83 @@
 [
     {
-        "bleu": 15.857314133124,
-        "delay_words": 4.039740845517522,
-        "num_beams": 2,
-        "wait_for_beginning": 2
-    },
-    {
-        "bleu": 15.575818585222223,
-        "delay_words": 3.645213395528945,
+        "bleu": 14.118744109647507,
+        "attention_frame_size": 3,
+        "layers": [
+            3
+        ],
         "num_beams": 2,
         "wait_for_beginning": 3
     },
     {
-        "bleu": 15.51632050863685,
-        "delay_words": 3.8801986333951755,
-        "num_beams": 3,
-        "wait_for_beginning": 2
-    },
-    {
-        "bleu": 15.477308456721376,
-        "delay_words": 4.952395167681028,
-        "num_beams": 1,
-        "wait_for_beginning": 1
-    },
-    {
-        "bleu": 15.331780752103073,
-        "delay_words": 3.803363619900081,
-        "num_beams": 3,
-        "wait_for_beginning": 3
-    },
-    {
-        "bleu": 14.996696259396254,
-        "delay_words": 3.8048396209208666,
+        "bleu": 13.688811660318564,
+        "attention_frame_size": 2,
+        "layers": [
+            3
+        ],
         "num_beams": 2,
-        "wait_for_beginning": 1
-    },
-    {
-        "bleu": 14.618129515446123,
-        "delay_words": 3.741351959843924,
-        "num_beams": 1,
         "wait_for_beginning": 3
     },
     {
-        "bleu": 14.56029285963585,
-        "delay_words": 4.144907924301257,
-        "num_beams": 1,
-        "wait_for_beginning": 2
+        "bleu": 13.181906986367883,
+        "attention_frame_size": 1,
+        "layers": [
+            3
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
     },
     {
-        "bleu": 14.218297991493978,
-        "delay_words": 3.5211740174735007,
-        "num_beams": 3,
-        "wait_for_beginning": 1
+        "bleu": 9.775599322225931,
+        "attention_frame_size": 2,
+        "layers": [
+            2
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 9.714011836073226,
+        "attention_frame_size": 1,
+        "layers": [
+            1
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 9.614997221997474,
+        "attention_frame_size": 1,
+        "layers": [
+            2
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 9.552464144828038,
+        "attention_frame_size": 3,
+        "layers": [
+            1
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 9.4390074330349,
+        "attention_frame_size": 3,
+        "layers": [
+            2
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
+    },
+    {
+        "bleu": 9.42247468817302,
+        "attention_frame_size": 2,
+        "layers": [
+            1
+        ],
+        "num_beams": 2,
+        "wait_for_beginning": 3
     }
 ]
