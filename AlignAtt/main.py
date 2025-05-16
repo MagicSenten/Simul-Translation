@@ -2,7 +2,6 @@ import json
 import os
 from argparse import Namespace
 import torch
-import evaluate
 import random
 from tqdm import tqdm
 import numpy as np
@@ -169,7 +168,7 @@ def translate_LLM(model, tokenizer, input_text, stable_theory, args, computation
     decoded_align_att = tokenizer.convert_ids_to_tokens(output_ids[:alignatt_result], skip_special_tokens=True)
     return decoded_align_att
 
-def translate(model, tokenizer, input_text, stable_theory, computation_stats, args, verbose=False):
+def translate(model, tokenizer: PreTrainedTokenizerBase, input_text, stable_theory, computation_stats, args, verbose=False):
     '''
         - 'prefix' Refers to a substring, for each substring.
         - 'pt': Return as pytorch tensor.
@@ -190,15 +189,22 @@ def translate(model, tokenizer, input_text, stable_theory, computation_stats, ar
                              return_dict_in_generate=True, output_attentions=True, max_new_tokens=10,
                              generation_config=config, renormalize_logits=True, forced_bos_token_id=tokenizer.convert_tokens_to_ids(args.forced_bos_token_text) if args.forced_bos_token_text is not None else None)
     ca = outputs["cross_attentions"]
-    len_output = len(outputs["sequences"][0])
-    output_ids = outputs["sequences"][0][decoder_input_ids.shape[1]+1 if decoder_input_ids is not None else 0:].cpu()
-    if args.top_attentions > 0 and not decoder_input_ids is None and len(ca) > 0:
+    print(len(ca), len(ca[0]), len(ca[0][0]), len(ca[0][0][0]))
+    outputsequence = outputs["sequences"][0].cpu()
+    print(tokenizer.convert_ids_to_tokens(outputsequence))
+    if False:
+        print(tokenizer.convert_ids_to_tokens(decoder_input_ids[0]))
+        assert len(ca) - 2 == len(outputsequence) - decoder_input_ids.shape[1] - 1, f"or {len(ca)} {len(outputsequence)} {decoder_input_ids.shape[1]}"
+    if outputsequence[-1] == tokenizer.eos_token_id:
+        outputsequence = outputsequence[:-1]
+    len_output = len(outputsequence)
+    output_ids = outputsequence[decoder_input_ids.shape[1] if decoder_input_ids is not None else 0:].cpu()
+    if args.top_attentions > 0 and not decoder_input_ids is None and len(ca) > 1:
         assert all([x[0].shape[2] == 1 for x in ca[1:]])
+        #assert len(ca) == len(output_ids), f"or {len(ca)} {len(output_ids)}"
         attentions = [sum(x[-1-i][:1, :, -1:] for i in args.layers) for x in ca]
-        #If some tokens (eos tokens) have been dropped exclude them from the attention
-        attentions = attentions[:len_output - decoder_input_ids.shape[1]]
         if verbose:
-            visualize_attention(input_ids[0], output_ids[decoder_input_ids.shape[1]:], attentions, tokenizer, args)
+            visualize_attention(input_ids[0], output_ids, attentions, tokenizer, args)
         alignatt_relative = alignatt(attentions, args)
         #If for some reason the attentions are too short remove from allignatt result
         extra_length =  (len_output - decoder_input_ids.shape[1]) - len(attentions)
@@ -211,17 +217,29 @@ def translate(model, tokenizer, input_text, stable_theory, computation_stats, ar
         computation_stats["total_its"] = computation_stats.get("total_its", 0) + 1
         if alignatt_is_zero:
             computation_stats["alignatt_is_zero"] = computation_stats.get("alignatt_is_zero", 0) + 1
-        if alignatt_is_zero and len(input_text.split(" ")) % 3 != 0:
+        if alignatt_is_zero and len(input_text.split(" ")) % 4 == 0:
             alignatt_relative = 1
         alignatt_result = alignatt_relative
     else:
         alignatt_result = len(output_ids)
 
-    decoded_align_att = tokenizer.convert_ids_to_tokens(output_ids[:alignatt_result], skip_special_tokens=True)
+    decoded_align_att = tokenizer.convert_ids_to_tokens(output_ids[:alignatt_result], skip_special_tokens=False)
     return decoded_align_att
 
 def to_string(tokens, tokenizer: PreTrainedTokenizerBase):
     return tokenizer.decode(tokenizer.convert_tokens_to_ids(tokens), skip_special_tokens=True)
+
+def analyze_dataset_from_jsonl(args, data):
+    inputs = data["inputs"]
+    outputs = data["outputs"]
+    texts = data["texts"]
+    metric = SimuEval()
+    for input, output, text in zip(inputs, outputs, texts):
+        for x in range(len(input)):
+            metric.update(input[x], output[x], text)
+    with open(args.output_file, "a") as f:
+        f.write(json.dumps({"bleu": metric.eval()["bleu"], "all_metrics": metric.eval()})+"\n")
+
 
 
 def analyze_dataset(args, model, tokenizer, prefixes):
@@ -231,8 +249,6 @@ def analyze_dataset(args, model, tokenizer, prefixes):
     '''
     print(vars(args))
     first = True
-    bleu = evaluate.load("sacrebleu")
-    total_bleu = 0
     total_latency = np.zeros(3)
     # The total number of prefixes seen.
     cs = 0
@@ -257,7 +273,6 @@ def analyze_dataset(args, model, tokenizer, prefixes):
         stable_theory = tokenizer.tokenize(helper_text_en + gold_text)[:lhten_tok + int(start * 2.5)]
         previous_theory = []
         new_theory = previous_theory
-        new_bleu = 0
         output_theories = []
         inputs = []
         per = 1
@@ -294,24 +309,17 @@ def analyze_dataset(args, model, tokenizer, prefixes):
             output_theories.append(to_string(stable_theory, tokenizer)[lhten:])
             previous_theory = new_theory
 
-        metric.update(inputs, output_theories, gold_text, tokenizer)
+        metric.update(inputs, output_theories, gold_text)
         all_inputs.append(inputs)
         for i in range(len(output_theories)-1):
             assert output_theories[i+1].startswith(output_theories[i]), str(output_theories)
         all_outputs.append(output_theories)
         all_texts.append(gold_text)
-        if len(stable_theory) > 0:
-            new_bleu = bleu.compute(predictions=[to_string(stable_theory, tokenizer)],
-                                references=[gold_text])["score"]
-        else:
-            new_bleu = 0
-        total_bleu += new_bleu
         cs += 1
-        print(f"sent{sentid} of{len(data)}", new_bleu, total_bleu/cs, computation_stats, metric.eval(), vars(args))
-        #print(new_bleu, total_bleu / cs, list(zip(["new_delay_chars", "new_delay_words", "new_delay_tokens"], new_delay)), list(zip(["avg_delay_chars", "avg_delay_words", "avg_delay_tokens"], total_latency / cs)))
+        print(f"sent{sentid} of{len(data)}", computation_stats, metric.eval(), vars(args))
 
     with open(args.output_file, "a") as f:
-        f.write(json.dumps({"bleu": total_bleu/cs, "total": cs, "computation_stats": computation_stats, "args": vars(args), "all_metrics": metric.eval(), "stuck_count": repeating_tokens_num, "data": {"inputs": all_inputs, "outputs": all_outputs, "texts": all_texts}}, ensure_ascii=False)+"\n")
+        f.write(json.dumps({"bleu": metric.eval()["bleu"], "total": cs, "computation_stats": computation_stats, "args": vars(args), "all_metrics": metric.eval(), "stuck_count": repeating_tokens_num, "data": {"inputs": all_inputs, "outputs": all_outputs, "texts": all_texts}}, ensure_ascii=False)+"\n")
 # default 0.28967596904893456 0.21614738454887503 71.79527559055117 59.460164212070396
 # -100 0.1857398572730801 0.24759903978731826 41.23529411764707 158.65644156457532
 
@@ -357,7 +365,8 @@ def main():
         print(tokenizer.supported_language_codes)
     prefixes = get_data(args)
 
-    run_align_att(args, model, tokenizer, prefixes)
+    run_local_agreement(args, model, tokenizer, prefixes)
+    #run_align_att(args, model, tokenizer, prefixes)
 
 
 if __name__ == "__main__":

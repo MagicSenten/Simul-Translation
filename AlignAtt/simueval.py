@@ -1,7 +1,7 @@
 from typing import List, Union
 from jiwer import wer
 import sacrebleu
-
+import numpy as np
 
 def compute(
         delays: List[Union[float, int]],
@@ -193,8 +193,14 @@ class SimuEval:
             self.bleu: Set to the calculated BLEU score.
         """
         # compute BLEU
-        bleu = sacrebleu.corpus_bleu(self.predictions, self.golden_trans)
+        bleu = sacrebleu.corpus_bleu(self.predictions, [[x for x in self.golden_trans]])
 
         self.bleu = bleu.score
-
         return bleu.score
+
+    def eval(self):
+        return {
+            "bleu": self.calc_sacreBLEU(),
+            "wer": self.calc_WER()[1],
+            "AL": float(np.mean(self._AL)),
+        }
