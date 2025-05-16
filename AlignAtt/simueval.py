@@ -1,4 +1,5 @@
 from typing import List, Union
+from jiwer import wer
 import sacrebleu
 
 
@@ -38,7 +39,19 @@ def compute(
 
 class SimuEval:
     def __init__(self):
-        self.counter = 0
+        """
+        Initializes the SimuEval object.
+
+        Attributes:
+            delays (List[List[Union[float, int]]]): A list to store sequences of delays for each processed sentence.
+            predictions (List[str]): A list to store the final predicted translations for each sentence.
+            golden_trans (List[str]): A list to store the ground truth translations for each sentence.
+            _AL (List[List[float]]): A list to store Average Lagging scores for each sentence.
+                                     Each inner list contains AL scores (typically one per sentence).
+            WERs (List[float]): A list to store Word Error Rate (WER) scores for each sentence.
+            bleu (float): The corpus-level BLEU score.
+            avg_WER (float): The average Word Error Rate over all sentences.
+        """
         self.delays = []
 
         self.predictions = []
@@ -46,32 +59,45 @@ class SimuEval:
 
         self._AL = []
         self.bleu = 0
+        self.WERs = []
+        self.avg_WER = 0
 
-        # self.latency_scorer = []
-        # self.quality_scorer = []
+    def update(self, inputs, pred_outputs, gold_text):
+        """
+        Updates the evaluation metrics with a new instance of inputs, predicted outputs, and gold text.
+        It calculates per-word delays, stores predictions and gold text for quality evaluation,
+        and computes the AL score for the current instance.
 
-        self.words__latency = 0
+        Args:
+            inputs (List[str]): List of source inputs at different time steps.
+                                `inputs[i]` is the source text available when `pred_outputs[i]` was generated.
+                                `inputs[-1]` is the full source text.
+            pred_outputs (List[str]): List of predicted outputs (translations) at different time steps.
+                                      `pred_outputs[i]` is the translation prefix generated based on `inputs[i]`.
+                                      `pred_outputs[-1]` is the final translation.
+            gold_text (str): The true translated sentence.
 
-    def update(self, inputs, pred_outputs, gold_text, tokenizer):
+        Returns:
+            List[List[Union[float, int]]]: The `self.delays` attribute, which is a list containing
+                                           lists of delays for each processed instance. The last appended
+                                           inner list corresponds to the current call's calculated delays.
+
+        Modifies:
+            self.predictions: Appends the final predicted output (`pred_outputs[-1]`).
+            self.golden_trans: Appends the `gold_text`.
+            self.delays: Appends a list of calculated delays for the current instance.
+            self._AL: Appends the AL score for the current instance (via `call_AL_compute`).
+        """
         delays = []
 
         # save the data for the sacreBLEU evaluation
         self.predictions.append(pred_outputs[-1])
         self.golden_trans.append(gold_text)
 
-        # # prints to be deleted
-        # print("##############################")
-        # print(inputs)
-        # print(pred_outputs)
-
         # keep track of previously seen output words
         prev_output_words = []
 
         for i, output in enumerate(pred_outputs):
-            # print(inputs)
-            # print(output)
-            # print(i)
-
             # split current output into words
             output_words = output.strip().split()
 
@@ -92,7 +118,23 @@ class SimuEval:
         # computes AL scores for the input and output and stores the results
         self.call_AL_compute(inputs, gold_text, delays)
 
+        return self.delays
+
     def call_AL_compute(self, inputs, gold_text, delays):
+        """
+        Computes the Average Lagging (AL) score for the current instance using the provided delays
+        and stores it in the `_AL` attribute.
+
+        Args:
+            inputs (List[str]): List of source inputs at different time steps.
+                                `inputs[-1]` (the full source text) is used to determine source length.
+            gold_text (str): The ground truth target sentence, used to determine target length.
+            delays_current_instance (List[Union[float, int]]): Sequence of delays calculated for the current instance.
+
+        Modifies:
+            self._AL: Appends a list containing the computed AL score for the current instance.
+                      If no delays are present, an empty list is appended for this instance's AL.
+        """
         ALs = []
 
         # compute latency score using current delays
@@ -106,21 +148,53 @@ class SimuEval:
 
         self._AL.append(ALs)
 
-        # # prints to be deleted
-        # print(f"Current AL: {self._AL}")
-        # print("##############################")
+    def calc_WER(self):
+        """
+        Calculate average Word Error Rate (WER) over lists of golden texts and predictions.
+        Saves the results both individually and an average result.
+
+        Args:
+            None (uses `self.golden_trans` and `self.predictions`).
+
+        Returns:
+            Tuple[List[float], float]: A tuple containing:
+                - WERs (List[float]): List of the WER calculated for each golden texts and predictions pair.
+                - avg_WER (float): Float representing the average WER score on all pairs.
+
+        Modifies:
+            self.WERs: Populated with individual WER scores for each sentence pair.
+            self.avg_WER: Set to the calculated average WER.
+        """
+        total_wer = 0.0
+        # clear previous results if any
+        self.WERs = []
+        n = len(self.golden_trans)
+        for ref, hyp in zip(self.golden_trans, self.predictions):
+            wer_res = wer(ref, hyp)
+            self.WERs.append(wer_res)
+            total_wer += wer_res
+
+        self.avg_WER = total_wer / n if n > 0 else 0.0
+
+        return self.WERs, self.avg_WER
 
     def calc_sacreBLEU(self):
+        """
+        Calculates the BLEU score using sacreBLEU based on the stored
+        predictions and golden translations.
 
+        Args:
+            None (uses `self.predictions` and `self.golden_trans`).
+
+        Returns:
+            float: The corpus BLEU score. Returns 0.0 if no predictions or references.
+
+        Modifies:
+            self.bleu: Set to the calculated BLEU score.
+        """
         # compute BLEU
         bleu = sacrebleu.corpus_bleu(self.predictions, self.golden_trans)
 
-        # print(f"bleu: {bleu.score}")
         self.bleu = bleu.score
 
-    def eval(self):
-        return {
-            "delay_words": self.words__latency,
-            # "delay_chars": self.chars__latency,
-            # "delay_tokens": self.tokens_latency,
-        }
+        return bleu.score
