@@ -364,7 +364,6 @@ def main():
              "facebook/nllb-200-distilled-600M",
              "utter-project/EuroLLM-1.7B-Instruct",
              "utter-project/EuroLLM-9B-Instruct",
-             "davidruda/opus-mt-cs-en-Prefix-Finetuned"]
     args.isLLM = "LLM" in names[args.model_id]
     print(args.isLLM, names[args.model_id])
     if args.isLLM:

@@ -13,6 +13,8 @@ def write_results(name):
     outp = os.path.join("../AlignAttOutputs/parsed", os.path.splitext(os.path.basename(name))[0]) + ".json"
     with open(outp, "w") as f:
         all_data = []
+        if outp.endswith("results_alignatt_finetuned.json"):
+            data = [x for x in data if x["args"]["top_attentions"] > 0]
         for x in data:
             make_e = True
             def make_examples(count, reduce):
@@ -24,6 +26,7 @@ def write_results(name):
                     return x[0]
                 return x
             print(outp)
+
             if x["args"]["top_attentions"] > 0:
                 all_data.append(OrderedDict([("bleu",x["all_metrics"]["bleu"]), ("attention_frame_size", x["args"]["attention_frame_size"]), ("layers", first_if_one(x["args"]["layers"])), ("num_beams",x["args"]["num_beams"]), ("wait_for_beginning",x["args"]["wait_for_beginning"]), ("all_metrics",x["all_metrics"]), ("example_sentances", make_examples(2, 3))]))
             else:
