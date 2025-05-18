@@ -3,6 +3,11 @@
         "bleu": 13.091331014174207,
         "num_beams": 1,
         "wait_for_beginning": 2,
+        "all_metrics": {
+            "bleu": 13.091331014174207,
+            "wer": 0.8319379754633581,
+            "AL": 7.815123294541216
+        },
         "example_sentances": [
             [
                 [
@@ -64,6 +69,11 @@
         "bleu": 12.401299835156138,
         "num_beams": 1,
         "wait_for_beginning": 3,
+        "all_metrics": {
+            "bleu": 12.401299835156138,
+            "wer": 0.8266645009635905,
+            "AL": 8.201818188582454
+        },
         "example_sentances": [
             [
                 [
@@ -125,6 +135,11 @@
         "bleu": 11.64086581317952,
         "num_beams": 3,
         "wait_for_beginning": 3,
+        "all_metrics": {
+            "bleu": 11.64086581317952,
+            "wer": 0.8303132943140625,
+            "AL": 8.405939693297482
+        },
         "example_sentances": [
             [
                 [
@@ -186,6 +201,11 @@
         "bleu": 11.42787150041337,
         "num_beams": 1,
         "wait_for_beginning": 1,
+        "all_metrics": {
+            "bleu": 11.42787150041337,
+            "wer": 0.8743403575933726,
+            "AL": 7.749319808786665
+        },
         "example_sentances": [
             [
                 [
@@ -247,6 +267,11 @@
         "bleu": 11.294916414170764,
         "num_beams": 2,
         "wait_for_beginning": 3,
+        "all_metrics": {
+            "bleu": 11.294916414170764,
+            "wer": 0.8246144888353732,
+            "AL": 8.403914687729696
+        },
         "example_sentances": [
             [
                 [
@@ -308,6 +333,11 @@
         "bleu": 11.175805265108028,
         "num_beams": 3,
         "wait_for_beginning": 2,
+        "all_metrics": {
+            "bleu": 11.175805265108028,
+            "wer": 0.8709557355757984,
+            "AL": 8.144297458411142
+        },
         "example_sentances": [
             [
                 [
@@ -369,6 +399,11 @@
         "bleu": 11.08856733582082,
         "num_beams": 2,
         "wait_for_beginning": 2,
+        "all_metrics": {
+            "bleu": 11.08856733582082,
+            "wer": 0.861007518935128,
+            "AL": 8.07589382940786
+        },
         "example_sentances": [
             [
                 [
@@ -427,9 +462,14 @@
         ]
     },
     {
-        "bleu": 10.444510779473863,
+        "bleu": 10.444510779473857,
         "num_beams": 2,
         "wait_for_beginning": 1,
+        "all_metrics": {
+            "bleu": 10.444510779473857,
+            "wer": 0.8936311958389592,
+            "AL": 7.881946519536687
+        },
         "example_sentances": [
             [
                 [
@@ -491,6 +531,11 @@
         "bleu": 9.9946302992061,
         "num_beams": 3,
         "wait_for_beginning": 1,
+        "all_metrics": {
+            "bleu": 9.9946302992061,
+            "wer": 0.9017195064425126,
+            "AL": 7.954760542260753
+        },
         "example_sentances": [
             [
                 [

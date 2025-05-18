@@ -3,6 +3,9 @@ import json
 import os
 from itertools import islice
 import numpy as np
+from collections import OrderedDict
+from main import analyze_dataset_from_jsonl
+
 def write_results(name):
     with open(name) as file:
         data = [json.loads(x) for x in file.read().split("\n") if len(x) > 0]
@@ -20,11 +23,11 @@ def write_results(name):
                 if len(x) == 1:
                     return x[0]
                 return x
-
+            print(outp)
             if x["args"]["top_attentions"] > 0:
-                all_data.append({"bleu":x["bleu"], "attention_frame_size": x["args"]["attention_frame_size"], "layers": first_if_one(x["args"]["layers"]), "num_beams":x["args"]["num_beams"], "wait_for_beginning":x["args"]["wait_for_beginning"], "example_sentances": make_examples(2, 3)})
+                all_data.append(OrderedDict([("bleu",x["all_metrics"]["bleu"]), ("attention_frame_size", x["args"]["attention_frame_size"]), ("layers", first_if_one(x["args"]["layers"])), ("num_beams",x["args"]["num_beams"]), ("wait_for_beginning",x["args"]["wait_for_beginning"]), ("all_metrics",x["all_metrics"]), ("example_sentances", make_examples(2, 3))]))
             else:
-                all_data.append({"bleu":x["bleu"], "num_beams":x["args"]["num_beams"], "wait_for_beginning":x["args"]["wait_for_beginning"], "example_sentances": make_examples(2, 3)})
+                all_data.append(OrderedDict([("bleu",x["all_metrics"]["bleu"]), ("num_beams",x["args"]["num_beams"]), ("wait_for_beginning",x["args"]["wait_for_beginning"]), ("all_metrics",x["all_metrics"]), ("example_sentances", make_examples(2, 3))]))
 
             if not make_e:
                 all_data[-1].pop("example_sentances")
@@ -57,4 +60,6 @@ if __name__ == "__main__":
     root = "../AlignAttOutputs/results"
     for x in os.listdir(root):
         if x.endswith(".jsonl"):
-            write_results(os.path.join(root,x))
+            p = os.path.join(root,x)
+            analyze_dataset_from_jsonl(p)
+            write_results(p)

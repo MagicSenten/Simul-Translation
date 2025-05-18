@@ -243,7 +243,7 @@ def analyze_dataset_from_jsonl(inf):
             metric.update(input, output, text)
         data["all_metrics"]= metric.eval()
         out_data.append(data)
-    with open(inf+"reevaluated.jsonl", "w") as f:
+    with open(inf, "w") as f:
         for data in out_data:
             f.write(json.dumps(data)+"\n")
 
@@ -348,6 +348,7 @@ def run_local_agreement(args, model, tokenizer, prefixes):
 
 
 def run_align_att(args, model, tokenizer, prefixes):
+    args.top_attentions = 1
     for layer in range(1, 4):
         for frame_size in range(1, 4):
             args.attention_frame_size = frame_size
@@ -385,10 +386,5 @@ def main():
         run_local_agreement(args, model, tokenizer, prefixes)
 
 if __name__ == "__main__":
-    try:
-        analyze_dataset_from_jsonl("../AlignAttOutputs/results/results_LLM.jsonl")
-        analyze_dataset_from_jsonl("../AlignAttOutputs/results/results_la_finetuned.jsonl")
-    except:
-        pass
     torch.backends.cuda.matmul.allow_tf32 = True
     main()
