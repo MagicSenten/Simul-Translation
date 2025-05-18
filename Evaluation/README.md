@@ -21,7 +21,7 @@ First, import the class and create an instance:
 
 from simueval import SimuEval
 
-evaluator = SimuEval()
+<pre> ``` evaluator = SimuEval() ``` </pre>
 
 b. Process Sentences with the "update" Method
 
