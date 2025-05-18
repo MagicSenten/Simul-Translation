@@ -1,7 +1,7 @@
 # Results
 
 ##Results - Best per Table
- | experiment name | BLEU | WER | AL|
+ | | BLEU | WER | AL|
  | ---- | ---- | ---- | ----|
 | NMT Finetuned | **17.62** | 0.76 | 9.06 | 
 | LA NMT Baseline | 16.53 | 0.78 | 9.11 | 
