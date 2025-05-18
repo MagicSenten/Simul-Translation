@@ -39,14 +39,6 @@
 | 2 | BLEU: 11.34, AL: **9.29**, WER: 0.80 | BLEU: **11.78**, AL: 9.75, WER: **0.79** | BLEU: 11.44, AL: 10.23, WER: 0.80 |
 | 3 | BLEU: 11.14, AL: 9.33, WER: 0.80 | BLEU: 11.58, AL: 9.73, WER: **0.79** | BLEU: 11.55, AL: 10.22, WER: **0.79** |
 
-## NMT Finetuned
-
-| #Beams |1 (Wait At Begin)|2 (Wait At Begin)|3 (Wait At Begin)|
-|----|----|----|----|
-| 1 | BLEU: 17.01, AL: 8.71, WER: 0.80 | BLEU: 17.21, AL: 8.88, WER: 0.78 | BLEU: 17.04, AL: 9.13, WER: 0.77 |
-| 2 | BLEU: 16.79, AL: 8.72, WER: 0.78 | BLEU: 16.82, AL: 8.92, WER: 0.78 | BLEU: **17.62**, AL: 9.06, WER: **0.76** |
-| 3 | BLEU: 16.84, AL: **8.70**, WER: 0.79 | BLEU: 16.90, AL: 8.93, WER: 0.78 | BLEU: 17.53, AL: 9.14, WER: **0.76** |
-
 ## NMT Baseline
 
 | #Beams |1 (Wait At Begin)|2 (Wait At Begin)|3 (Wait At Begin)|
@@ -54,3 +46,11 @@
 | 1 | BLEU: 11.43, AL: **7.75**, WER: 0.87 | BLEU: **13.09**, AL: 7.82, WER: 0.83 | BLEU: 12.40, AL: 8.20, WER: 0.83 |
 | 2 | BLEU: 10.44, AL: 7.88, WER: 0.89 | BLEU: 11.09, AL: 8.08, WER: 0.86 | BLEU: 11.29, AL: 8.40, WER: **0.82** |
 | 3 | BLEU: 9.99, AL: 7.95, WER: 0.90 | BLEU: 11.18, AL: 8.14, WER: 0.87 | BLEU: 11.64, AL: 8.41, WER: 0.83 |
+
+## NMT Finetuned
+
+| #Beams |1 (Wait At Begin)|2 (Wait At Begin)|3 (Wait At Begin)|
+|----|----|----|----|
+| 1 | BLEU: 17.01, AL: 8.71, WER: 0.80 | BLEU: 17.21, AL: 8.88, WER: 0.78 | BLEU: 17.04, AL: 9.13, WER: 0.77 |
+| 2 | BLEU: 16.79, AL: 8.72, WER: 0.78 | BLEU: 16.82, AL: 8.92, WER: 0.78 | BLEU: **17.62**, AL: 9.06, WER: **0.76** |
+| 3 | BLEU: 16.84, AL: **8.70**, WER: 0.79 | BLEU: 16.90, AL: 8.93, WER: 0.78 | BLEU: 17.53, AL: 9.14, WER: **0.76** |
