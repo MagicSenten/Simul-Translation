@@ -1,3 +1,15 @@
+# Results
+
+##Results - Best per Table
+ | experiment name | BLEU | WER | AL|
+ | ---- | ---- | ---- | ----|
+| finetuned wait beginning | **17.62** | 0.76 | 9.06 | 
+| baseline local agreement | 16.53 | 0.78 | 9.11 | 
+| finetuned alignatt | 16.43 | **0.73** | 9.36 | 
+| finetuned local agreement | 16.07 | 0.74 | 9.53 | 
+| baseline alignatt | 14.30 | 0.78 | 8.89 | 
+| baseline wait beginning | 13.09 | 0.83 | **7.82** | 
+| LLM local agreement | 11.33 | 0.79 | 9.33 | 
 
 ## AlignAtt NMT Baseline
 
