@@ -80,7 +80,11 @@ def create_metric_table(data, axis1, axis2, axis1_name, axis2_name, experiment_n
     if experiment_name:
         md_lines.append(f"\n## {experiment_name}\n")
     # Header row
-    header = f"| {axis1_name} |" + "|".join(f"{str(a2)} ({axis2_name})" for a2 in axis2_values) + "|"
+    if axis2_name.lower() in ['layers', 'layer']:
+        header = f"| {axis1_name} |" + "|".join(f"{str(5 - a2)}. ({axis2_name})" for a2 in axis2_values) + "|"
+    else:
+        header = f"| {axis1_name} |" + "|".join(f"{str(a2)} ({axis2_name})" for a2 in axis2_values) + "|"
+    md_lines.append(header)
     md_lines.append(header)
     # Separator row
     md_lines.append("|" + "----|" * (len(axis2_values) + 1))
@@ -131,12 +135,12 @@ if __name__ == "__main__":
     # AlignNatt extraction
     first_alignatt = "../AlignAttOutputs/parsed/baseline_alignatt.json"
     alignatt_baseline = extract_alignatt_data(first_alignatt)
-    create_metric_table(alignatt_baseline, axis1='attention_frame_size', axis2='layers', axis1_name='Frame Size', axis2_name='Layers', experiment_name='AlignAtt Baseline')
+    create_metric_table(alignatt_baseline, axis1='attention_frame_size', axis2='layers', axis1_name='Frame Size', axis2_name='Layer', experiment_name='AlignAtt Baseline')
 
     first_alignatt = "../AlignAttOutputs/parsed/finetuned_alignatt.json"
     alignatt_finetuned = extract_alignatt_data(first_alignatt)
     #write_side_by_side_tables_md(alignatt_baseline, alignatt_finetuned, axis1='attention_frame_size', axis2='layers', axis1_name='Frame Size', axis2_name='Layers', exp1_name='AlignAtt Baseline', exp2_name='AlignAtt Finetuned')
-    create_metric_table(alignatt_finetuned, axis1='attention_frame_size', axis2='layers', axis1_name='Frame Size', axis2_name='Layers', experiment_name='AlignAtt Finetuned')
+    create_metric_table(alignatt_finetuned, axis1='attention_frame_size', axis2='layers', axis1_name='Frame Size', axis2_name='Layer', experiment_name='AlignAtt Finetuned')
 
     #Local agreement extraction
     first_local = "../AlignAttOutputs/parsed/baseline_local_agreement.json"
