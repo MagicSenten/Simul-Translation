@@ -7,14 +7,14 @@ Welcome! This guide walks you through using the `SimuEval` toolkit to evaluate y
 ### 1. Install Python Dependencies
 
 With your virtual environment activated, install the required libraries:
+
+pip install -r requirements.txt
 IGNORE_WHEN_COPYING_START
 content_copy
 download
 Use code with caution.
 Python
 IGNORE_WHEN_COPYING_END
-pip install -r requirements.txt
-
 
 ### 2. Using the SimuEval Class for Evaluation
 
