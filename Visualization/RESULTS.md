@@ -13,17 +13,17 @@
 | Frame Size |4. (Layer)|3. (Layer)|2. (Layer)|
 | Frame Size |4. (Layer)|3. (Layer)|2. (Layer)|
 |----|----|----|----|
-| 1 | BLEU: 8.34, AL: 9.06, WER: 0.78 | BLEU: 8.92, AL: 9.06, WER: 0.77 | BLEU: 15.19, AL: 9.37, WER: 0.74 |
-| 2 | BLEU: 8.24, AL: **9.05**, WER: 0.78 | BLEU: 8.80, AL: 9.08, WER: 0.77 | BLEU: 15.27, AL: 9.39, WER: 0.74 |
-| 3 | BLEU: 8.07, AL: 9.08, WER: 0.78 | BLEU: 8.87, AL: 9.13, WER: 0.77 | BLEU: 15.15, AL: 9.36, WER: 0.74 |
+| 1 | BLEU: 8.34, AL: 9.06, WER: 0.78 | BLEU: 8.92, AL: 9.06, WER: 0.77 | BLEU: 15.19, AL: 9.37, WER: **0.74** |
+| 2 | BLEU: 8.24, AL: **9.05**, WER: 0.78 | BLEU: 8.80, AL: 9.08, WER: 0.77 | BLEU: **15.27**, AL: 9.39, WER: **0.74** |
+| 3 | BLEU: 8.07, AL: 9.08, WER: 0.78 | BLEU: 8.87, AL: 9.13, WER: 0.77 | BLEU: 15.15, AL: 9.36, WER: **0.74** |
 
 ## Local Agreement MNT Baseline
 
 | #Beams |1 (Wait At Begin)|2 (Wait At Begin)|3 (Wait At Begin)|
 | #Beams |1 (Wait At Begin)|2 (Wait At Begin)|3 (Wait At Begin)|
 |----|----|----|----|
-| 1 | BLEU: 11.43, AL: **7.75**, WER: 0.87 | BLEU: 13.09, AL: 7.82, WER: 0.83 | BLEU: 12.40, AL: 8.20, WER: 0.83 |
-| 2 | BLEU: 10.44, AL: 7.88, WER: 0.89 | BLEU: 11.09, AL: 8.08, WER: 0.86 | BLEU: 11.29, AL: 8.40, WER: 0.82 |
+| 1 | BLEU: 11.43, AL: **7.75**, WER: 0.87 | BLEU: **13.09**, AL: 7.82, WER: 0.83 | BLEU: 12.40, AL: 8.20, WER: 0.83 |
+| 2 | BLEU: 10.44, AL: 7.88, WER: 0.89 | BLEU: 11.09, AL: 8.08, WER: 0.86 | BLEU: 11.29, AL: 8.40, WER: **0.82** |
 | 3 | BLEU: 9.99, AL: 7.95, WER: 0.90 | BLEU: 11.18, AL: 8.14, WER: 0.87 | BLEU: 11.64, AL: 8.41, WER: 0.83 |
 
 ## Local Agreement Finetuned
