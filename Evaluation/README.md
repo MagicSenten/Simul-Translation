@@ -8,7 +8,9 @@ Welcome! This guide walks you through using the `SimuEval` toolkit to evaluate y
 
 With your virtual environment activated, install the required libraries:
 
-``` pip install -r requirements.txt ```
+```bash
+pip install -r requirements.txt
+```
 
 
 ### 2. Using the SimuEval Class for Evaluation
