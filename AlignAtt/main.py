@@ -230,25 +230,6 @@ def translate(model, tokenizer: PreTrainedTokenizerBase, input_text, stable_theo
 def to_string(tokens, tokenizer: PreTrainedTokenizerBase):
     return tokenizer.decode(tokenizer.convert_tokens_to_ids(tokens), skip_special_tokens=True)
 
-def analyze_dataset_from_jsonl(inf):
-    with jsonlines.open(inf) as reader:
-        data_list = list(reader)
-    out_data = []
-    for data in data_list:
-        inputs = data["data"]["inputs"]
-        outputs = data["data"]["outputs"]
-        texts = data["data"]["texts"]
-        metric = SimuEval()
-        for input, output, text in zip(inputs, outputs, texts):
-            metric.update(input, output, text)
-        data["all_metrics"]= metric.eval()
-        out_data.append(data)
-    with open(inf, "w") as f:
-        for data in out_data:
-            f.write(json.dumps(data)+"\n")
-
-
-
 def analyze_dataset(args, model, tokenizer, prefixes):
     ''''
       the model names used

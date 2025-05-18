@@ -1,5 +1,6 @@
 import json
 import os
+import numpy as np
 with open("best.json", "r") as f:
     data = json.load(f)
 
@@ -9,24 +10,32 @@ def tostr(x):
     else:
         return str(x)
 
+def makebold(x, bold=True):
+    return "\\textbf{" + x + "}" if bold else x
 
-def make_table(headers, data):
+def make_table(name, headers, data, ismin):
     textabular = f"l|{'r'*len(headers)}"
     texheader = " & " + " & ".join(headers) + "\\\\"
     texdata = "\\hline\n"
-    for label in sorted(data, key=lambda x: data[x][0], reverse=True):
+    sorted_keys = sorted(data, key=lambda x: x)
+    besti = [np.argmax([data[x][i] * (-1 if ismin[i] else 1) for x in sorted_keys])  for i in range(len(data[sorted_keys[0]]))]
+    for i, label in enumerate(sorted_keys):
        if label == "z":
           texdata += "\\hline\n"
-       texdata += f"{label} & {' & '.join(map(tostr,data[label][:len(headers)]))} \\\\\n"
+       texdata += f"{label} & {' & '.join([makebold(tostr(y), x == i) for x,y in zip(besti, data[label][:len(headers)])])} \\\\\n"
 
+    print("\\begin{table}[H]")
     print("\\begin{tabular}{"+textabular+"}")
     print(texheader)
     print(texdata,end="")
     print("\\end{tabular}")
+    print(f"\\caption{{{name}}}")
+    print("\\end{table}")
 
 data = {os.path.splitext(os.path.basename(x[1]))[0].replace("_", " "): x[0] for x in data}
-data = {k: (v["all_metrics"]["bleu"], v["all_metrics"]["wer"], v["all_metrics"]["AL"], v["num_beams"], v["wait_for_beginning"], v["example_sentances"][0][len(v["example_sentances"][0])//2], v["example_sentances"][-1]) for k,v in data.items()}
+def make_data(metric_key):
+    return {k: (v[metric_key]["bleu"], v[metric_key]["wer"], v[metric_key]["AL"]) for k,v in data.items()}, [False, True, True]
 
-make_table(["bleu", "word error rate", "average lagging", "number of beams","wait_for_beginning", "halfway example", "full example"], data)
-
-make_table(["bleu", "word error rate", "average lagging", "number of beams","wait k for beginning"], data)
+make_table("Results on all data.", ["bleu", "word error rate", "average lagging"], *make_data("all_metrics"))
+make_table("Results on all sentences shorter than 100 cahracters.", ["bleu", "word error rate", "average lagging"], *make_data("all_metrics_long"))
+make_table("Results on all sentences longer than 100 cahracters.", ["bleu", "word error rate", "average lagging"], *make_data("all_metrics_short"))
