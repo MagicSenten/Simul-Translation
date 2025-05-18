@@ -1,11 +1,6 @@
 [
     {
         "bleu": 17.61603838345263,
-        "attention_frame_size": 10,
-        "layers": [
-            3,
-            4
-        ],
         "num_beams": 2,
         "wait_for_beginning": 3,
         "example_sentances": [
@@ -67,11 +62,6 @@
     },
     {
         "bleu": 17.529855949378017,
-        "attention_frame_size": 10,
-        "layers": [
-            3,
-            4
-        ],
         "num_beams": 3,
         "wait_for_beginning": 3,
         "example_sentances": [
@@ -133,11 +123,6 @@
     },
     {
         "bleu": 17.211569878953313,
-        "attention_frame_size": 10,
-        "layers": [
-            3,
-            4
-        ],
         "num_beams": 1,
         "wait_for_beginning": 2,
         "example_sentances": [
@@ -199,11 +184,6 @@
     },
     {
         "bleu": 17.044123696734314,
-        "attention_frame_size": 10,
-        "layers": [
-            3,
-            4
-        ],
         "num_beams": 1,
         "wait_for_beginning": 3,
         "example_sentances": [
@@ -265,11 +245,6 @@
     },
     {
         "bleu": 17.013524290947345,
-        "attention_frame_size": 10,
-        "layers": [
-            3,
-            4
-        ],
         "num_beams": 1,
         "wait_for_beginning": 1,
         "example_sentances": [
@@ -331,11 +306,6 @@
     },
     {
         "bleu": 16.8976935171189,
-        "attention_frame_size": 10,
-        "layers": [
-            3,
-            4
-        ],
         "num_beams": 3,
         "wait_for_beginning": 2,
         "example_sentances": [
@@ -397,11 +367,6 @@
     },
     {
         "bleu": 16.844499515944943,
-        "attention_frame_size": 10,
-        "layers": [
-            3,
-            4
-        ],
         "num_beams": 3,
         "wait_for_beginning": 1,
         "example_sentances": [
@@ -463,11 +428,6 @@
     },
     {
         "bleu": 16.819836395379884,
-        "attention_frame_size": 10,
-        "layers": [
-            3,
-            4
-        ],
         "num_beams": 2,
         "wait_for_beginning": 2,
         "example_sentances": [
@@ -529,11 +489,6 @@
     },
     {
         "bleu": 16.787787303955533,
-        "attention_frame_size": 10,
-        "layers": [
-            3,
-            4
-        ],
         "num_beams": 2,
         "wait_for_beginning": 1,
         "example_sentances": [

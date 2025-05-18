@@ -21,10 +21,10 @@ def write_results(name):
                     return x[0]
                 return x
 
-            if x["args"]["local_agreement_length"] > 0:
-                    all_data.append({"bleu":x["bleu"], "num_beams":x["args"]["num_beams"], "wait_for_beginning":x["args"]["wait_for_beginning"], "example_sentances": make_examples(2, 3)})
-            if x["args"]["local_agreement_length"] == 0:
-                    all_data.append({"bleu":x["bleu"], "attention_frame_size": x["args"]["attention_frame_size"], "layers": first_if_one(x["args"]["layers"]), "num_beams":x["args"]["num_beams"], "wait_for_beginning":x["args"]["wait_for_beginning"], "example_sentances": make_examples(2, 3)})
+            if x["args"]["top_attentions"] > 0:
+                all_data.append({"bleu":x["bleu"], "attention_frame_size": x["args"]["attention_frame_size"], "layers": first_if_one(x["args"]["layers"]), "num_beams":x["args"]["num_beams"], "wait_for_beginning":x["args"]["wait_for_beginning"], "example_sentances": make_examples(2, 3)})
+            else:
+                all_data.append({"bleu":x["bleu"], "num_beams":x["args"]["num_beams"], "wait_for_beginning":x["args"]["wait_for_beginning"], "example_sentances": make_examples(2, 3)})
 
             if not make_e:
                 all_data[-1].pop("example_sentances")
