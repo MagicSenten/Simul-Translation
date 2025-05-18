@@ -4,7 +4,6 @@ import os
 from itertools import islice
 import numpy as np
 from collections import OrderedDict
-from main import analyze_dataset_from_jsonl
 
 def write_results(name):
     with open(name) as file:
@@ -68,7 +67,6 @@ if __name__ == "__main__":
     for x in os.listdir(root):
         if x.endswith(".jsonl"):
             p = os.path.join(root,x)
-            analyze_dataset_from_jsonl(p)
             best.append(write_results(p))
     best = sorted(best, key=lambda x: x[0]["bleu"], reverse=True)
     with open("best.json", "w") as f:
