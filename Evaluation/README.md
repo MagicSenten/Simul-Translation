@@ -1,9 +1,3 @@
-Okay, here's a README.md file for simueval.py in a style similar to the example you provided.
-
-README.md
-
-# SimuEval: Simultaneous Translation Evaluation Toolkit
-
 Welcome! This guide walks you through using the `SimuEval` toolkit to evaluate your simultaneous machine translation system, focusing on latency (Average Lagging) and quality (WER, BLEU) metrics.
 
 ---
