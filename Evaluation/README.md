@@ -79,7 +79,7 @@ print(f"Individual WER scores for each sentence: {individual_WERs}")
 print(f"Average WER across all sentences: {average_WER}")
 ```
 
-# These are also stored in:
+# These are also stored in
 # evaluator.WERs
 # evaluator.avg_WER
 
