@@ -3,7 +3,7 @@ import os
 
 def extract_alignatt_data(json_file):
     """
-    Extract data from AlignAtt approach JSON files.
+    Extract data from AlignAtt approach JSON files. 
     Returns a list of dictionaries containing attention_frame_size, layers, and metrics.
     """
     with open(json_file, 'r', encoding='utf-8') as f:
