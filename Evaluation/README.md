@@ -23,7 +23,9 @@ First, import the class and create an instance:
 
 from simueval import SimuEval
 
-```bash evaluator = SimuEval() ```
+```bash
+evaluator = SimuEval()
+```
 
 b. Process Sentences with the "update" Method
 
@@ -40,6 +42,7 @@ gold_text (str): The ground truth (reference) translation.
 Example for one sentence:
 
 # Example data for one sentence
+```bash
 source_segments = [
     "This is",
     "This is a source",
@@ -58,7 +61,7 @@ evaluator.update(
     pred_outputs=predicted_partials,
     gold_text=reference_translation,
 )
-
+```
 
 Repeat this step for every sentence in your evaluation set.
 
@@ -69,10 +72,12 @@ After processing all sentences using update(), you can compute:
 Word Error Rate (WER):
 
 # Calculates WER for each sentence and the average
+```bash
 individual_WERs, average_WER = evaluator.calc_WER()
 
 print(f"Individual WER scores for each sentence: {individual_WERs}")
 print(f"Average WER across all sentences: {average_WER}")
+```
 
 # These are also stored in:
 # evaluator.WERs
@@ -81,9 +86,11 @@ print(f"Average WER across all sentences: {average_WER}")
 BLEU Score (Corpus-level):
 
 # Calculates corpus-level BLEU
+```bash
 corpus_bleu_score = evaluator.calc_sacreBLEU()
 
 print(f"Corpus BLEU score: {corpus_bleu_score}")
+```
 
 # This is also stored in:
 # evaluator.bleu
@@ -94,6 +101,7 @@ Average Lagging (AL) is calculated for each sentence during the update() call an
 
 To get the average AL across all sentences:
 
+```bash
 # _AL stores AL scores like: [[al_sent1], [al_sent2_if_valid], []]
 all_al_scores = []
 for al_list_for_sentence in evaluator._AL:
@@ -106,6 +114,7 @@ if all_al_scores:
     print(f"Individual ALs (as stored): {evaluator._AL}")
 else:
     print("No AL scores were calculated (e.g., all inputs had empty delays or zero target length).")
+```
 
 5. Full Usage Example
 
@@ -114,25 +123,34 @@ Here's a complete example demonstrating the workflow:
 from simueval import SimuEval
 
 # 1. Initialize evaluator
+```bash
 evaluator = SimuEval()
+```
 
 # --- Sentence 1 Data ---
+```bash
 inputs_s1 = ["Hund", "Hund und", "Hund und Katze"]
 preds_s1 = ["Dog", "Dog and", "Dog and cat"]
 gold_s1 = "Dog and cat"
+```
 
 # --- Sentence 2 Data ---
+```bash
 inputs_s2 = ["Das ist", "Das ist ein Test", "Das ist ein Test Satz"]
 preds_s2 = ["This is", "This is a test", "This is a test sentence indeed"] # Prediction differs
 gold_s2 = "This is a test sentence"
+```
 
 # 2. Process sentences
+```bash
 print("Processing Sentence 1...")
 evaluator.update(inputs=inputs_s1, pred_outputs=preds_s1, gold_text=gold_s1, tokenizer=None)
 print("Processing Sentence 2...")
 evaluator.update(inputs=inputs_s2, pred_outputs=preds_s2, gold_text=gold_s2, tokenizer=None)
+```
 
 # 3. Calculate and Print Metrics
+```bash
 print("\n--- Evaluation Results ---")
 
 # WER
@@ -159,3 +177,4 @@ else:
 print(f"\nDetailed AL scores per sentence (from evaluator._AL): {evaluator._AL}")
 print(f"Stored predictions: {evaluator.predictions}")
 print(f"Stored golden translations: {evaluator.golden_trans}")
+```
