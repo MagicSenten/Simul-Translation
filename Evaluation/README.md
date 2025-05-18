@@ -23,7 +23,7 @@ First, import the class and create an instance:
 
 from simueval import SimuEval
 
-<pre> ``` evaluator = SimuEval() ``` </pre>
+```bash evaluator = SimuEval() ```
 
 b. Process Sentences with the "update" Method
 
