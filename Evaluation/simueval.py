@@ -8,7 +8,15 @@ import json
 
 def load_jsonl_to_dict(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
-        return [json.loads(line) for line in f]
+        for line in f:
+            try:
+                json.loads(line)
+            except:
+                print(f"error at line: {line}")
+
+        data = [json.loads(line) for line in f]
+        print(data)
+        return data
 
 
 def compute(
@@ -80,7 +88,7 @@ class SimuEval:
                                                    gold_text_list):
             self.calc_delays(inputs, pred_outputs, gold_text)
 
-    def calc_delays(self, inputs, pred_outputs, gold_text):
+    def update(self, inputs, pred_outputs, gold_text):
         """
         Updates the evaluation metrics with a new instance of inputs, predicted outputs, and gold text.
         It calculates per-word delays, stores predictions and gold text for quality evaluation,
@@ -217,19 +225,20 @@ class SimuEval:
 
         return bleu.score
 
-# # Example usage
-# filename = r"O:\Charles\LLMProject\Simul-Translation\AlignAttOutputs\results\results_la_finetuned.jsonl"
-# results = load_jsonl_to_dict(filename)
-# count = 1
-#
-# for data in results:
-#     print(f"iteration num: {count}")
-#
-#     s = SimuEval()
-#     s.process_data(data)
-#
-#     print(f"delays: {s.delays}")
-#     # print(f"ALs: {s._AL}")
-#     print(f"BLEU: {s.bleu}")
-#     print(f"WERs: {s.WERs}")
-#     print(f"Avg WER: {s.avg_WER}")
+
+# Example usage
+filename = r"O:\Charles\LLMProject\Simul-Translation\AlignAttOutputs\parsed\finetuned_alignatt.json"
+results = load_jsonl_to_dict(filename)
+count = 1
+
+for data in results:
+    print(f"iteration num: {count}")
+
+    s = SimuEval()
+    s.process_data(data)
+
+    print(f"delays: {s.delays}")
+    # print(f"ALs: {s._AL}")
+    print(f"BLEU: {s.bleu}")
+    print(f"WERs: {s.WERs}")
+    print(f"Avg WER: {s.avg_WER}")
