@@ -73,7 +73,6 @@ def create_metric_table(data, axis1, axis2, axis1_name, axis2_name, experiment_n
 
     # Find max BLEU, min WER, min AL (rounded to 2 decimals for comparison)
     max_bleu = round(max(bleu_list), 2) if bleu_list else None
-    print(max_bleu)
     min_wer = round(min(wer_list), 2) if wer_list else None
     min_al = round(min(al_list), 2) if al_list else None
 
