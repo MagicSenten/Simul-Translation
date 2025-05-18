@@ -13,7 +13,7 @@ def write_results(name):
     outp = os.path.join("../AlignAttOutputs/parsed", os.path.splitext(os.path.basename(name))[0]) + ".json"
     with open(outp, "w") as f:
         all_data = []
-        if outp.endswith("results_alignatt_finetuned.json"):
+        if outp.endswith("finetuned_alignatt.json"):
             data = [x for x in data if x["args"]["top_attentions"] > 0]
         for x in data:
             make_e = True
@@ -34,7 +34,8 @@ def write_results(name):
 
             if not make_e:
                 all_data[-1].pop("example_sentances")
-        json.dump(sorted(all_data, key=lambda x: x["bleu"], reverse=True), f, indent=4, ensure_ascii=False)
+        all_data_sorted = sorted(all_data, key=lambda x: x["bleu"], reverse=True)
+        json.dump(all_data_sorted, f, indent=4, ensure_ascii=False)
 
     for x in data:
         x.update(x["args"])
@@ -58,11 +59,19 @@ def write_results(name):
         print(f"********* num_beams = {x}")
         print_top([y for y in data if y["num_beams"] == x])
 
+    return (all_data_sorted[0], name)
+
 if __name__ == "__main__":
     print(os.getcwd())
     root = "../AlignAttOutputs/results"
+    best = []
     for x in os.listdir(root):
         if x.endswith(".jsonl"):
             p = os.path.join(root,x)
             analyze_dataset_from_jsonl(p)
-            write_results(p)
+            best.append(write_results(p))
+    best = sorted(best, key=lambda x: x[0]["bleu"], reverse=True)
+    with open("best.json", "w") as f:
+        json.dump(best, f, indent=4, ensure_ascii=False)
+    with open("best_names.json", "w") as f:
+        json.dump([(x[0]["all_metrics"]["bleu"], x[0]["all_metrics"]["AL"], os.path.splitext(os.path.basename(x[1]))[0]) for x in best], f, indent=4, ensure_ascii=False)
