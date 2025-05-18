@@ -85,7 +85,6 @@ def create_metric_table(data, axis1, axis2, axis1_name, axis2_name, experiment_n
     else:
         header = f"| {axis1_name} |" + "|".join(f"{str(a2)} ({axis2_name})" for a2 in axis2_values) + "|"
     md_lines.append(header)
-    md_lines.append(header)
     # Separator row
     md_lines.append("|" + "----|" * (len(axis2_values) + 1))
     # Data rows
