@@ -18,9 +18,9 @@ def make_table(name, headers, file, data, ismin):
     text_hline = " | ---- | " + " | ".join(["----" for x in headers]) + "|"
     texdata = ""
     sorted_keys = sorted(data, key=lambda x: x)
-    besti = [np.argmax([data[x][i] * (-1 if ismin[i] else 1) for x in sorted_keys])  for i in range(len(data[sorted_keys[0]]))]
+    besti = [np.argmax([data[x][i] * (-1 if ismin[i] else 1) for x in sorted_keys]) if ismin[i] is not None else None  for i in range(len(data[sorted_keys[0]]))]
     for i, label in enumerate(sorted_keys):
-       texdata += f"| {label} | {' | '.join([makebold(tostr(y), x == i) for x,y in zip(besti, data[label][:len(headers)])])} | \n"
+       texdata += f"| {label} | {' | '.join([makebold(tostr(y), x is not None and x == i) for x,y in zip(besti, data[label][:len(headers)])])} | \n"
 
     print(f"## {name}", file=file)
     print(texheader, file=file)
@@ -31,7 +31,11 @@ data = {os.path.splitext(os.path.basename(x[1]))[0].replace("_", " "): x[0] for 
 def make_data(metric_key):
     return {k: (v[metric_key]["bleu"], v[metric_key]["wer"], v[metric_key]["AL"]) for k,v in data.items()}, [False, True, True]
 
+def make_data2(metric_key):
+    return {k: (v["example_sentances"][-1][0][-1],) for k,v in data.items()}, [None]
+
 with open("RESULTS_OVERALL.md", "w") as f:
-    make_table("Results on all data.", ["bleu", "word error rate", "average lagging"], f, *make_data("all_metrics"))
-    make_table("Results on all sentences shorter than 100 cahracters.", ["bleu", "word error rate", "average lagging"], f, *make_data("all_metrics_long"))
-    make_table("Results on all sentences longer than 100 cahracters.", ["bleu", "word error rate", "average lagging"], f, *make_data("all_metrics_short"))
+    make_table("Results on all data.", ["final translation"], f, *make_data("all_metrics"))
+    make_table("Results on all data.", ["final translation"], f, *make_data2("all_metrics"))
+    #make_table("Results on all sentences shorter than 100 characters.", ["bleu", "word error rate", "average lagging"], f, *make_data("all_metrics_long"))
+    #make_table("Results on all sentences longer than 100 characters.", ["bleu", "word error rate", "average lagging"], f, *make_data("all_metrics_short"))

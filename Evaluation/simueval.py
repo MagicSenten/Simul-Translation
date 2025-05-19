@@ -4,21 +4,6 @@ import sacrebleu
 import json
 
 
-# נו כבר
-
-def load_jsonl_to_dict(filepath):
-    with open(filepath, "r", encoding="utf-8") as f:
-        for line in f:
-            try:
-                json.loads(line)
-            except:
-                print(f"error at line: {line}")
-
-        data = [json.loads(line) for line in f]
-        print(data)
-        return data
-
-
 def compute(
         delays: List[Union[float, int]],
         source_length: Union[float, int],
@@ -225,20 +210,9 @@ class SimuEval:
 
         return bleu.score
 
-
-# Example usage
-filename = r"O:\Charles\LLMProject\Simul-Translation\AlignAttOutputs\parsed\finetuned_alignatt.json"
-results = load_jsonl_to_dict(filename)
-count = 1
-
-for data in results:
-    print(f"iteration num: {count}")
-
-    s = SimuEval()
-    s.process_data(data)
-
-    print(f"delays: {s.delays}")
-    # print(f"ALs: {s._AL}")
-    print(f"BLEU: {s.bleu}")
-    print(f"WERs: {s.WERs}")
-    print(f"Avg WER: {s.avg_WER}")
+    def eval(self):
+        return {
+            "bleu": self.calc_sacreBLEU(),
+            "wer": self.calc_WER()[1],
+            "AL": sum([x[-1] for x in self._AL]) / len(self._AL),
+        }

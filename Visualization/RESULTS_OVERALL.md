@@ -1,30 +1,20 @@
 ## Results on all data.
- | experiment name | bleu | word error rate | average lagging|
- | ---- | ---- | ---- | ----|
-| LLM local agreement | 11.33 | 0.79 | 9.33 | 
-| baseline alignatt | 14.30 | 0.78 | 8.89 | 
-| baseline local agreement | 16.53 | 0.78 | 9.11 | 
-| baseline wait beginning | 13.09 | 0.83 | **7.82** | 
-| finetuned alignatt | 16.43 | **0.73** | 9.36 | 
-| finetuned local agreement | 16.07 | 0.74 | 9.53 | 
-| finetuned wait beginning | **17.62** | 0.76 | 9.06 | 
-## Results on all sentences shorter than 100 cahracters.
- | experiment name | bleu | word error rate | average lagging|
- | ---- | ---- | ---- | ----|
-| LLM local agreement | 11.37 | 0.79 | 14.55 | 
-| baseline alignatt | 14.62 | 0.78 | 13.65 | 
-| baseline local agreement | 17.27 | 0.77 | 13.72 | 
-| baseline wait beginning | 12.16 | 0.83 | **11.81** | 
-| finetuned alignatt | 16.49 | **0.74** | 14.26 | 
-| finetuned local agreement | 15.61 | 0.75 | 14.29 | 
-| finetuned wait beginning | **17.84** | 0.75 | 13.56 | 
-## Results on all sentences longer than 100 cahracters.
- | experiment name | bleu | word error rate | average lagging|
- | ---- | ---- | ---- | ----|
-| LLM local agreement | 11.37 | 0.79 | 7.16 | 
-| baseline alignatt | 13.81 | 0.78 | 6.94 | 
-| baseline local agreement | 15.37 | 0.79 | 7.14 | 
-| baseline wait beginning | 13.03 | 0.84 | **6.16** | 
-| finetuned alignatt | 16.06 | **0.73** | 7.30 | 
-| finetuned local agreement | 16.95 | 0.74 | 7.57 | 
-| finetuned wait beginning | **16.95** | 0.77 | 7.13 | 
+ | experiment name | final translation|
+ | ---- | ----|
+| LLM local agreement | **0.69** | 
+| baseline alignatt | 0.42 | 
+| baseline local agreement | 0.43 | 
+| baseline wait beginning | 0.45 | 
+| finetuned alignatt | 0.54 | 
+| finetuned local agreement | 0.54 | 
+| finetuned wait beginning | 0.46 | 
+## Results on all data.
+ | experiment name | final translation|
+ | ---- | ----|
+| LLM local agreement | In the material that I have prepared, there is a beautiful argument that if we limit the authority of the municipal police in just the area of measuring the speed or controlling the safety of road traffic and speed, then we will reduce | 
+| baseline alignatt | In the material I have prepared is beautiful argument that if we limit the authority of the municipal police in the area of speed measurement or control of road safety, then, although we will reduce the number of offences detected, to which we have been fined, but we are not going to reduce any | 
+| baseline local agreement | In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police in the area of speed measurement, or road safety control, and speed, we will reduce the number of offences detected, to which we have come and which have been fined, but we certainly will not reduce any offences committed. | 
+| baseline wait beginning | In material I have prepared, it is beautiful argument, that if we limit the power of the municipal police just in the area of measurement of speed or control of safety of road traffic, and speed, we will be able to reduce the number of offences detected, to: | 
+| finetuned alignatt | In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police in the area of measuring the speed or control of road traffic safety and speed, we will reduce the number of offences exposed to which were fined, but will not reduce those | 
+| finetuned local agreement | In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police precisely in the area of speed measurement or road roadding road traffic and speed safety, sožílítlítícíítílící který předvětící osvrátek. | 
+| finetuned wait beginning | In the material I have prepared, there is a beautiful argument that if we limit the authority of the municipal police in the area of speed measurement or safety control of road traffic and speed, so we will reduce the number of offences exposed to which they were fined, but we won't reduce those offences. | 

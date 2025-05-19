@@ -5,7 +5,7 @@ from itertools import islice
 import numpy as np
 from collections import OrderedDict
 import sys
-sys.path.append(os.path.abspath("../AlignAtt"))
+sys.path.append(os.path.abspath("../Evaluation"))
 from simueval import SimuEval
 
 def write_results(name, text, write):
@@ -109,4 +109,4 @@ if __name__ == "__main__":
     with open("best.json", "w") as f:
         json.dump(best, f, indent=4, ensure_ascii=False)
     with open("best_names.json", "w") as f:
-        json.dump([(x[0]["all_metrics"]["bleu"], x[0]["all_metrics"]["AL"], os.path.splitext(os.path.basename(x[1]))[0]) for x in best], f, indent=4, ensure_ascii=False)
+        json.dump((best[0][0]["example_sentances"][-1][0][-2], best[0][0]["example_sentances"][-1][1], [(os.path.splitext(os.path.basename(x[1]))[0], x[0]["example_sentances"][-1][0][-2]) for x in best]), f, indent=4, ensure_ascii=False)
