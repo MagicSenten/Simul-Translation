@@ -1,3 +1,15 @@
+# Results
+
+##Results - Best per Table
+ | | BLEU | WER | AL|
+ | ---- | ---- | ---- | ----|
+| NMT Finetuned | **17.62** | 0.76 | 9.06 | 
+| LA NMT Baseline | 16.53 | 0.78 | 9.11 | 
+| AligNatt NMT Finetuned | 16.43 | **0.73** | 9.36 | 
+| LA NMT Finetuned | 16.07 | 0.74 | 9.53 | 
+| AligNatt NMT Baseline | 14.30 | 0.78 | 8.89 | 
+| NMT Baseline | 13.09 | 0.83 | **7.82** | 
+| LA EuroLLM | 11.33 | 0.79 | 9.33 | 
 
 ## AlignAtt NMT Baseline
 
@@ -31,7 +43,7 @@
 | 2 | BLEU: 15.39, AL: 9.37, WER: 0.77 | BLEU: 15.67, AL: 9.50, WER: 0.76 | BLEU: 15.89, AL: 9.53, WER: 0.75 |
 | 3 | BLEU: 15.34, AL: **9.34**, WER: 0.77 | BLEU: 15.15, AL: 9.47, WER: 0.76 | BLEU: 16.07, AL: 9.53, WER: **0.74** |
 
-## Local Agreement LLM
+## Local Agreement EuroLLM
 
 | #Beams |1 (Wait At Begin)|2 (Wait At Begin)|3 (Wait At Begin)|
 |----|----|----|----|
