@@ -49,9 +49,9 @@ class SimuEval:
             golden_trans (List[str]): A list to store the ground truth translations for each sentence.
             _AL (List[List[float]]): A list to store Average Lagging scores for each sentence.
                                      Each inner list contains AL scores (typically one per sentence).
-            WERs (List[float]): A list to store Word Error Rate (WER) scores for each sentence.
+            TERs (List[float]): A list to store Word Error Rate (TER) scores for each sentence.
             bleu (float): The corpus-level BLEU score.
-            avg_WER (float): The average Word Error Rate over all sentences.
+            avg_TER (float): The average Word Error Rate over all sentences.
         """
         self.delays = []
 
@@ -60,8 +60,8 @@ class SimuEval:
 
         self._AL = []
         self.bleu = -1
-        self.WERs = []
-        self.avg_WER = -1
+        self.TERs = []
+        self.avg_TER = -1
 
     def process_data(self, data_dict):
         inputs_list = data_dict["data"]["inputs"]
@@ -159,9 +159,9 @@ class SimuEval:
 
         self._AL.append(ALs)
 
-    def calc_WER(self):
+    def calc_TER(self):
         """
-        Calculate average Word Error Rate (WER) over lists of golden texts and predictions.
+        Calculate average Word Error Rate (TER) over lists of golden texts and predictions.
         Saves the results both individually and an average result.
 
         Args:
@@ -169,25 +169,25 @@ class SimuEval:
 
         Returns:
             Tuple[List[float], float]: A tuple containing:
-                - WERs (List[float]): List of the WER calculated for each golden texts and predictions pair.
-                - avg_WER (float): Float representing the average WER score on all pairs.
+                - TERs (List[float]): List of the TER calculated for each golden texts and predictions pair.
+                - avg_TER (float): Float representing the average TER score on all pairs.
 
         Modifies:
-            self.WERs: Populated with individual WER scores for each sentence pair.
-            self.avg_WER: Set to the calculated average WER.
+            self.TERs: Populated with individual TER scores for each sentence pair.
+            self.avg_TER: Set to the calculated average TER.
         """
-        total_wer = 0.0
+        total_ter = 0.0
         # clear previous results if any
-        self.WERs = []
+        self.TERs = []
         n = len(self.golden_trans)
         for ref, hyp in zip(self.golden_trans, self.predictions):
-            wer_res = wer(ref, hyp)
-            self.WERs.append(wer_res)
-            total_wer += wer_res
+            ter_res = wer(ref, hyp)
+            self.TERs.append(ter_res)
+            total_ter += ter_res
 
-        self.avg_WER = total_wer / n if n > 0 else 0.0
+        self.avg_TER = total_ter / n if n > 0 else 0.0
 
-        return self.WERs, self.avg_WER
+        return self.TERs, self.avg_TER
 
     def calc_sacreBLEU(self):
         """
@@ -213,6 +213,6 @@ class SimuEval:
     def eval(self):
         return {
             "bleu": self.calc_sacreBLEU(),
-            "wer": self.calc_WER()[1],
+            "ter": self.calc_TER()[1],
             "AL": sum([x[-1] for x in self._AL]) / len(self._AL),
         }
