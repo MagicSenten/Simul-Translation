@@ -27,10 +27,10 @@ def compute(
     AL = 0
     gamma = target_length / source_length
     tau = 0
-    for t_miuns_1, d in enumerate(delays):
+    for t_minus_1, d in enumerate(delays):
         if d <= source_length:
-            AL += d - t_miuns_1 / gamma
-            tau = t_miuns_1 + 1
+            AL += d - t_minus_1 / gamma
+            tau = t_minus_1 + 1
 
             if d == source_length:
                 break
