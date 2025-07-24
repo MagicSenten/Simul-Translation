@@ -71,7 +71,7 @@ class SimuEval:
         for inputs, pred_outputs, gold_text in zip(inputs_list,
                                                    pred_outputs_list,
                                                    gold_text_list):
-            self.calc_delays(inputs, pred_outputs, gold_text)
+            self.update(inputs, pred_outputs, gold_text)
 
     def update(self, inputs, pred_outputs, gold_text):
         """
