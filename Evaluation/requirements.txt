@@ -1,2 +1,2 @@
-jiwer
-sacrebleu
+jiwer~=3.1.0
+sacrebleu~=2.5.1
