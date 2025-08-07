@@ -1,7 +1,8 @@
 import json
-import numpy as np
 from itertools import islice
+
 import jsonlines
+import numpy as np
 
 
 def trim_to_last_word(self, hypothesis, tokenizer):

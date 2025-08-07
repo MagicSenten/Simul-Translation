@@ -1,10 +1,12 @@
 import itertools
 import json
 import os
-from itertools import islice
-import numpy as np
-from collections import OrderedDict
 import sys
+from collections import OrderedDict
+from itertools import islice
+
+import numpy as np
+
 sys.path.append(os.path.abspath("../Evaluation"))
 from simueval import SimuEval
 

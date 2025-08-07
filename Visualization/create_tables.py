@@ -1,5 +1,5 @@
 import json
-import os
+
 
 def extract_alignatt_data(json_file):
     """

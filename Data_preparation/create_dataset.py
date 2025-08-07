@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-import json
-import regex
-import numpy as np
-import random
 import argparse
+import json
+import random
 from itertools import islice
+
+import numpy as np
+import regex
+
 parser = argparse.ArgumentParser()
 #The training dataset arguments
 parser.add_argument("--seed", default=42, type=int, help="Random seed.")

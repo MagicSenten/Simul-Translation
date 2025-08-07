@@ -1,15 +1,14 @@
 import argparse
-import numpy as np
-import torch
-from datasets import load_dataset, DatasetDict
+
 import evaluate
+import numpy as np
+from datasets import load_dataset, DatasetDict
 from transformers import (
     AutoTokenizer,
     AutoModelForSeq2SeqLM,
     DataCollatorForSeq2Seq,
     Seq2SeqTrainingArguments,
     Seq2SeqTrainer,
-    GenerationConfig,
     set_seed,
     EarlyStoppingCallback,
 )

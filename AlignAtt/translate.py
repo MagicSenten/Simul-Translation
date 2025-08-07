@@ -1,6 +1,9 @@
-from transformers import GenerationConfig, PreTrainedTokenizerBase
 import torch
+from transformers import GenerationConfig, PreTrainedTokenizerBase
+
 from alignatt import alignatt, visualize_attention
+
+
 def translate_LLM(model, tokenizer, input_text, stable_theory, args, computation_stats, verbose=False):
     '''
         - 'prefix' Refers to a substring, for each substring.

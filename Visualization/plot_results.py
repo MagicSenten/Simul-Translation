@@ -1,6 +1,8 @@
 import json
 import os
+
 import numpy as np
+
 with open("best.json", "r") as f:
     data = json.load(f)
 
