@@ -3,8 +3,8 @@ import json
 import numpy as np
 from transformers import PreTrainedTokenizerBase
 
-from local_agreement import local_agreement
-from translate import translate, translate_LLM
+from .local_agreement import local_agreement
+from .translate import translate, translate_LLM
 
 
 class States:

@@ -218,7 +218,7 @@ class SimuEval:
             "AL": sum([x[-1] for x in self._AL]) / len(self._AL),
         }
 
-if _name_ == "_main_":
+if __name__ == "__main__":
         evaluator = SimuEval()
         
         file_path = (
