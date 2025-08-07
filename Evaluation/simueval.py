@@ -2,6 +2,7 @@ from typing import List, Union
 from jiwer import wer
 import sacrebleu
 import json
+from pyarrow.ipc import open_file
 
 
 def compute(
@@ -216,3 +217,34 @@ class SimuEval:
             "ter": self.calc_TER()[1],
             "AL": sum([x[-1] for x in self._AL]) / len(self._AL),
         }
+
+
+evaluator = SimuEval()
+
+file_path = (
+    r"O:\Charles\LLMProject\Simul-Translation\AlignAttOutputs\parsed\baseline_alignatt.json")
+
+
+def read_json_to_dict(file_path):
+    with open(file=file_path, mode='r', encoding='utf-8') as f:
+        data = f.read()
+    return data
+
+
+def read_jsonl_to_dict_list(file_path):
+    data = []
+    with open(file=file_path, mode='r', encoding='utf-8') as f:
+        for line in f:
+            if line.strip():  # skip empty lines
+                data.append(json.loads(line))
+    return data
+
+
+results = read_json_to_dict(file_path)
+data = results["data"]["inputs"]
+evaluator.process_data(data)
+
+# for result in results:
+#     evaluator.process_data(result)
+
+evaluator.eval()
