@@ -30,8 +30,8 @@ def write_results(name, text, write):
         if x["args"]["top_attentions"] > 0:
             all_data.append(OrderedDict([("bleu",x["all_metrics"]["bleu"]), ("attention_frame_size", x["args"]["attention_frame_size"]), ("layers", first_if_one(x["args"]["layers"])), ("num_beams",x["args"]["num_beams"]), ("wait_for_beginning",x["args"]["wait_for_beginning"]), ("all_metrics",x["all_metrics"]), ("example_sentances", make_examples(2, 3))]))
         else:
-            all_data.append(OrderedDict([("bleu",x["all_metrics"]["bleu"]), ("num_beams",x["args"]["num_beams"]), ("wait_for_beginning",x["args"]["wait_for_beginning"]), ("all_metrics",x["all_metrics"]), ("example_sentances", make_examples(2, 3))]))
-        x["example_sentances"] = make_examples(2, 1)
+            all_data.append(OrderedDict([("bleu",x["all_metrics"]["bleu"]), ("num_beams",x["args"]["num_beams"]), ("wait_for_beginning",x["args"]["wait_for_beginning"]), ("all_metrics",x["all_metrics"]), ("example_sentances", make_examples(10, 3))]))
+        x["example_sentances"] = make_examples(10, 1)
         if not make_e:
             all_data[-1].pop("example_sentances")
     all_data_sorted = sorted(data, key=lambda x: x["bleu"], reverse=True)

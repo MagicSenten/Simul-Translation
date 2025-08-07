@@ -1,0 +1,97 @@
+import torch
+import random
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig, AutoModelForCausalLM, BitsAndBytesConfig, PreTrainedTokenizerBase
+from AlignAtt.get_data import get_data
+import argparse
+from Evaluation.simueval import SimuEval
+from AlignAtt.analyze_dataset import analyze_dataset
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    keys = ["czech", "english"] if False else (["source", "target"] if True else ["pref_source", "pref_target"])
+    parser.add_argument("--dataset_path", default="../Data_preparation/cleaned_eval_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
+    parser.add_argument("--local_agreement_length", type=int, default=0, help="Number of next tokens it must agree with the previous theory in")
+    parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
+    parser.add_argument("--layers", type=int, nargs='+', default=[3,4], help="List of layer indices")
+    parser.add_argument("--top_attentions", type=int, default=0, help="Top attentions to use, set to 0 to disable alignatt.")
+    parser.add_argument("--output_file", type=str, default="results.jsonl")
+    parser.add_argument("--attention_frame_size", type=int, default=10, help="The excluded frame of last positions size")
+    parser.add_argument("--count_in", type=int, default=1, help="How many values in the top_attentions must be in attention_frame_size from end for the position to be bad.")
+    parser.add_argument("--wait_for", type=int, default=0, help="A static wait time to apply on top of alignatt everywhere")
+    parser.add_argument("--wait_for_beginning", type=int, default=3, help="A wait time to apply at the beginning")
+    parser.add_argument("--heads", type=int, nargs='+', default=list(range(6)), help="List of attention heads")
+    parser.add_argument("--device", type=str, default="cuda", help="Device to use")
+    parser.add_argument("--words_per_prefix", type=int, default=2, help="Words per prefix shown")
+    parser.add_argument("--forced_bos_token_text", type=str, default=None, help="Forced BOS token text")
+    parser.add_argument("--model_id", type=int, default=0, help="Model ID")
+    parser.add_argument("--num_beams", type=int, default=2, help="Setting the num_beams to a multiple of three turns on diverse beam search with num_beams//3 groups.")
+    parser.add_argument("--num_swaps", type=int, default=0, help="Number of word pairs to blindly swap.")
+    parser.add_argument("--src_key", type=str, default=keys[0], help="Source key")
+    parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key")
+    parser.add_argument("--verbose", action="store_true", default=True)
+    parser.add_argument("--experiment_type", type=str, default="none")
+
+    return parser.parse_args()
+
+def analyze_dataset_wrapper(args, model, tokenizer, prefixes):
+    analyze_dataset(args, model, tokenizer, prefixes, SimuEval())
+
+def run_param_search(args, model, tokenizer, prefixes):
+    for num_beams in range(1, 4):
+        for wait_for_beginning in range(1, 4):
+            args.num_beams = num_beams
+            args.wait_for_beginning = wait_for_beginning
+            analyze_dataset_wrapper(args, model, tokenizer, prefixes)
+
+def run_local_agreement(args, model, tokenizer, prefixes):
+    for num_beams in range(1, 4):
+        for wait_for_beginning in range(1, 4):
+            args.top_attentions = 0
+            args.local_agreement_length = 1
+            args.num_beams = num_beams
+            args.wait_for_beginning = wait_for_beginning
+            analyze_dataset_wrapper(args, model, tokenizer, prefixes)
+
+
+def run_align_att(args, model, tokenizer, prefixes):
+    args.top_attentions = 1
+    for layer in range(1, 4):
+        for frame_size in range(1, 4):
+            args.attention_frame_size = frame_size
+            args.layers = [layer]
+            analyze_dataset_wrapper(args, model, tokenizer, prefixes)
+
+def main():
+    random.seed(42)
+    args = parse_args()
+    names = ["Helsinki-NLP/opus-mt-cs-en",
+             "facebook/nllb-200-3.3B",
+             "facebook/nllb-200-1.3B",
+             "facebook/nllb-200-distilled-600M",
+             "utter-project/EuroLLM-1.7B-Instruct",
+             "utter-project/EuroLLM-9B-Instruct",
+             "davidruda/opus-mt-cs-en-Prefix-Finetuned"]
+    args.isLLM = "LLM" in names[args.model_id]
+    print(args.isLLM, names[args.model_id])
+    if args.isLLM:
+        tokenizer = AutoTokenizer.from_pretrained(names[args.model_id], token = "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")
+        args.forced_bos_token_text = None
+        quantization_config = BitsAndBytesConfig(load_in_4bit=True,
+                                                 bnb_4bit_compute_dtype=torch.bfloat16)
+        model = AutoModelForCausalLM.from_pretrained(names[args.model_id], attn_implementation="eager", quantization_config=quantization_config, token = "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").to(args.device)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(names[args.model_id], src_lang="ces_Latn", tgt_lang="eng_Latn")
+        model = AutoModelForSeq2SeqLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
+        print(tokenizer.supported_language_codes)
+    prefixes = get_data(args)
+    if args.experiment_type == "none":
+        run_param_search(args, model, tokenizer, prefixes)
+    elif args.experiment_type == "alignatt":
+        run_align_att(args, model, tokenizer, prefixes)
+    elif args.experiment_type == "local_agreement":
+        run_local_agreement(args, model, tokenizer, prefixes)
+
+if __name__ == "__main__":
+    torch.backends.cuda.matmul.allow_tf32 = True
+    main()

@@ -32,7 +32,7 @@ def make_data(metric_key):
     return {k: (v[metric_key]["bleu"], v[metric_key]["wer"], v[metric_key]["AL"]) for k,v in data.items()}, [False, True, True]
 
 def make_data2(metric_key):
-    return {k: (v["example_sentances"][-1][0][-1],) for k,v in data.items()}, [None]
+    return {k: (v["example_sentances"][1][0][-1],) for k,v in data.items()}, [None]
 
 with open("RESULTS_OVERALL.md", "w") as f:
     make_table("Results on all data.", ["final translation"], f, *make_data("all_metrics"))
