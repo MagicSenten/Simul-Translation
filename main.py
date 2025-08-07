@@ -12,7 +12,7 @@ from Evaluation.simueval import SimuEval
 def parse_args():
     parser = argparse.ArgumentParser()
     keys = ["czech", "english"] if False else (["source", "target"] if True else ["pref_source", "pref_target"])
-    parser.add_argument("--dataset_path", default="../Data_preparation/cleaned_eval_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
+    parser.add_argument("--dataset_path", default="./Data_preparation/cleaned_eval_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
     parser.add_argument("--local_agreement_length", type=int, default=0, help="Number of next tokens it must agree with the previous theory in")
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore")
     parser.add_argument("--layers", type=int, nargs='+', default=[3,4], help="List of layer indices")
