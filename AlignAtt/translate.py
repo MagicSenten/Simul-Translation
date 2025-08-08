@@ -6,7 +6,7 @@ from .alignatt import alignatt, visualize_attention
 
 def translate_LLM(model, tokenizer, input_text, stable_theory, args, computation_stats, verbose=False):
     """
-    Translates input text using a large language model (LLM) with specific configurations.
+    Translates input text using a large language model (LLM) with specific configurations. Runs AlignATT if instructed.
 
     Args:
         model: The LLM model used for translation.
@@ -64,7 +64,7 @@ def translate_LLM(model, tokenizer, input_text, stable_theory, args, computation
 
 def translate(model, tokenizer: PreTrainedTokenizerBase, input_text, stable_theory, computation_stats, args, verbose=False):
     """
-    Translates input text using a sequence-to-sequence model with specific configurations.
+    Translates input text using a sequence-to-sequence model with specific configurations. Runs AlignATT if instructed.
 
     Args:
         model: The sequence-to-sequence model used for translation.

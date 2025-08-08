@@ -6,23 +6,6 @@ from transformers import PreTrainedTokenizerBase
 from .local_agreement import local_agreement
 from .translate import translate, translate_LLM
 
-
-class States:
-    """
-    A class to represent the state of hypotheses during analysis.
-
-    Attributes:
-        stable_hypothesis (list): A list to store the stable hypothesis.
-        hypothesis (list): A list to store the current hypothesis.
-    """
-    def __init__(self):
-        """
-        Initializes the States class with empty stable_hypothesis and hypothesis lists.
-        """
-        self.stable_hypothesis = []
-        self.hypothesis = []
-
-
 def to_string(tokens, tokenizer: PreTrainedTokenizerBase):
     """
     Converts a list of tokens into a string using the tokenizer.

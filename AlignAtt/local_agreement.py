@@ -1,6 +1,6 @@
 def local_agreement(new_theory, previous_theory, stable_theory, args):
     """
-    Ensures local agreement between the new theory and the previous theory by
+    Runs the local agreement algorithm. Ensures local agreement between the new theory and the previous theory by
     extending the stable theory with tokens that match within a specified range.
 
     Args:

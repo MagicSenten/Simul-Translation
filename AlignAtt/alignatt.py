@@ -20,23 +20,23 @@ def visualize_attention(input_ids, output_ids, attentions, tokenizer, args):
     """
     def sort_top(l, t):
         """
-        Sorts the top attention positions, keeping the last `t` positions in order.
+        Sorts the top attention positions, keeping the fist `len(l)-t` positions in order.
 
         Args:
             l (list): A list of attention positions.
-            t (int): The number of positions to keep in order.
+            t (int): The number of last positions to sort.
 
         Returns:
-            list: Sorted attention positions with the last `t` positions preserved.
+            list: Sorted attention positions with the first `len(l)-t` positions preserved.
         """
         return [y - len(input_ids) for y in l[:-t] + sorted(l[-t:])]
 
     def get_range(vs):
         """
-        Decodes a range of input tokens based on attention positions.
+        Decodes a representative range of input tokens on positions.
 
         Args:
-            vs (list): A list of attention positions.
+            vs (list): A list of positions.
 
         Returns:
             str: Decoded text for the specified range of input tokens.
@@ -62,8 +62,7 @@ def visualize_attention(input_ids, output_ids, attentions, tokenizer, args):
 
 def alignatt(attentions, args):
     """
-    Aligns attention weights by identifying the first position where the top attention
-    positions meet specific criteria.
+    Runs the AlignATT algorithm.
 
     Args:
         attentions (list): A list of attention tensors with shape
@@ -82,7 +81,7 @@ def alignatt(attentions, args):
         top_pos = mean_attentions.argsort(-1)[-args.top_attentions:].cpu().numpy()
         # Exclude positions within the skip range
         top_pos[top_pos >= attentions[0].shape[-1] - args.skip_l] = 0
-        # Check if the top positions meet the alignment criteria
+        # Check if any of the top positions meet the alignment criteria
         if np.sum(np.less_equal(attentions[0].shape[-1] - args.attention_frame_size, top_pos)) >= args.count_in:
             print(i, len(attentions), attentions[0].shape[-1] - top_pos)
             return i
