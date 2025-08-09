@@ -53,6 +53,28 @@ class SimuEval:
             TERs (List[float]): A list to store Word Error Rate (TER) scores for each sentence.
             bleu (float): The corpus-level BLEU score.
             avg_TER (float): The average Word Error Rate over all sentences.
+
+        ### Example:
+            from simueval import SimuEval
+            import json
+
+            # Initialize the evaluator
+            evaluator = SimuEval()
+
+            # Define a helper to read JSON data
+            def read_json_to_dict(file_path):
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+
+            # Path to a JSON file containing the evaluation data
+            file_path = r"Simul-Translation/AlignAttOutputs/parsed/baseline_alignatt.json"
+
+            # Load and process the data
+            results = read_json_to_dict(file_path)
+            evaluator.process_data(results[0])
+
+            # Print evaluation metrics
+            print(evaluator.eval())
         """
         self.delays = []
 
@@ -65,6 +87,36 @@ class SimuEval:
         self.avg_TER = -1
 
     def process_data(self, data_dict):
+        """
+        Processes a batch of evaluation data by extracting inputs, predicted
+        outputs, and gold texts from the provided dictionary, and updating
+        the evaluation metrics for each instance.
+
+        Args:
+           data_dict (dict): A dictionary containing the evaluation
+           data with the structure: {
+           "data": {
+                "inputs" (List[List[str]]): Source inputs at various time
+                steps for each instance.
+
+               "outputs" (List[List[str]]): Predicted outputs at various time
+               steps for each instance.
+
+               "texts" (List[str]): Ground truth target sentences
+               for each instance. }
+            }
+
+        Returns:
+           None
+
+        Modifies:
+           Calls `self.update` for each set of (inputs, predicted
+           outputs, gold text), thereby updating:
+           - self.predictions
+           - self.golden_trans
+           - self.delays
+           - self._AL
+        """
         inputs_list = data_dict["data"]["inputs"]
         pred_outputs_list = data_dict["data"]["outputs"]
         gold_text_list = data_dict["data"]["texts"]
@@ -217,34 +269,3 @@ class SimuEval:
             "ter": self.calc_TER()[1],
             "AL": sum([x[-1] for x in self._AL]) / len(self._AL),
         }
-
-if __name__ == "__main__":
-        evaluator = SimuEval()
-        
-        file_path = (
-            r"O:\Charles\LLMProject\Simul-Translation\AlignAttOutputs\parsed\baseline_alignatt.json")
-        
-        
-        def read_json_to_dict(file_path):
-            with open(file=file_path, mode='r', encoding='utf-8') as f:
-                data = f.read()
-            return data
-        
-        
-        def read_jsonl_to_dict_list(file_path):
-            data = []
-            with open(file=file_path, mode='r', encoding='utf-8') as f:
-                for line in f:
-                    if line.strip():  # skip empty lines
-                        data.append(json.loads(line))
-            return data
-        
-        
-        results = read_json_to_dict(file_path)
-        data = results["data"]["inputs"]
-        evaluator.process_data(data)
-        
-        # for result in results:
-        #     evaluator.process_data(result)
-        
-        evaluator.eval()
