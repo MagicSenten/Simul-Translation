@@ -1,42 +1,8 @@
-from typing import List, Union
+from typing import List, Union, Dict, Any, Tuple
 from jiwer import wer
 import sacrebleu
 import json
 from pyarrow.ipc import open_file
-
-
-def compute(
-        delays: List[Union[float, int]],
-        source_length: Union[float, int],
-        target_length: Union[float, int],
-):
-    """
-    Function to compute latency on one sentence (instance).
-
-    Args:
-        delays (List[Union[float, int]]): Sequence of delays.
-        source_length (Union[float, int]): Length of source sequence.
-        target_length (Union[float, int]): Length of target sequence.
-
-    Returns:
-        float: the latency score on one sentence.
-    """
-
-    if delays[0] > source_length:
-        return delays[0]
-
-    AL = 0
-    gamma = target_length / source_length
-    tau = 0
-    for t_minus_1, d in enumerate(delays):
-        if d <= source_length:
-            AL += d - t_minus_1 / gamma
-            tau = t_minus_1 + 1
-
-            if d == source_length:
-                break
-    AL /= tau
-    return AL
 
 
 class SimuEval:
@@ -45,36 +11,24 @@ class SimuEval:
         Initializes the SimuEval object.
 
         Attributes:
-            delays (List[List[Union[float, int]]]): A list to store sequences of delays for each processed sentence.
-            predictions (List[str]): A list to store the final predicted translations for each sentence.
-            golden_trans (List[str]): A list to store the ground truth translations for each sentence.
-            _AL (List[List[float]]): A list to store Average Lagging scores for each sentence.
-                                     Each inner list contains AL scores (typically one per sentence).
-            TERs (List[float]): A list to store Word Error Rate (TER) scores for each sentence.
+            delays (List[List[Union[float, int]]]): A list to store sequences
+             of delays for each processed sentence.
+
+            predictions (List[str]): A list to store the final predicted
+             translations for each sentence.
+
+            golden_trans (List[str]): A list to store the ground truth
+             translations for each sentence.
+
+            _AL (List[List[float]]): A list to store Average Lagging
+             scores for each sentence. Each inner list contains AL
+             scores (typically one per sentence).
+
+            TERs (List[float]): A list to store Word Error
+            Rate (TER) scores for each sentence.
+
             bleu (float): The corpus-level BLEU score.
             avg_TER (float): The average Word Error Rate over all sentences.
-
-        ### Example:
-            from simueval import SimuEval
-            import json
-
-            # Initialize the evaluator
-            evaluator = SimuEval()
-
-            # Define a helper to read JSON data
-            def read_json_to_dict(file_path):
-                with open(file_path, "r", encoding="utf-8") as f:
-                    return json.load(f)
-
-            # Path to a JSON file containing the evaluation data
-            file_path = r"Simul-Translation/AlignAttOutputs/parsed/baseline_alignatt.json"
-
-            # Load and process the data
-            results = read_json_to_dict(file_path)
-            evaluator.process_data(results[0])
-
-            # Print evaluation metrics
-            print(evaluator.eval())
         """
         self.delays = []
 
@@ -86,7 +40,7 @@ class SimuEval:
         self.TERs = []
         self.avg_TER = -1
 
-    def process_data(self, data_dict):
+    def process_data(self, data_dict: Dict) -> None:
         """
         Processes a batch of evaluation data by extracting inputs, predicted
         outputs, and gold texts from the provided dictionary, and updating
@@ -116,6 +70,29 @@ class SimuEval:
            - self.golden_trans
            - self.delays
            - self._AL
+
+
+        ### Example:
+            from simueval import SimuEval
+            import json
+
+            # Initialize the evaluator
+            evaluator = SimuEval()
+
+            # Define a helper to read JSON data
+            def read_json_to_dict(file_path):
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+
+            # Path to a JSON file containing the evaluation data
+            file_path = r"<path_to_directory>/baseline_alignatt.json"
+
+            # Load and process the data
+            results = read_json_to_dict(file_path)
+            evaluator.process_data(results[0])
+
+            # Print evaluation metrics
+            print(evaluator.eval())
         """
         inputs_list = data_dict["data"]["inputs"]
         pred_outputs_list = data_dict["data"]["outputs"]
@@ -126,9 +103,48 @@ class SimuEval:
                                                    gold_text_list):
             self.update(inputs, pred_outputs, gold_text)
 
-    def update(self, inputs, pred_outputs, gold_text):
+    @staticmethod
+    def compute_latency(
+            delays: List[int],
+            source_length: int,
+            target_length: int,
+    ):
         """
-        Updates the evaluation metrics with a new instance of inputs, predicted outputs, and gold text.
+        Compute latency on one sentence (instance).
+
+        Args:
+            delays (List[Union[float, int]]): Sequence of delays.
+            source_length (Union[float, int]): Length of source sequence.
+            target_length (Union[float, int]): Length of target sequence.
+
+        Returns:
+            float: The latency score on one sentence.
+        """
+        if delays[0] > source_length:
+            return delays[0]
+
+        al = 0
+        gamma = target_length / source_length
+        tau = 0
+        for t_minus_1, d in enumerate(delays):
+            if d <= source_length:
+                al += d - t_minus_1 / gamma
+                tau = t_minus_1 + 1
+
+                if d == source_length:
+                    break
+        al /= tau
+        return al
+
+    def update(
+            self,
+            inputs: List[str],
+            pred_outputs: List[str],
+            gold_text: str
+    ) -> List[List[int]]:
+        """
+        Updates the evaluation metrics with a new instance of inputs,
+        predicted outputs, and gold text.
         It calculates per-word delays, stores predictions and gold text for quality evaluation,
         and computes the AL score for the current instance.
 
@@ -184,7 +200,12 @@ class SimuEval:
 
         return self.delays
 
-    def call_AL_compute(self, inputs, gold_text, delays):
+    def call_AL_compute(
+            self,
+            inputs: List[str],
+            gold_text: str,
+            delays: List[int]
+    ) -> None:
         """
         Computes the Average Lagging (AL) score for the current instance using the provided delays
         and stores it in the `_AL` attribute.
@@ -193,13 +214,13 @@ class SimuEval:
             inputs (List[str]): List of source inputs at different time steps.
                                 `inputs[-1]` (the full source text) is used to determine source length.
             gold_text (str): The ground truth target sentence, used to determine target length.
-            delays_current_instance (List[Union[float, int]]): Sequence of delays calculated for the current instance.
+            delays (List[Union[float, int]]): Sequence of delays calculated for the current instance.
 
         Modifies:
             self._AL: Appends a list containing the computed AL score for the current instance.
                       If no delays are present, an empty list is appended for this instance's AL.
         """
-        ALs = []
+        al_list = []
 
         # compute latency score using current delays
         source_len = len(inputs[-1].strip().split())
@@ -207,18 +228,15 @@ class SimuEval:
 
         # calc AL only if there are calculated delays
         if len(delays) > 0:
-            AL = compute(delays, source_len, target_len)
-            ALs.append(AL)
+            al = self.compute_latency(delays, source_len, target_len)
+            al_list.append(al)
 
-        self._AL.append(ALs)
+        self._AL.append(al_list)
 
-    def calc_TER(self):
+    def calc_TER(self) -> Tuple[List[float], float]:
         """
         Calculate average Word Error Rate (TER) over lists of golden texts and predictions.
         Saves the results both individually and an average result.
-
-        Args:
-            None (uses `self.golden_trans` and `self.predictions`).
 
         Returns:
             Tuple[List[float], float]: A tuple containing:
@@ -242,13 +260,10 @@ class SimuEval:
 
         return self.TERs, self.avg_TER
 
-    def calc_sacreBLEU(self):
+    def calc_sacreBLEU(self) -> float:
         """
         Calculates the BLEU score using sacreBLEU based on the stored
         predictions and golden translations.
-
-        Args:
-            None (uses `self.predictions` and `self.golden_trans`).
 
         Returns:
             float: The corpus BLEU score. Returns 0.0 if no predictions or references.
@@ -263,7 +278,23 @@ class SimuEval:
 
         return bleu.score
 
-    def eval(self):
+    def eval(self) -> Dict[str, float]:
+        """
+            Evaluates the stored predictions against the ground truth translations
+            using BLEU, TER, and Average Lagging (AL) metrics.
+
+            Returns:
+                Dict[str, float]: A dictionary containing:
+                    - "bleu" (float): The corpus BLEU score computed via `calc_sacreBLEU`.
+                    - "ter" (float): The average Translation Error Rate computed via `calc_TER`.
+                    - "AL" (float): The average lagging score computed over all stored instances.
+
+            Modifies:
+                self.bleu: Set to the calculated BLEU score.
+                self.TERs: Populated with individual TER scores.
+                self.avg_TER: Set to the average TER score.
+                self._AL: Used to compute the average AL score.
+            """
         return {
             "bleu": self.calc_sacreBLEU(),
             "ter": self.calc_TER()[1],
