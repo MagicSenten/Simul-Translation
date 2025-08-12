@@ -31,37 +31,37 @@ pip install -r requirements.txt
 ----
 ## ⚙️ Command-line Arguments
 
-| Argument | Type | Default | Description |
-|-----------------------------------------|------|---------|-------------|
-| `--dataset_path`                        | str  | `./Data_preparation/cleaned_eval_dataset.jsonl` | Path to the JSONL dataset file. |
-| `--local_agreement_length`              | int  | `0`     | Number of next tokens to agree with the previous theory. |
-| `--skip_l`                              | int  | `0`     | Number of last positions in `attention_frame_size` to ignore. |
-| `--layers`                              | int list | `[3, 4]` | Layer indices to use. |
-| `--top_attentions`                      | int  | `0`     | Top attentions to use (0 disables AlignAtt). |
-| `--output_file`                         | str  | `results.jsonl` | Output file for results. |
-| `--attention_frame_size`                | int  | `10`    | Excluded frame of last positions size. |
-| `--count_in`                            | int  | `1`     | Required top_attentions within `attention_frame_size` for position to be bad. |
-| `--wait_for`                            | int  | `0`     | Static wait time applied globally. |
-| `--wait_for_beginning`                  | int  | `3`     | Wait time applied at the beginning. |
-| `--heads`                               | int list | `0 1 2 3 4 5` | Attention heads to use. |
-| `--device`                              | str  | `cuda`  | Device (`cuda` or `cpu`). |
-| `--words_per_prefix`                    | int  | `2`     | Words per prefix shown. |
-| `--forced_bos_token_text`               | str  | `None`  | Forced BOS token text. |
-| `--model_id`                            | int  | `0`     | Model ID from predefined list. |
-| `--num_beams`                           | int  | `2`     | Number of beams for beam search (multiple of 3 for diverse beam search). |
-| `--num_swaps`                           | int  | `0`     | Number of word pairs to blindly swap. |
-| `--src_key`                             | str  | `source` | Source key in dataset. |
-| `--tgt_key`                             | str  | `target` | Target key in dataset. |
-| `--verbose`                             | flag | `True`  | Enable verbose output. |
-| `--experiment_type`                     | str  | `none`  | Experiment type (`none`, `alignatt`, `local_agreement`). |
+| Argument | Type | Default | Description                                                                                                                                                                                                  |
+|-----------------------------------------|------|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--dataset_path`                        | str  | `./Data_preparation/cleaned_eval_dataset.jsonl` | Path to the JSONL dataset file.                                                                                                                                                                              |
+| `--local_agreement_length`              | int  | `0`    | Number of next tokens to agree with the previous theory.                                                                                                                                                     |
+| `--skip_l`                              | int  | `0`    | Number of last positions in `attention_frame_size` to ignore.                                                                                                                                                |
+| `--layers`                              | int list | `3, 4` | Layer indices to use. The attention values are averaged over these layers.                                                                                                                                   |
+| `--top_attentions`                      | int  | `0`    | Top attentions to use (0 disables AlignAtt).                                                                                                                                                                 |
+| `--output_file`                         | str  | `results.jsonl` | Output file for results.                                                                                                                                                                                     |
+| `--attention_frame_size`                | int  | `10`   | Excluded frame of last positions size.                                                                                                                                                                       |
+| `--count_in`                            | int  | `1`    | Required top_attentions within `attention_frame_size` for position to be bad.                                                                                                                                |
+| `--wait_for`                            | int  | `0`    | Static wait time applied globally.                                                                                                                                                                           |
+| `--wait_for_beginning`                  | int  | `3`    | Wait time applied at the beginning.                                                                                                                                                                          |
+| `--heads`                               | int list | `0 1 2 3 4 5` | Attention heads to use. The attention values are averaged over these heads.                                                                                                                                  |
+| `--device`                              | str  | `cuda` | Device (`cuda` or `cpu`).                                                                                                                                                                                    |
+| `--words_per_prefix`                    | int  | `2`    | Words per prefix shown.                                                                                                                                                                                      |
+| `--forced_bos_token_text`               | str  | `None` | Forced BOS token text.                                                                                                                                                                                       |
+| `--model_id`                            | int  | `0`    | Model ID from predefined list.                                                                                                                                                                               |
+| `--num_beams`                           | int  | `2`    | Number of beams for beam search (multiple of 3 for diverse beam search).                                                                                                                                     |
+| `--num_swaps`                           | int  | `0`    | Number of word pairs to blindly swap.                                                                                                                                                                        |
+| `--src_key`                             | str  | `source` | Source key in dataset.                                                                                                                                                                                       |
+| `--tgt_key`                             | str  | `target` | Target key in dataset.                                                                                                                                                                                       |
+| `--verbose`                             | flag | `True` | Enable verbose output.                                                                                                                                                                                       |
+| `--experiment_type`                     | str  | `none` | Experiment type (`simple`, `alignatt`). The `simple` option does a grid search over `num_beams` and `wait_for_beginning`. The `alignatt` option does a grid search over `layers` and `attention_frame_size`. |
 
 ## 📜 Usage Example
 
-```python
+```bash
 python main.py \
   --dataset_path ./Data_preparation/cleaned_eval_dataset.jsonl \
   --experiment_type alignatt \
-  --layers 3 4 \
+  --layers 3 \
   --heads 0 1 2 3 4 5 \
   --model_id 0 \
   --device cuda \
@@ -70,7 +70,7 @@ python main.py \
 
 ---
 ### 📂 Project Structure
-```bash
+```
 Simul-Translation/
 ├── .gitignore
 ├── main.py

@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument("--dataset_path", default="./Data_preparation/cleaned_eval_dataset.jsonl", type=str, help="Path to the jsonl file with data.")
     parser.add_argument("--local_agreement_length", type=int, default=0, help="Number of next tokens it must agree with the previous theory in.")
     parser.add_argument("--skip_l", type=int, default=0, help="Number of last positions in attention_frame_size to ignore.")
-    parser.add_argument("--layers", type=int, nargs='+', default=[3,4], help="List of layer indices.")
+    parser.add_argument("--layers", type=int, nargs='+', default=[2], help="List of layer indices.")
     parser.add_argument("--top_attentions", type=int, default=0, help="Top attentions to use, set to 0 to disable alignatt.")
     parser.add_argument("--output_file", type=str, default="results.jsonl", help="Output file to save results.")
     parser.add_argument("--attention_frame_size", type=int, default=10, help="The excluded frame of last positions size.")
@@ -38,7 +38,7 @@ def parse_args():
     parser.add_argument("--src_key", type=str, default=keys[0], help="Source key for the dataset.")
     parser.add_argument("--tgt_key", type=str, default=keys[1], help="Target key for the dataset.")
     parser.add_argument("--verbose", action="store_true", default=True, help="Enable verbose output.")
-    parser.add_argument("--experiment_type", type=str, default="none", help="Type of experiment to run (e.g., 'none', 'alignatt', 'local_agreement').")
+    parser.add_argument("--experiment_type", type=str, default="none", help="Type of experiment to run (e.g., 'simple', 'alignatt').")
 
     return parser.parse_args()
 
@@ -71,26 +71,6 @@ def run_param_search(args, model, tokenizer, prefixes):
             args.num_beams = num_beams
             args.wait_for_beginning = wait_for_beginning
             analyze_dataset_wrapper(args, model, tokenizer, prefixes)
-
-
-def run_local_agreement(args, model, tokenizer, prefixes):
-    """
-    Runs local agreement experiments by iterating over combinations of num_beams and wait_for_beginning.
-
-    Args:
-        args (argparse.Namespace): Parsed arguments.
-        model: The model to use for analysis.
-        tokenizer: The tokenizer to use for the model.
-        prefixes: Data prefixes to analyze.
-    """
-    for num_beams in range(1, 4):
-        for wait_for_beginning in range(1, 4):
-            args.top_attentions = 0
-            args.local_agreement_length = 1
-            args.num_beams = num_beams
-            args.wait_for_beginning = wait_for_beginning
-            analyze_dataset_wrapper(args, model, tokenizer, prefixes)
-
 
 def run_align_att(args, model, tokenizer, prefixes):
     """
@@ -139,12 +119,10 @@ def main():
         model = AutoModelForSeq2SeqLM.from_pretrained(names[args.model_id], attn_implementation="eager").to(args.device)
         print(tokenizer.supported_language_codes)
     prefixes = get_data(args)
-    if args.experiment_type == "none":
+    if args.experiment_type == "simple":
         run_param_search(args, model, tokenizer, prefixes)
     elif args.experiment_type == "alignatt":
         run_align_att(args, model, tokenizer, prefixes)
-    elif args.experiment_type == "local_agreement":
-        run_local_agreement(args, model, tokenizer, prefixes)
 
 
 if __name__ == "__main__":
