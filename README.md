@@ -1,6 +1,19 @@
 # 📝 Simultanous Translation CZ → EN
 
-### Simul-Translation is a research-oriented toolkit for text-to-text Simultaneous Machine Translation (SimulMT) with support for dataset preparation, model training, fine-tuning, evaluation, and visualization. It includes modular components for alignment-based policies, local agreement strategies, and output analysis.
+### Simul-Translation is a research-oriented toolkit for text-to-text Simultaneous Machine Translation (SimulMT) with support for dataset preparation, model training, fine-tuning, evaluation, and visualization. It includes modular components for alignment-based policies, local agreement strategies, and output analysis. 
+#### The main script `main.py` allows you to run model evaluation experiments with different configurations. It supports various command-line arguments to customize the behavior of the script.
+
+#### The `Data_preparation` folder contains the `create_dataset.py` script for preparing our training and testing datasets.
+
+#### The `Finetuning` folder contains the `finetune_nmt_backbone.py` script for fine-tuning the NMT backbone model on a dataset.
+
+#### The `AlignAtt` folder contains the definitions of align att and local agreement policies and runs the model using them.
+
+#### The `Evaluation` folder contains the definitions of the evaluation metrics.
+
+#### The `Visualization` folder contains scripts for parsing results, creating tables, and plotting results.
+
+#### The `AlignAttOutputs` folder contains the output logs from the grid search over local agreement and align att parameters, parsed results, and final results.
 
 ## 🛠️ Technologies Used
 <p align="center">
@@ -16,20 +29,19 @@
 ----
 ### 🔧 Installation
 Each module contains its own requirements.txt. To install dependencies for a module, run:
-```python
+```bash
 pip install -r <module>/requirements.txt
 ```
 Example:
-```python
+```bash
 pip install -r Data_preparation/requirements.txt
 ```
 *Alternitavely*, to install all dependencies for all modules, run:
-```python
+```bash
 pip install -r requirements.txt
 ```
-
 ----
-## ⚙️ Command-line Arguments
+## ⚙️ Command-line Arguments for main.py
 
 | Argument | Type | Default | Description                                                                                                                                                                                                  |
 |-----------------------------------------|------|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
