@@ -85,7 +85,9 @@ python main.py \
 ```
 Simul-Translation/
 ├── .gitignore
+├── README.md
 ├── main.py
+├── requirements.txt
 ├── AlignAtt/
 │   ├── README.md
 │   ├── alignatt.py
