@@ -108,11 +108,11 @@ def main():
     print(args.isLLM, names[args.model_id])
     if args.isLLM:
         # Load a causal language model with quantization for large models
-        tokenizer = AutoTokenizer.from_pretrained(names[args.model_id], token="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")
+        tokenizer = AutoTokenizer.from_pretrained(names[args.model_id])
         args.forced_bos_token_text = None
         quantization_config = BitsAndBytesConfig(load_in_4bit=True,
                                                  bnb_4bit_compute_dtype=torch.bfloat16)
-        model = AutoModelForCausalLM.from_pretrained(names[args.model_id], attn_implementation="eager", quantization_config=quantization_config, token="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").to(args.device)
+        model = AutoModelForCausalLM.from_pretrained(names[args.model_id], attn_implementation="eager", quantization_config=quantization_config).to(args.device)
     else:
         # Load a sequence-to-sequence model
         tokenizer = AutoTokenizer.from_pretrained(names[args.model_id], src_lang="ces_Latn", tgt_lang="eng_Latn")
