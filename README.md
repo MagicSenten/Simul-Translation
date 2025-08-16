@@ -1,4 +1,4 @@
-# 📝 Simultanous Translation CZ → EN
+# 📝 Simultaneous Translation CZ → EN
 
 ### Simul-Translation is a research-oriented toolkit for text-to-text Simultaneous Machine Translation (SimulMT) with support for dataset preparation, model training, fine-tuning, evaluation, and visualization. It includes modular components for alignment-based policies, local agreement strategies, and output analysis. 
 #### The main script `main.py` allows you to run model evaluation experiments with different configurations. It supports various command-line arguments to customize the behavior of the script.
