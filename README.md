@@ -9,7 +9,7 @@
 
 #### The `AlignAtt` folder contains the definitions of align att and local agreement policies and runs the model using them.
 
-#### The `Evaluation` folder contains the definitions of the evaluation metrics.
+#### The `Evaluation` folder contains the scripts for the evaluation metrics, which can be used independently or by running the main script.
 
 #### The `Visualization` folder contains scripts for parsing results, creating tables, and plotting results.
 
